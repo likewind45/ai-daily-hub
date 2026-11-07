@@ -722,13 +722,13 @@
         grid-area: switcher;
         width: 100%;
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
       }
 
       .device-btn {
         justify-content: center;
-        padding: 0.32rem 0.25rem;
-        font-size: 0.75rem;
+        padding: 0.32rem 0.15rem;
+        font-size: 0.72rem;
       }
 
       .device-spec {
@@ -780,18 +780,19 @@
       </div>
     </div>
 
-    <!-- One-Click Device Switcher -->
+    <!-- One-Click Device Switcher (with Smart Auto-Detect) -->
     <div class="device-switcher" role="group" aria-label="版面切換">
-      <button class="device-btn active" id="btnDesktop" onclick="setDeviceMode('desktop')">
-        <span>💻 電腦版</span>
+      <button class="device-btn active" id="btnAuto" onclick="setDeviceMode('auto')">
+        <span>✨ 自動偵測</span>
+      </button>
+      <button class="device-btn" id="btnDesktop" onclick="setDeviceMode('desktop')">
+        <span>💻 電腦</span>
       </button>
       <button class="device-btn" id="btnIphone15" onclick="setDeviceMode('iphone15')">
         <span>📱 iPhone 15</span>
-        <span class="device-spec">393px</span>
       </button>
       <button class="device-btn" id="btnIphone15pm" onclick="setDeviceMode('iphone15pm')">
         <span>📱 15 Pro Max</span>
-        <span class="device-spec">430px</span>
       </button>
     </div>
 
@@ -989,34 +990,97 @@
     }
 
     // =====================================================
-    // Device Mode Switching (Desktop / iPhone 15 / iPhone 15 Pro Max)
+    // Smart Resolution Detection & Device Mode Switching
     // =====================================================
-    function setDeviceMode(deviceMode) {
-      const isMobileView = (deviceMode === 'iphone15' || deviceMode === 'iphone15pm');
-      const viewMode = isMobileView ? 'mobile' : 'desktop';
+    let currentSelectedMode = 'auto';
 
-      document.documentElement.setAttribute('data-device', deviceMode);
-      document.documentElement.setAttribute('data-view', viewMode);
+    function detectDeviceByResolution() {
+      const vw = Math.round(window.innerWidth);
+      const vh = Math.round(window.innerHeight);
+      const sw = Math.round(window.screen ? window.screen.width : vw);
+      const sh = Math.round(window.screen ? window.screen.height : vh);
+      const dpr = window.devicePixelRatio || 1;
+      const minSide = Math.min(sw, sh);
+      const maxSide = Math.max(sw, sh);
+
+      let label = '';
+      let viewMode = 'desktop';
+
+      if (vw <= 820) {
+        viewMode = 'mobile';
+        if ((minSide === 430 && maxSide === 932) || (vw >= 415 && vw <= 445)) {
+          label = `✨ 自動偵測：iPhone 15 Pro Max (${vw}×${vh} @${dpr}x)`;
+        } else if ((minSide === 393 && maxSide === 852) || (vw >= 380 && vw < 415)) {
+          label = `✨ 自動偵測：iPhone 15 / Pro (${vw}×${vh} @${dpr}x)`;
+        } else {
+          label = `✨ 自動偵測：行動裝置 (${vw}×${vh})`;
+        }
+      } else {
+        viewMode = 'desktop';
+        label = `✨ 自動偵測：電腦寬螢幕 (${vw}×${vh})`;
+      }
+
+      return { viewMode, label, vw, vh };
+    }
+
+    function setDeviceMode(deviceMode) {
+      currentSelectedMode = deviceMode;
       localStorage.setItem('ai-hub-device-mode', deviceMode);
+
+      const detected = detectDeviceByResolution();
+      let effectiveDevice = deviceMode;
+      let viewMode = 'desktop';
+      let indicatorText = '';
+
+      if (deviceMode === 'auto') {
+        viewMode = detected.viewMode;
+        effectiveDevice = 'auto-fill';
+        indicatorText = detected.label;
+      } else if (deviceMode === 'iphone15') {
+        viewMode = 'mobile';
+        effectiveDevice = 'iphone15';
+        indicatorText = '📱 預覽：iPhone 15 (393×852)';
+      } else if (deviceMode === 'iphone15pm') {
+        viewMode = 'mobile';
+        effectiveDevice = 'iphone15pm';
+        indicatorText = '📱 預覽：15 Pro Max (430×932)';
+      } else {
+        viewMode = 'desktop';
+        effectiveDevice = 'desktop';
+        indicatorText = `💻 預覽：電腦版 (${detected.vw}×${detected.vh})`;
+      }
+
+      document.documentElement.setAttribute('data-device', effectiveDevice);
+      document.documentElement.setAttribute('data-view', viewMode);
       localStorage.setItem('ai-hub-view-mode', viewMode);
 
       // Update active button state
       document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-      if (deviceMode === 'desktop') document.getElementById('btnDesktop').classList.add('active');
-      if (deviceMode === 'iphone15') document.getElementById('btnIphone15').classList.add('active');
-      if (deviceMode === 'iphone15pm') document.getElementById('btnIphone15pm').classList.add('active');
+      const btnMap = {
+        auto: 'btnAuto',
+        desktop: 'btnDesktop',
+        iphone15: 'btnIphone15',
+        iphone15pm: 'btnIphone15pm'
+      };
+      const activeBtn = document.getElementById(btnMap[deviceMode] || 'btnAuto');
+      if (activeBtn) activeBtn.classList.add('active');
 
       // Update indicator label
       const indicator = document.getElementById('deviceIndicator');
       if (indicator) {
-        if (deviceMode === 'desktop') indicator.textContent = '💻 電腦版寬螢幕';
-        if (deviceMode === 'iphone15') indicator.textContent = '📱 iPhone 15 (393×852)';
-        if (deviceMode === 'iphone15pm') indicator.textContent = '📱 15 Pro Max (430×932)';
+        indicator.textContent = indicatorText;
       }
 
       // Sync view mode into iframe document
       syncIframeState();
     }
+
+    // Real-time resolution listener: whenever screen rotates or browser resizes, auto-adjust immediately!
+    window.addEventListener('resize', () => {
+      if (currentSelectedMode === 'auto') {
+        setDeviceMode('auto');
+      }
+    });
 
     function syncIframeState() {
       const frame = document.getElementById('contentFrame');
@@ -1312,17 +1376,8 @@
       const savedTheme = localStorage.getItem('ai-hub-theme') || 'dark';
       applyHubTheme(savedTheme);
 
-      // Auto-detect real iPhone / narrow screen on first visit, otherwise restore saved mode
-      const savedDevice = localStorage.getItem('ai-hub-device-mode');
-      if (savedDevice) {
-        setDeviceMode(savedDevice);
-      } else if (window.innerWidth <= 400) {
-        setDeviceMode('iphone15');
-      } else if (window.innerWidth <= 500) {
-        setDeviceMode('iphone15pm');
-      } else {
-        setDeviceMode('desktop');
-      }
+      // Always start in smart auto-detect resolution mode by default!
+      setDeviceMode('auto');
 
       initSelectorsAndDefaultCollapse();
       updatePrevNextButtons();

@@ -944,8 +944,8 @@ sequenceDiagram
     (function () {
       const saved = localStorage.getItem('ai-hub-theme') || 'dark';
       applyTheme(saved);
-      const savedMode = localStorage.getItem('ai-hub-view-mode') || 'auto';
-      applyPostViewMode(savedMode);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
       if (window.self !== window.top) {
         const nav = document.getElementById('postNavbar');
         if (nav) nav.style.display = 'none';
