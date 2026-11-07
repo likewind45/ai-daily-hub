@@ -418,7 +418,9 @@
     /* Hierarchical Archive Tree */
     .post-list {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
+      overscroll-behavior: contain;
       padding: 0.75rem;
       display: flex;
       flex-direction: column;
@@ -429,8 +431,8 @@
     .year-group {
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      overflow: hidden;
       background: var(--bg-card);
+      flex-shrink: 0;
     }
 
     .year-header {
@@ -445,6 +447,7 @@
       cursor: pointer;
       user-select: none;
       border-bottom: 1px solid var(--border-color);
+      border-radius: 9px 9px 0 0;
     }
 
     .group-badge {
@@ -466,7 +469,7 @@
     .month-group {
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      overflow: hidden;
+      flex-shrink: 0;
     }
 
     .month-header {
@@ -577,6 +580,7 @@
     .viewer {
       flex: 1;
       height: 100%;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       background: var(--bg-primary);
@@ -593,6 +597,7 @@
       font-size: 0.82rem;
       color: var(--text-secondary);
       gap: 0.5rem;
+      flex-shrink: 0;
     }
 
     .current-post-label {
@@ -601,10 +606,21 @@
       white-space: nowrap;
     }
 
-    iframe#contentFrame {
+    .iframe-scroll-wrapper {
       flex: 1;
+      min-height: 0;
       width: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
+
+    iframe#contentFrame {
+      width: 100%;
+      min-height: 100%;
       border: 0;
+      display: block;
       background: var(--bg-primary);
     }
 
@@ -841,7 +857,9 @@
           <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-07（週六）｜告別單一問答！2026 多模型全自動工作流</span>
         </div>
 
-        <iframe id="contentFrame" src="posts/2026-11-07.html" title="Daily AI Learning Content"></iframe>
+        <div class="iframe-scroll-wrapper" id="iframeWrapper">
+          <iframe id="contentFrame" src="posts/2026-11-07.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
+        </div>
 
         <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
         <nav class="mobile-bottom-nav">
@@ -1048,13 +1066,33 @@
       const frame = document.getElementById('contentFrame');
       if (!frame || !frame.contentWindow) return;
       try {
-        const docEl = frame.contentWindow.document.documentElement;
+        const doc = frame.contentWindow.document;
+        const docEl = doc.documentElement;
         const theme = document.documentElement.getAttribute('data-theme') || 'dark';
         const view = document.documentElement.getAttribute('data-view') || 'desktop';
         docEl.setAttribute('data-theme', theme);
         docEl.setAttribute('data-view-mode', view);
-        const nav = frame.contentWindow.document.getElementById('postNavbar');
+        const nav = doc.getElementById('postNavbar');
         if (nav) nav.style.display = 'none';
+
+        // Fix iOS Safari iframe non-scrolling bug: dynamically expand iframe height to full document height
+        // so the parent .iframe-scroll-wrapper handles native touch scrolling smoothly!
+        const resizeIframeToContent = () => {
+          if (!doc.body) return;
+          const contentHeight = Math.max(
+            doc.body.scrollHeight,
+            docEl.scrollHeight,
+            doc.body.offsetHeight,
+            docEl.offsetHeight
+          );
+          if (contentHeight > 200) {
+            frame.style.height = (contentHeight + 48) + 'px';
+          }
+        };
+        resizeIframeToContent();
+        setTimeout(resizeIframeToContent, 350);
+        setTimeout(resizeIframeToContent, 1200);
+        setTimeout(resizeIframeToContent, 2500);
       } catch (e) {}
     }
 
@@ -1188,7 +1226,11 @@
       const { year, ym } = extractYearMonth(date);
       openYears.add(year);
       openMonths.add(ym);
-      document.getElementById('contentFrame').src = path;
+      const frame = document.getElementById('contentFrame');
+      frame.style.height = '100%';
+      frame.src = path;
+      const wrapper = document.getElementById('iframeWrapper');
+      if (wrapper) wrapper.scrollTop = 0;
       document.getElementById('currentPostLabel').textContent = `正在閱讀：${date}｜${title}`;
       document.getElementById('openNewTabLink').href = path;
       toggleMobileDrawer(false); // Auto-close drawer on mobile after picking a post
