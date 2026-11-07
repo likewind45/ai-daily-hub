@@ -111,6 +111,9 @@
       font-weight: 700;
       font-size: 0.98rem;
       white-space: nowrap;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .brand-icon {
@@ -705,12 +708,14 @@
       .topbar-left {
         grid-area: left;
         min-width: 0;
+        overflow: hidden;
       }
 
       .topbar-right {
         grid-area: right;
         justify-content: flex-end;
         gap: 0.35rem;
+        flex-shrink: 0;
       }
 
       .device-switcher {
@@ -730,23 +735,32 @@
         display: none;
       }
 
-      /* Hide QR button & raw link text on real phone screen so topbar fits 100% cleanly */
+      /* Hide QR button on real phone screen so topbar fits 100% cleanly */
       .qr-btn-desktop {
         display: none !important;
       }
 
       .action-btn {
-        padding: 0.32rem 0.55rem;
-        font-size: 0.75rem;
+        padding: 0.32rem 0.52rem;
+        font-size: 0.74rem;
       }
 
       .brand span {
-        font-size: 0.88rem;
+        font-size: 0.82rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       html[data-view="mobile"] .viewer-toolbar {
         padding: 0.45rem 0.75rem;
         font-size: 0.75rem;
+      }
+    }
+
+    @media (max-width: 460px) {
+      .brand span {
+        display: none;
       }
     }
   </style>
