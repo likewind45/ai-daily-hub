@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-06｜多模態視覺 AI 實戰：手繪白板秒轉程式碼 ＆ 複雜圖表逆向工程（附週五 YouTube 雙精選） - AI 每日實戰學習站</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.friday {
+      background: rgba(251, 113, 133, 0.14);
+      color: var(--accent-rose);
+      border-color: rgba(251, 113, 133, 0.3);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    /* YouTube Recommendations Grid */
+    .yt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.4rem;
+    }
+
+    .yt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
+    }
+
+    .yt-video-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      display: block;
+      overflow: hidden;
+      text-decoration: none;
+    }
+
+    .yt-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .yt-video-container:hover .yt-thumb {
+      transform: scale(1.04);
+      filter: brightness(0.85);
+    }
+
+    .yt-play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.15) 100%);
+    }
+
+    .yt-play-btn {
+      width: 68px;
+      height: 48px;
+      background: rgba(255, 0, 0, 0.92);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .yt-video-container:hover .yt-play-btn {
+      transform: scale(1.1);
+      background: #ff0000;
+    }
+
+    .yt-play-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: #ffffff;
+      margin-left: 3px;
+    }
+
+    .yt-duration-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .yt-body {
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .yt-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .yt-tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+      background: rgba(129, 140, 248, 0.15);
+      color: var(--accent-secondary);
+    }
+
+    .yt-tag.fresh {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--accent-emerald);
+    }
+
+    .yt-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.45;
+    }
+
+    .yt-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .yt-takeaways {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.15rem;
+      flex: 1;
+    }
+
+    .yt-takeaways ul {
+      padding-left: 1.15rem;
+      margin-top: 0.4rem;
+      color: var(--text-secondary);
+    }
+
+    .yt-takeaways li {
+      margin-bottom: 0.35rem;
+    }
+
+    .yt-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.65rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+
+    .yt-btn:hover {
+      opacity: 0.92;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-grid {
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-body {
+      padding: 1.1rem 1.05rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+      .yt-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>AI 每日實戰學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="viewModeToggle" onclick="togglePostViewMode()">📱 手機版</button>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge ">📅 2026-11-06（週五多模態實戰與影音特輯）</span>
+<span class="badge level">🎯 入門至進階：Vision 多模態高效工作流</span>
+<span class="badge friday">🎬 附週五 YouTube 雙精選專欄</span>
+      </div>
+      <h1>多模態視覺 AI 實戰：手繪白板秒轉程式碼 ＆ 複雜圖表逆向工程（附週五 YouTube 雙精選）</h1>
+      <p>文字打字太慢？在 2026 年，「截圖（Screenshot）就是最高效的 Prompt」！今天帶你解鎖多模態視覺模型（Vision LLM）的三大高階用法：白板草圖直接轉為互動網頁、複雜財報圖表逆向還原成結構化數據、以及視覺化 UI 除錯；同時奉上本週五限定 YouTube 雙精選！</p>
+    </header>
+
+    <section class="kpi-grid">
+      
+      <div class="kpi-card">
+        <div class="kpi-label">今日核心觀念</div>
+        <div class="kpi-value">Screenshot as a Prompt</div>
+        <div class="kpi-sub">一張標註紅框的截圖，勝過 500 字的文字排版描述</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">核心實戰技能</div>
+        <div class="kpi-value">視覺逆向工程 (Visual Reverse)</div>
+        <div class="kpi-sub">把圖片裡的表格、架構圖直接轉成可編輯的 Markdown / Mermaid</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">週五影音特輯</div>
+        <div class="kpi-value">雷蒙三十 × PanSci 泛科學</div>
+        <div class="kpi-sub">雙棲 AI Agent 記憶系統教學 ＋ 53 萬觀看 AI 晶片封裝科普</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">預估閱讀與實作</div>
+        <div class="kpi-value">12 分鐘閱讀 + 2 部精選影片</div>
+        <div class="kpi-sub">內含 2 張視覺工作流圖解 + 1 組截圖逆向工程 Prompt</div>
+      </div>
+    </section>
+
+    
+    <section class="section">
+      <div class="section-header">
+        <span>🔥</span>
+        <h2>今日實戰主題一：「截圖即指令」——用紅框標註（Visual Prompting）精準引導 AI</h2>
+      </div>
+      <div class="card">
+        <h3>不要再用文字形容「左邊數過來第二個按鈕往下移一點」了！</h3>
+        <p>
+          當你在修改簡報排版、調整網頁介面，或是請 AI 解讀一張擁擠的系統架構圖時，純文字描述空間位置極度低效。2026 年的多模態模型對<strong>「視覺標記（Visual Markers，如紅框、數字編號箭頭）」</strong>極為敏感——只要在截圖上隨手畫個紅框標上 <code>①</code>、<code>②</code>，AI 的理解準確率會瞬間拉滿。
+        </p>
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 空間與視覺問題，永遠用「截圖 + 紅框編號」來溝通；省去大量形容詞，AI 馬上知道你要改哪裡。
+        </div>
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart LR
+    S1["📸 第一步：隨手擷取畫面
+(白板手繪草圖 / 競品網頁 / PDF 複雜圖表)"] --> S2["🖍️ 第二步：加上視覺錨點
+用紅框圈出重點並標上 ① ② ③"]
+    S2 --> S3["🤖 第三步：多模態模型解析
+(精準對應圖中 ① ② ③ 編號執行指令)"]
+    S3 --> Out1["💻 產出前端 UI 程式碼"]
+    S3 --> Out2["📊 還原成 Excel / CSV 數據表"]
+    S3 --> Out3["🗺️ 轉為可修改的 Mermaid 原始碼"]
+          </pre>
+          <div class="diagram-caption">圖 1：結合「視覺紅框錨點（Visual Grounding）」的多模態極速工作流</div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="section">
+      <div class="section-header">
+        <span>🛠️</span>
+        <h2>今日實戰主題二：三大高含金量的「視覺逆向工程」應用場景</h2>
+      </div>
+      <div class="card">
+        <h3>把「死圖片」變成「活資產」的 3 個必學招式</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>應用場景</th>
+                <th>輸入給 AI 的圖片</th>
+                <th>要求 AI 產出的可編輯資產</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. 架構圖/流程圖數位化</strong></td>
+                <td>開會討論完手機拍下的「白板手繪流程圖」或別人簡報裡的靜態架構圖</td>
+                <td>直接轉換為 <strong>Mermaid 語法</strong>，貼進筆記或網頁就能隨時增刪節點、統一美化風格。</td>
+              </tr>
+              <tr>
+                <td><strong>2. 報告圖表數據逆向提取</strong></td>
+                <td>研究報告裡只有折線圖/長條圖截圖，卻沒有附原始數據表格</td>
+                <td>要求 AI 讀取座標軸與數值標籤，逆向還原成 <strong>CSV / Markdown 數據表</strong> 並計算年增率（YoY）。</td>
+              </tr>
+              <tr>
+                <td><strong>3. 介面原型克隆與改版</strong></td>
+                <td>看到某個網站的卡片排版或儀表板設計非常好看，想借鑑到自己的工具裡</td>
+                <td>截圖並請 AI 提煉其 <strong>配色色碼（Hex Palette）、間距比例與 HTML/CSS 骨架</strong>。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    Img["🖼️ 輸入：一張無法編輯的靜態架構圖或圖表截圖"] --> Parse["🔍 AI 視覺拆解
+辨識文字節點、箭頭流向、色塊分組與座標數值"]
+    Parse --> Code["📝 轉譯為純文字結構碼
+(Mermaid / Markdown Table / HTML+CSS)"]
+    Code --> Edit["✏️ 自由二次創作
+加入自己公司的業務邏輯或最新一季數據"]
+    Edit --> Final["🚀 10 分鐘完成原本要重畫 2 小時的專業圖表"]
+          </pre>
+          <div class="diagram-caption">圖 2：將靜態圖片轉化為「結構化文字程式碼（Diagram-as-Code）」的逆向工程閉環</div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）：靜態圖表逆向轉譯（Image-to-Mermaid/Table）Prompt</h2>
+      </div>
+      <div class="card">
+        <h3>下次看到別人簡報或報告裡有很棒的流程圖或表格截圖，直接截圖搭配這段指令餵給 AI：</h3>
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 複製 Prompt</button>
+          <pre id="dailyPrompt">請仔細檢視我上傳的這張圖片，幫我進行「視覺逆向工程（Visual Reverse Engineering）」：
+
+1. 【結構化還原】：
+   - 如果圖中是流程圖或架構圖，請幫我 100% 還原並轉換為標準的 **Mermaid `flowchart` 或 `sequenceDiagram` 語法**（節點文字包含特殊符號時請加上雙引號 `""`）。
+   - 如果圖中是數據圖表或表格，請幫我精準讀取數值，還原為完整的 **Markdown 表格** 與可直接貼入 Excel 的 **CSV 格式**。
+2. 【優化升級建議】：除了還原原圖之外，請以資訊設計專家的角度，指出原圖在視覺層次或邏輯表達上可以改進的 2 個地方，並直接提供一個「優化升級版」的 Mermaid 圖表或表格。</pre>
+        </div>
+      </div>
+    </section>
+
+    
+    <!-- Section 4: Friday Special YouTube Recommendations (2026-11-06) -->
+    <section class="section">
+      <div class="section-header">
+        <span>🎬</span>
+        <h2>【週五限定專欄】本週中文 AI YouTube 雙精選（近半年內發布・高觀看量乾貨）</h2>
+      </div>
+      <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">
+        每週五為您嚴選 <strong>2 則近 6 個月內上傳、繁體中文發音、片長 14～15 分鐘且經數萬至數十萬觀眾驗證</strong> 的高品質影片（一則工具實操、一則產業趨勢）：
+      </p>
+
+      <div class="yt-grid">
+        <!-- Video 1: Type 1 (Tool & Workflow Practical Tutorial) -->
+        <article class="yt-card">
+          <a href="https://www.youtube.com/watch?v=GRhg_ZZswmQ" target="_blank" rel="noopener" class="yt-video-container" title="點擊前往 YouTube 觀看影片">
+            <img class="yt-thumb" src="https://i.ytimg.com/vi/GRhg_ZZswmQ/hqdefault.jpg" alt="AI Agent 怎麼訓練？Claude Code 與 Codex 雙棲記憶系統、對話管理、AI 分工誤區" />
+            <div class="yt-play-overlay">
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <span class="yt-duration-badge">14:40</span>
+            </div>
+          </a>
+          <div class="yt-body">
+            <div class="yt-tags">
+              <span class="yt-tag">類型 1｜工具與應用實操教學</span>
+              <span class="yt-tag fresh">🔥 3.7 萬次觀看・2026-07-09 發布</span>
+            </div>
+            <div class="yt-title">AI Agent 怎麼訓練？Claude Code 與 Codex 雙棲記憶系統、對話管理、AI 分工誤區｜直播精華</div>
+            <div class="yt-meta">📺 頻道：柚智夫妻 X 雷蒙三十 ｜ ⏱️ 片長：14 分 40 秒 ｜ 🗣️ 繁體中文（台灣）</div>
+            <div class="yt-takeaways">
+              <strong>📌 為什麼推薦這支影片：</strong>
+              <ul>
+                <li><strong>避免被單一 AI 平台綁架：</strong> 雷蒙實戰示範如何用本機 Markdown 建立「雙棲記憶系統」，讓 Claude Code 與 OpenAI Codex 共用同一套個人知識庫，隨時無痛切換。</li>
+                <li><strong>核心實戰重點：</strong>
+                  <br>• 聊天機器人（出方案）與 AI Agent（直接動手做完）的底層差異
+                  <br>• 「雙棲設置對照表」：如何讓不同 AI 工具讀取同一份專案規則與記憶檔而不產生斷層
+                  <br>• Context 視窗管理技巧與常見的 AI 分工誤區
+                </li>
+              </ul>
+            </div>
+            <a href="https://www.youtube.com/watch?v=GRhg_ZZswmQ" target="_blank" rel="noopener" class="yt-btn">
+              ▶️ 前往 YouTube 觀看完整影片
+            </a>
+          </div>
+        </article>
+
+        <!-- Video 2: Type 3 (AI Tech News & Trend Deep Commentary) -->
+        <article class="yt-card">
+          <a href="https://www.youtube.com/watch?v=i1KVNNvkuwM" target="_blank" rel="noopener" class="yt-video-container" title="點擊前往 YouTube 觀看影片">
+            <img class="yt-thumb" src="https://i.ytimg.com/vi/i1KVNNvkuwM/hqdefault.jpg" alt="全新AI晶片封裝規則！CoPoS能超越CoWoS？｜PanSci 泛科學" />
+            <div class="yt-play-overlay">
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <span class="yt-duration-badge">14:32</span>
+            </div>
+          </a>
+          <div class="yt-body">
+            <div class="yt-tags">
+              <span class="yt-tag">類型 3｜AI 科技新聞與趨勢深度評論</span>
+              <span class="yt-tag fresh">🔥 53.7 萬次觀看・2026-05 發布</span>
+            </div>
+            <div class="yt-title">全新 AI 晶片封裝規則！CoPoS 能超越 CoWoS？看懂算力背後的半導體先進封裝戰局</div>
+            <div class="yt-meta">📺 頻道：PanSci 泛科學 ｜ ⏱️ 片長：14 分 32 秒 ｜ 🗣️ 繁體中文（台灣）</div>
+            <div class="yt-takeaways">
+              <strong>📌 為什麼推薦這支影片：</strong>
+              <ul>
+                <li><strong>53 萬人觀看的硬核科普神作：</strong> 為什麼 2026 年各大 AI 巨頭都在搶先進封裝產能？泛科學用超直覺的視覺動畫，把台積電 CoWoS 到最新面板級封裝（CoPoS / FOPLP）講得連非理工背景都能秒懂！</li>
+                <li><strong>核心趨勢重點：</strong>
+                  <br>• 為什麼摩爾定律放緩後，「先進封裝」與「HBM 高頻寬記憶體」成為 AI 算力天花板的決定關鍵？
+                  <br>• 圓形晶圓（Wafer）vs. 方形面板（Panel）面積利用率差異與散熱挑戰
+                </li>
+              </ul>
+            </div>
+            <a href="https://www.youtube.com/watch?v=i1KVNNvkuwM" target="_blank" rel="noopener" class="yt-btn">
+              ▶️ 前往 YouTube 觀看完整影片
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>AI 每日實戰學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      const savedMode = localStorage.getItem('ai-hub-view-mode') || 'auto';
+      applyPostViewMode(savedMode);
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

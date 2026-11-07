@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-04｜把冰冷 Excel 變成互動式網頁儀表板！單一 HTML 檔案（Single-File App）生成術 - AI 每日實戰學習站</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.friday {
+      background: rgba(251, 113, 133, 0.14);
+      color: var(--accent-rose);
+      border-color: rgba(251, 113, 133, 0.3);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    /* YouTube Recommendations Grid */
+    .yt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.4rem;
+    }
+
+    .yt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
+    }
+
+    .yt-video-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      display: block;
+      overflow: hidden;
+      text-decoration: none;
+    }
+
+    .yt-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .yt-video-container:hover .yt-thumb {
+      transform: scale(1.04);
+      filter: brightness(0.85);
+    }
+
+    .yt-play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.15) 100%);
+    }
+
+    .yt-play-btn {
+      width: 68px;
+      height: 48px;
+      background: rgba(255, 0, 0, 0.92);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .yt-video-container:hover .yt-play-btn {
+      transform: scale(1.1);
+      background: #ff0000;
+    }
+
+    .yt-play-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: #ffffff;
+      margin-left: 3px;
+    }
+
+    .yt-duration-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .yt-body {
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .yt-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .yt-tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+      background: rgba(129, 140, 248, 0.15);
+      color: var(--accent-secondary);
+    }
+
+    .yt-tag.fresh {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--accent-emerald);
+    }
+
+    .yt-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.45;
+    }
+
+    .yt-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .yt-takeaways {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.15rem;
+      flex: 1;
+    }
+
+    .yt-takeaways ul {
+      padding-left: 1.15rem;
+      margin-top: 0.4rem;
+      color: var(--text-secondary);
+    }
+
+    .yt-takeaways li {
+      margin-bottom: 0.35rem;
+    }
+
+    .yt-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.65rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+
+    .yt-btn:hover {
+      opacity: 0.92;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-grid {
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-body {
+      padding: 1.1rem 1.05rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+      .yt-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>AI 每日實戰學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="viewModeToggle" onclick="togglePostViewMode()">📱 手機版</button>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge ">📅 2026-11-04（週三數據視覺化與微工具專題）</span>
+<span class="badge level">🎯 入門至進階：零基礎生成互動式 HTML 儀表板</span>
+      </div>
+      <h1>把冰冷 Excel 變成互動式網頁儀表板！單一 HTML 檔案（Single-File App）生成術</h1>
+      <p>開會報告時還在放密密麻麻、字小到看不清的 Excel 截圖嗎？今天教你如何用一句 Prompt，讓 AI 把任何 CSV 數據或計算邏輯，直接打包成一個「免安裝任何環境、雙擊就能在瀏覽器打開、可篩選可互動」的單一 HTML 微型應用程式（Micro-App）！</p>
+    </header>
+
+    <section class="kpi-grid">
+      
+      <div class="kpi-card">
+        <div class="kpi-label">今日核心觀念</div>
+        <div class="kpi-value">Single-File HTML App</div>
+        <div class="kpi-sub">把 HTML + CSS + 圖表庫集中在單一檔案，點兩下就能跑</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">視覺化神器</div>
+        <div class="kpi-value">Chart.js / ECharts / Mermaid</div>
+        <div class="kpi-sub">透過 CDN 直接引入，免裝 Node.js 或 Python 環境</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">實戰殺手級應用</div>
+        <div class="kpi-value">互動式報價單 / KPI 儀表板</div>
+        <div class="kpi-sub">主管拉動滑桿就能即時試算不同方案的毛利與成本</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">預估閱讀與實作</div>
+        <div class="kpi-value">10 分鐘閱讀 + 5 分鐘練習</div>
+        <div class="kpi-sub">內含 2 張轉換流程圖 + 1 組一鍵生成儀表板 Prompt</div>
+      </div>
+    </section>
+
+    
+    <section class="section">
+      <div class="section-header">
+        <span>🔥</span>
+        <h2>今日實戰主題一：為什麼「單一 HTML 檔案（Single-File App）」是職場最強交付格式？</h2>
+      </div>
+      <div class="card">
+        <h3>免架伺服器、免裝套件、發到 Line 或 Email 對方點開就能互動</h3>
+        <p>
+          以前請 AI 寫一個數據分析工具，如果用 Python，同事電腦沒裝環境根本跑不起來；如果寫成標準前端專案，一大堆資料夾跟 <code>npm install</code> 讓人望之卻步。但在 2026 年，最聰明的做法是要求 AI 產出<strong>「內嵌 CDN 圖表庫（如 Chart.js 或 Tailwind）的單一獨立 <code>.html</code> 檔案」</strong>。
+        </p>
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 靜態 PPT 只能回答你事先預設好的問題；互動式 HTML 儀表板讓老闆在會議現場問「如果預算砍 15% 會怎樣？」時，你拉一下滑桿 1 秒鐘給出圖表答案。
+        </div>
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart LR
+    Raw["📊 原始雜亂資料
+(Excel 表格 / CSV / 會議數據)"] --> Prompt["🤖 AI 單檔打包指令
+(要求 HTML+CSS+JS 合一 + CDN 圖表庫)"]
+    Prompt --> File["📄 產出單一 `dashboard.html`
+(僅 20KB、零外部環境依賴)"]
+    File --> Use1["💻 自己本機雙擊開啟
+離線篩選與交叉分析"]
+    File --> Use2["📤 傳給客戶或主管
+拉動滑桿即時試算 ROI / 報價"]
+          </pre>
+          <div class="diagram-caption">圖 1：從靜態表格升級為「免安裝單檔互動式網頁應用程式」的極簡交付流程</div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="section">
+      <div class="section-header">
+        <span>🛠️</span>
+        <h2>今日實戰主題二：3 種最適合用 AI 幾分鐘內做出來的「微型內部工具」</h2>
+      </div>
+      <div class="card">
+        <h3>把每週重複算的公式，固化成你的專屬小工具</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>微型工具類型</th>
+                <th>傳統做法痛點</th>
+                <th>AI 生成單檔 HTML 解決方案</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. 動態報價與毛利試算器</strong></td>
+                <td>業務在 Excel 改錯一格公式，整張報價單算錯</td>
+                <td>做成有防呆拉桿（人數、折扣碼、加購模組）的網頁，自動算出總價並可一鍵列印 PDF。</td>
+              </tr>
+              <tr>
+                <td><strong>2. 月度營運 KPI 視覺看板</strong></td>
+                <td>每個月花 3 小時重拉長條圖、調 PPT 顏色</td>
+                <td>設計一個支援「直接拖曳 CSV 檔案進去」就自動渲染出 4 張關鍵圖表與異常紅字提醒的網頁。</td>
+              </tr>
+              <tr>
+                <td><strong>3. 團隊 SOP 互動檢查清單</strong></td>
+                <td>Word 文件太長沒人看，新人常漏步驟</td>
+                <td>做成可打勾、有進度條（Progress Bar）、且會用 `localStorage` 自動記憶進度的互動 Checklist。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    UI["🎨 單檔 HTML 儀表板黃金四要素"] --> K["1️⃣ 頂部 4 張 KPI 摘要大字卡
+(總營收、成長率、最高亮點、異常警報)"]
+    UI --> F["2️⃣ 互動控制列
+(日期區間篩選、部門下拉選單、試算滑桿)"]
+    UI --> C["3️⃣ 雙視覺圖表區 (Chart.js)
+(左側趨勢折線圖 + 右側佔比圓餅/長條圖)"]
+    UI --> T["4️⃣ 底部可排序明細表 + 深淺色切換
+(支援關鍵字即時過濾與匯出)"]
+          </pre>
+          <div class="diagram-caption">圖 2：高顏值互動式數據儀表板的標準版面結構（要求 AI 照此結構生成最穩固）</div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）：一鍵生成「互動式數據儀表板 HTML」萬用 Prompt</h2>
+      </div>
+      <div class="card">
+        <h3>貼上你手邊的一段表格數據（或讓它先產生模擬數據），1 分鐘內拿到一個超美互動網頁：</h3>
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 複製 Prompt</button>
+          <pre id="dailyPrompt">請幫我根據以下數據（若未附上數據，請先針對「[填入主題，例如：2026 各季產品線營收與廣告投報率]」產生一組真實感高的模擬數據），撰寫一個**單一、完整、可直接雙擊在瀏覽器執行的 `dashboard.html` 檔案**：
+
+【技術與架構要求】
+1. 必須是 Single-File HTML（包含所有 CSS 與 JavaScript），透過 CDN 引入 `Chart.js` 繪製互動圖表。
+2. 採用現代深色科技感 UI（並支援右上角一鍵切換淺色/深色模式）。
+3. 頁面必須包含四個區塊：
+   - 頂部：4 張關鍵 KPI 指標卡片（含漲跌幅標籤）。
+   - 控制區：提供類別篩選按鈕，以及一個「預算/成長率模擬滑桿（Slider）」，拉動時圖表與 KPI 數字會即時動態重算！
+   - 圖表區：並排顯示「月度趨勢折線圖」與「各類別表現長條圖」。
+   - 明細區：支援關鍵字即時搜尋過濾的數據表格，並附帶一段 AI 自動歸納的「3 點決策建議」。</pre>
+        </div>
+      </div>
+    </section>
+
+    
+  </main>
+
+  <footer>
+    <p>AI 每日實戰學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      const savedMode = localStorage.getItem('ai-hub-view-mode') || 'auto';
+      applyPostViewMode(savedMode);
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

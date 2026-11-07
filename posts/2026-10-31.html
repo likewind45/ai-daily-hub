@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-10-31｜AI 語音與會議自動化實戰：錄音秒轉結構化 Action Items ＆ 跨國雙向即時翻譯工作流 - AI 每日實戰學習站</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.friday {
+      background: rgba(251, 113, 133, 0.14);
+      color: var(--accent-rose);
+      border-color: rgba(251, 113, 133, 0.3);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    /* YouTube Recommendations Grid */
+    .yt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.4rem;
+    }
+
+    .yt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
+    }
+
+    .yt-video-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      display: block;
+      overflow: hidden;
+      text-decoration: none;
+    }
+
+    .yt-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .yt-video-container:hover .yt-thumb {
+      transform: scale(1.04);
+      filter: brightness(0.85);
+    }
+
+    .yt-play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.15) 100%);
+    }
+
+    .yt-play-btn {
+      width: 68px;
+      height: 48px;
+      background: rgba(255, 0, 0, 0.92);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .yt-video-container:hover .yt-play-btn {
+      transform: scale(1.1);
+      background: #ff0000;
+    }
+
+    .yt-play-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: #ffffff;
+      margin-left: 3px;
+    }
+
+    .yt-duration-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .yt-body {
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .yt-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .yt-tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+      background: rgba(129, 140, 248, 0.15);
+      color: var(--accent-secondary);
+    }
+
+    .yt-tag.fresh {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--accent-emerald);
+    }
+
+    .yt-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.45;
+    }
+
+    .yt-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .yt-takeaways {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.15rem;
+      flex: 1;
+    }
+
+    .yt-takeaways ul {
+      padding-left: 1.15rem;
+      margin-top: 0.4rem;
+      color: var(--text-secondary);
+    }
+
+    .yt-takeaways li {
+      margin-bottom: 0.35rem;
+    }
+
+    .yt-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.65rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+
+    .yt-btn:hover {
+      opacity: 0.92;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-grid {
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-body {
+      padding: 1.1rem 1.05rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+      .yt-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>AI 每日實戰學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="viewModeToggle" onclick="togglePostViewMode()">📱 手機版</button>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-10-31（週六語音與會議自動化專題）</span>
+        <span class="badge level">🎯 入門至進階：Voice-to-Action 實戰工作流</span>
+      </div>
+      <h1>AI 語音與會議自動化實戰：錄音秒轉結構化 Action Items ＆ 跨國雙向即時翻譯工作流</h1>
+      <p>開完 1 小時的會，還要花 2 小時聽錄音整理會議紀錄嗎？今天我們拆解 2026 最強的「語音轉結構化行動（Voice-to-Action）」工作流：從高精準度語音辨識（ASR + 講者分離），到自動提煉決策清單、自動指派負責人，讓你開完會的同時，會議紀錄已經發進團隊群組！</p>
+    </header>
+
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">今日核心觀念</div>
+        <div class="kpi-value">Voice-to-Action</div>
+        <div class="kpi-sub">不只轉成逐字稿，而是直接轉成「可追蹤的待辦事項」</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">關鍵技術指標</div>
+        <div class="kpi-value">Speaker Diarization</div>
+        <div class="kpi-sub">講者分離技術：精準辨識「誰說了哪句話、誰答應了什麼」</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">效率提升幅度</div>
+        <div class="kpi-value">60 分鐘會議 ➡️ 3 分鐘定稿</div>
+        <div class="kpi-sub">消除 90% 會後重聽錄音與手動打字時間</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">預估閱讀與實作</div>
+        <div class="kpi-value">10 分鐘閱讀 + 5 分鐘練習</div>
+        <div class="kpi-sub">內含 2 張語音自動化流程圖 + 1 組會議萃取 Prompt</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <span>🔥</span>
+        <h2>今日實戰主題一：為什麼拿到「一萬字逐字稿」反而沒人想看？</h2>
+      </div>
+      <div class="card">
+        <h3>從「流水帳逐字稿」升級為「決策導向的 3 層式會議紀錄」</h3>
+        <p>
+          現在許多錄音筆或會議軟體都能一鍵產出逐字稿，但口語對話中充滿了「嗯、這個、我們回頭再看」等發散語句。如果直接請 AI 「摘要這篇逐字稿」，它往往會漏掉最關鍵的數字與承諾期限。高手的做法是採用<strong>「講者分離（Speaker Diarization）+ 專有名詞詞庫校正 + 三層式結構化萃取」</strong>。
+        </p>
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 沒人有空重讀誰說了什麼廢話；一份滿分的 AI 會議紀錄只需要回答三個問題：「拍板了什麼（Decisions）？」、「誰在幾號前要做什麼（Action Items）？」、「還有什麼未決爭議（Open Issues）？」
+        </div>
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart LR
+    Audio["🎙️ 原始會議音訊
+(中英夾雜 / 多人發言)"] --> ASR["🗣️ 階段一：ASR 語音轉寫 + 講者分離
+(標記 Speaker A / B + 時間戳記)"]
+    ASR --> Clean["🧹 階段二：上下文專有名詞校正
+(餵入公司產品名/人名清單，修正常見同音錯字)"]
+    Clean --> Struct["🧠 階段三：AI 決策萃取引擎
+1. 已拍板決議
+2. 負責人 + Deadline 表格
+3. 待下次討論議題"]
+    Struct --> Sync["🚀 自動同步至 Notion / Jira / Slack"]
+          </pre>
+          <div class="diagram-caption">圖 1：高準確率「中英夾雜會議錄音」轉化為結構化任務追蹤表的 4 階段工作流</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <span>🛠️</span>
+        <h2>今日實戰主題二：解決「中英夾雜與同音錯字」的預處理秘訣</h2>
+      </div>
+      <div class="card">
+        <h3>給 AI 一張 10 行「專案術語小抄（Glossary）」，辨識率瞬間從 75% 衝上 98%</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>常見會議語音痛點</th>
+                <th>為什麼 AI 會翻車？</th>
+                <th>2026 實戰破解法</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>台灣職場常見「中英夾雜」</strong></td>
+                <td>單一語系模型遇到英文縮寫（如 Q4 ROI、PR Review）會硬湊成同音中文字</td>
+                <td>選用支援多語混和的模型（如 Whisper Large-v3 / Gemini Audio），並在 Prompt 先聲明中英雙語環境。</td>
+              </tr>
+              <tr>
+                <td><strong>客戶名、產品代號全部聽錯</strong></td>
+                <td>語音模型沒聽過你們公司內部的專案代號或同事名字</td>
+                <td>在轉寫或整理前，固定附上一小段 <code>&lt;glossary&gt;</code> 專有名詞對照表，讓 LLM 自動根據前後文做同音校正。</td>
+              </tr>
+              <tr>
+                <td><strong>討論很熱烈但最後沒人去做</strong></td>
+                <td>傳統摘要只寫「團隊討論了行銷方案」，沒寫誰負責</td>
+                <td>強制要求輸出 Markdown 表格，欄位必須包含：<code>任務內容｜負責人｜預計完成日｜提到的原始時間戳</code>。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    RawText["📝 帶有同音錯字的原始逐字稿"] --> Glossary["📖 注入 10 行『專有名詞與人名小抄』
+(如：產品名、客戶名、團隊成員職稱)"]
+    Glossary --> Fix["🔧 AI 語意自動糾錯
+將不合理的同音字還原為正確專業術語"]
+    Fix --> Table["📋 產出 Action Items 追蹤表
+(凡是沒有明確負責人的事項，自動標紅提醒主管指派)"]
+          </pre>
+          <div class="diagram-caption">圖 2：利用「專有名詞小抄（Glossary Injection）」消除語音轉寫同音錯字的防呆機制</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）：一鍵把雜亂逐字稿變「高執行力會議紀要」Prompt</h2>
+      </div>
+      <div class="card">
+        <h3>下次拿著手機語音備忘錄或 Teams/Meet 自動產生的逐字稿，直接套用這組指令：</h3>
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 複製 Prompt</button>
+          <pre id="dailyPrompt">請幫我將下方的「會議原始逐字稿」整理成一份可直接發送給全體與會者的【高執行力結構化會議紀要】。
+
+&lt;glossary_專有名詞與人員校正小抄&gt;
+- 專案/產品名稱：[填入常被聽錯的詞，例如：Antigravity, CoWoS]
+- 與會人員與職稱：[例如：Alex (PM), 怡君 (前端工程師), Kevin (客戶代表)]
+*註：逐字稿中若有發音相近的錯別字，請自動根據上下文校正為上述正確名稱。*
+&lt;/glossary_專有名詞與人員校正小抄&gt;
+
+&lt;output_format_輸出結構要求&gt;
+1. 【🎯 30 秒高管摘要（TL;DR）】：用 3 點以內總結今天這場會最重要的結論。
+2. 【✅ 已拍板決策清單（Decisions Made）】：列出會中明確達成共識的決定（並標註決策原因）。
+3. 【🏃‍♂️ 下一步行動追蹤表（Action Items）】：請務必用 Markdown 表格列出：
+   | 項次 | 具體待辦任務 | 負責人 (Owner) | 期限 (Deadline) | 備註 / 需協助事項 |
+   *(若某項任務在會中沒講清楚是誰負責或幾號交，請在表格中標註「⚠️ 待確認」提醒我)*
+4. 【❓ 懸而未決 / 待下次討論議題（Open Questions）】：會中提到但還沒結論的爭點。
+&lt;/output_format_輸出結構要求&gt;
+
+【會議逐字稿內容】：
+[在此貼上逐字稿]</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>AI 每日實戰學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      const savedMode = localStorage.getItem('ai-hub-view-mode') || 'auto';
+      applyPostViewMode(savedMode);
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

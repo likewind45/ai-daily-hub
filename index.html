@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark" data-view="desktop" data-device="desktop">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>AI 每日實戰學習站｜Daily AI Learning Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root[data-theme="dark"] {
+      --bg-outer: #060911;
+      --bg-primary: #0b0f19;
+      --bg-sidebar: #111827;
+      --bg-group: #161f33;
+      --bg-card: #131b2e;
+      --bg-card-hover: #1e2942;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-rose: #fb7185;
+      --accent-emerald: #34d399;
+      --active-bg: rgba(56, 189, 248, 0.14);
+      --backdrop-bg: rgba(0, 0, 0, 0.65);
+    }
+
+    :root[data-theme="light"] {
+      --bg-outer: #e2e8f0;
+      --bg-primary: #f8fafc;
+      --bg-sidebar: #ffffff;
+      --bg-group: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-card-hover: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-rose: #e11d48;
+      --accent-emerald: #059669;
+      --active-bg: rgba(2, 132, 199, 0.1);
+      --backdrop-bg: rgba(15, 23, 42, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-outer);
+      color: var(--text-primary);
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* =====================================================
+       Top Global Control Bar (Device Switcher + Theme)
+       ===================================================== */
+    .global-topbar {
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      padding-top: max(0.5rem, env(safe-area-inset-top));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-shrink: 0;
+      z-index: 200;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .mobile-drawer-btn {
+      display: none;
+      background: var(--active-bg);
+      border: 1px solid var(--accent-primary);
+      color: var(--accent-primary);
+      padding: 0.36rem 0.7rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-weight: 700;
+      font-size: 0.98rem;
+      white-space: nowrap;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+
+    /* Device Mode Segmented Switcher */
+    .device-switcher {
+      display: inline-flex;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.2rem;
+      gap: 0.2rem;
+    }
+
+    .device-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.32rem 0.7rem;
+      border-radius: 7px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .device-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .device-btn.active {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(56, 189, 248, 0.25);
+    }
+
+    .device-spec {
+      font-size: 0.68rem;
+      opacity: 0.85;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.34rem 0.68rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      white-space: nowrap;
+    }
+
+    .action-btn:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    /* =====================================================
+       App Shell Container (Adapts between Desktop & iPhone)
+       ===================================================== */
+    .workspace-stage {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .app-shell {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-primary);
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s ease, border-radius 0.3s ease;
+    }
+
+    /* Simulated iPhone 15 (393px) & iPhone 15 Pro Max (430px) Frame on Desktop Screen */
+    @media (min-width: 600px) {
+      html[data-device="iphone15"] .workspace-stage,
+      html[data-device="iphone15pm"] .workspace-stage {
+        padding: 1.2rem 0;
+        align-items: center;
+        background: radial-gradient(circle at center, rgba(56, 189, 248, 0.08), transparent 70%);
+      }
+
+      html[data-device="iphone15"] .app-shell {
+        width: 393px;
+        height: min(852px, calc(100vh - 76px));
+        border-radius: 44px;
+        border: 10px solid #1e293b;
+        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.75), 0 0 0 2px rgba(255,255,255,0.08);
+      }
+
+      html[data-device="iphone15pm"] .app-shell {
+        width: 430px;
+        height: min(932px, calc(100vh - 76px));
+        border-radius: 48px;
+        border: 10px solid #273549;
+        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.75), 0 0 0 2px rgba(255,255,255,0.1);
+      }
+    }
+
+    /* Dynamic Island notch visual for simulated iPhone mode */
+    .dynamic-island {
+      display: none;
+    }
+
+    @media (min-width: 600px) {
+      html[data-device="iphone15"] .dynamic-island,
+      html[data-device="iphone15pm"] .dynamic-island {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 0.85rem;
+        width: 120px;
+        height: 26px;
+        background: #000;
+        border-radius: 999px;
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 300;
+        pointer-events: none;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+      }
+
+      .island-lens {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #1e3a8a 30%, #090d16 70%);
+      }
+
+      .island-sensor {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #111827;
+      }
+    }
+
+    /* =====================================================
+       Sidebar Navigation (Fixed on Desktop, Drawer on Mobile)
+       ===================================================== */
+    .sidebar {
+      width: 340px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 150;
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease;
+    }
+
+    .drawer-backdrop {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: var(--backdrop-bg);
+      z-index: 140;
+      backdrop-filter: blur(3px);
+    }
+
+    .sidebar-header {
+      padding: 0.95rem 1rem 0.8rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .drawer-title-row {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.65rem;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .close-drawer-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.22rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .search-box:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .date-selectors {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+      margin-top: 0.55rem;
+    }
+
+    .select-control {
+      width: 100%;
+      padding: 0.42rem 0.55rem;
+      border-radius: 7px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.8rem;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      margin-top: 0.55rem;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .filter-chip {
+      font-size: 0.74rem;
+      padding: 0.24rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-chip.active {
+      background: var(--active-bg);
+      color: var(--accent-primary);
+      border-color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    .collapse-actions {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .mini-btn {
+      font-size: 0.72rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 5px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    /* Hierarchical Archive Tree */
+    .post-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .year-group {
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--bg-card);
+    }
+
+    .year-header {
+      padding: 0.55rem 0.85rem;
+      background: var(--bg-group);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .group-badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      background: var(--active-bg);
+      color: var(--accent-primary);
+    }
+
+    .month-container {
+      padding: 0.45rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .month-group {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .month-header {
+      padding: 0.48rem 0.75rem;
+      background: rgba(148, 163, 184, 0.06);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .month-posts {
+      padding: 0.45rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .collapsed {
+      display: none !important;
+    }
+
+    .chevron {
+      display: inline-block;
+      transition: transform 0.2s ease;
+      font-size: 0.72rem;
+      margin-right: 0.35rem;
+    }
+
+    .is-closed .chevron {
+      transform: rotate(-90deg);
+    }
+
+    .post-item {
+      padding: 0.72rem 0.85rem;
+      border-radius: 9px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-sidebar);
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .post-item:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-primary);
+    }
+
+    .post-item.active {
+      background: var(--active-bg);
+      border-color: var(--accent-primary);
+    }
+
+    .post-date {
+      font-size: 0.75rem;
+      color: var(--accent-primary);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.25rem;
+      font-family: 'JetBrains Mono', 'Noto Sans TC', monospace;
+    }
+
+    .friday-tag {
+      font-size: 0.68rem;
+      background: rgba(251, 113, 133, 0.16);
+      color: var(--accent-rose);
+      padding: 0.08rem 0.42rem;
+      border-radius: 5px;
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+
+    .post-title {
+      font-size: 0.86rem;
+      font-weight: 600;
+      line-height: 1.38;
+      margin-bottom: 0.25rem;
+    }
+
+    .post-desc {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+
+    .sidebar-footer {
+      padding: 0.7rem 0.95rem;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* =====================================================
+       Main Content Viewer + Mobile Bottom Bar
+       ===================================================== */
+    .viewer {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+      overflow: hidden;
+    }
+
+    .viewer-toolbar {
+      padding: 0.55rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-sidebar);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      gap: 0.5rem;
+    }
+
+    .current-post-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    iframe#contentFrame {
+      flex: 1;
+      width: 100%;
+      border: 0;
+      background: var(--bg-primary);
+    }
+
+    /* Mobile Bottom Navigation Bar (Visible in Mobile View) */
+    .mobile-bottom-nav {
+      display: none;
+      background: var(--bg-sidebar);
+      border-top: 1px solid var(--border-color);
+      padding: 0.45rem 0.65rem;
+      padding-bottom: max(0.45rem, env(safe-area-inset-bottom));
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.35rem;
+      flex-shrink: 0;
+      z-index: 120;
+    }
+
+    .m-nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.18rem;
+      padding: 0.3rem 0.2rem;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .m-nav-btn:hover,
+    .m-nav-btn.primary {
+      color: var(--accent-primary);
+      background: var(--active-bg);
+    }
+
+    .m-nav-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .m-nav-icon {
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    /* =====================================================
+       Mobile View Layout Overrides (Triggered by data-view="mobile")
+       ===================================================== */
+    html[data-view="mobile"] .mobile-drawer-btn {
+      display: inline-flex;
+    }
+
+    html[data-view="mobile"] .drawer-title-row {
+      display: flex;
+    }
+
+    html[data-view="mobile"] .sidebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: min(86%, 330px);
+      transform: translateX(-105%);
+      box-shadow: 12px 0 32px rgba(0, 0, 0, 0.5);
+    }
+
+    html[data-view="mobile"] .app-shell.drawer-open .sidebar {
+      transform: translateX(0);
+    }
+
+    html[data-view="mobile"] .app-shell.drawer-open .drawer-backdrop {
+      display: block;
+    }
+
+    html[data-view="mobile"] .viewer-toolbar {
+      padding-top: 2.1rem; /* Space for Dynamic Island when simulated */
+      font-size: 0.76rem;
+    }
+
+    html[data-view="mobile"] .mobile-bottom-nav {
+      display: grid;
+    }
+
+    /* Actual Physical Phone Screen Optimization (iPhone 15 / 15 Pro Max) */
+    @media (max-width: 600px) {
+      .global-topbar {
+        padding: 0.45rem 0.7rem;
+        padding-top: max(0.45rem, env(safe-area-inset-top));
+      }
+      .brand span {
+        display: none;
+      }
+      .device-spec {
+        display: none;
+      }
+      .device-btn {
+        padding: 0.28rem 0.5rem;
+        font-size: 0.74rem;
+      }
+      html[data-view="mobile"] .viewer-toolbar {
+        padding-top: 0.55rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Global Control Bar: Switch between Desktop, iPhone 15, iPhone 15 Pro Max -->
+  <header class="global-topbar">
+    <div class="topbar-left">
+      <button class="mobile-drawer-btn" onclick="toggleMobileDrawer()">
+        <span>📂</span>
+        <span>歷史目錄</span>
+      </button>
+      <div class="brand">
+        <div class="brand-icon">AI</div>
+        <span>每日 AI 實戰學習站</span>
+      </div>
+    </div>
+
+    <!-- One-Click Device Switcher -->
+    <div class="device-switcher" role="group" aria-label="版面切換">
+      <button class="device-btn active" id="btnDesktop" onclick="setDeviceMode('desktop')">
+        <span>💻 電腦版</span>
+      </button>
+      <button class="device-btn" id="btnIphone15" onclick="setDeviceMode('iphone15')">
+        <span>📱 iPhone 15</span>
+        <span class="device-spec">393px</span>
+      </button>
+      <button class="device-btn" id="btnIphone15pm" onclick="setDeviceMode('iphone15pm')">
+        <span>📱 15 Pro Max</span>
+        <span class="device-spec">430px</span>
+      </button>
+    </div>
+
+    <div class="topbar-right">
+      <a id="openNewTabLink" href="posts/2026-11-07.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁開啟</a>
+      <button class="action-btn" id="hubThemeBtn" onclick="toggleHubTheme()">☀️ 淺色</button>
+    </div>
+  </header>
+
+  <!-- Main Stage -->
+  <div class="workspace-stage">
+    <div class="app-shell" id="appShell">
+      <!-- Simulated iPhone 15 Dynamic Island -->
+      <div class="dynamic-island">
+        <div class="island-sensor"></div>
+        <div class="island-lens"></div>
+      </div>
+
+      <!-- Mobile Drawer Backdrop -->
+      <div class="drawer-backdrop" onclick="toggleMobileDrawer(false)"></div>
+
+      <!-- Archive Sidebar / Mobile Slide-Over Drawer -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="drawer-title-row">
+            <span>📚 歷史學習筆記歸檔</span>
+            <button class="close-drawer-btn" onclick="toggleMobileDrawer(false)">✕ 關閉</button>
+          </div>
+
+          <input type="text" id="searchInput" class="search-box" placeholder="🔍 搜尋關鍵字（如：MCP, 語音, YouTube）..." oninput="renderList()" />
+
+          <div class="date-selectors">
+            <select id="yearSelect" class="select-control" onchange="onYearChange()">
+              <option value="ALL">📅 全部年份</option>
+            </select>
+            <select id="monthSelect" class="select-control" onchange="renderList()">
+              <option value="ALL">🗓️ 全部月份</option>
+            </select>
+          </div>
+
+          <div class="filter-row">
+            <div class="filter-chips">
+              <button class="filter-chip active" data-filter="all" onclick="setFilter('all', this)">全部筆記</button>
+              <button class="filter-chip" data-filter="friday" onclick="setFilter('friday', this)">🎬 週五特輯</button>
+            </div>
+            <div class="collapse-actions">
+              <button class="mini-btn" onclick="toggleAllMonths(true)">展開</button>
+              <button class="mini-btn" onclick="toggleAllMonths(false)">收合</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-list" id="postList"></div>
+
+        <div class="sidebar-footer">
+          <span>🕗 每日 20:00 自動更新</span>
+          <span id="postCount">共 8 篇</span>
+        </div>
+      </aside>
+
+      <!-- Right / Full Main Content Frame -->
+      <section class="viewer">
+        <div class="viewer-toolbar">
+          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-07（週六）｜告別單一問答！2026 多模型全自動工作流</span>
+          <span id="deviceIndicator" style="font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--accent-primary); white-space: nowrap;">💻 Desktop</span>
+        </div>
+
+        <iframe id="contentFrame" src="posts/2026-11-07.html" title="Daily AI Learning Content"></iframe>
+
+        <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
+        <nav class="mobile-bottom-nav">
+          <button class="m-nav-btn primary" onclick="toggleMobileDrawer(true)">
+            <span class="m-nav-icon">📂</span>
+            <span>年月目錄</span>
+          </button>
+          <button class="m-nav-btn" id="prevDayBtn" onclick="stepPost(1)">
+            <span class="m-nav-icon">◀</span>
+            <span>前一天</span>
+          </button>
+          <button class="m-nav-btn" id="nextDayBtn" onclick="stepPost(-1)">
+            <span class="m-nav-icon">▶</span>
+            <span>後一天</span>
+          </button>
+          <button class="m-nav-btn" onclick="filterFridayMobile()">
+            <span class="m-nav-icon">🎬</span>
+            <span>週五影音</span>
+          </button>
+        </nav>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Frame-busting: prevent index.html from ever rendering inside an iframe
+    if (window.self !== window.top) {
+      window.top.location.href = window.location.href;
+    }
+
+    // Daily posts manifest — updated automatically by the daily 20:00 automation
+    const POSTS = [
+      {
+        date: "2026-11-07（週六）",
+        title: "告別單一問答！2026 多模型全自動工作流 ＆「Claude Code + Cursor」雙軌實戰指南",
+        summary: "三棒接力式零幻覺工作流（Perplexity + Claude + Gamma）、CLI Agent 雙軌開發閉環架構，以及創刊號特選 2 支繁中 AI YouTube 影片。",
+        path: "posts/2026-11-07.html",
+        hasYoutube: true,
+        tags: ["Agentic Workflow", "Claude Code", "Cursor", "Perplexity", "YouTube精選"]
+      },
+      {
+        date: "2026-11-06（週五）",
+        title: "多模態視覺 AI 實戰：手繪白板秒轉程式碼 ＆ 複雜圖表逆向工程（附週五 YouTube 雙精選）",
+        summary: "紅框標註 Visual Prompting 技巧、將靜態圖片逆向轉為 Mermaid 與 CSV 數據；週五專欄精選「雷蒙三十 AI Agent 雙棲記憶」與「泛科學 53萬觀看 CoPoS 晶片封裝解析」。",
+        path: "posts/2026-11-06.html",
+        hasYoutube: true,
+        tags: ["多模態 Vision", "逆向工程", "Mermaid", "雷蒙三十", "泛科學", "YouTube精選"]
+      },
+      {
+        date: "2026-11-05（週四）",
+        title: "自動化工作流進階：當 n8n / Make 遇上 AI Agent——打造 24 小時待命的數位分身",
+        summary: "結合確定性規則與 AI JSON 結構化語意路由，掌握「80% 規則 + 20% AI 決策」與 Human-in-the-Loop 半自動安全審核設計。",
+        path: "posts/2026-11-05.html",
+        hasYoutube: false,
+        tags: ["n8n", "Make", "工作流自動化", "AI Router", "JSON Schema"]
+      },
+      {
+        date: "2026-11-04（週三）",
+        title: "把冰冷 Excel 變成互動式網頁儀表板！單一 HTML 檔案（Single-File App）生成術",
+        summary: "免裝 Python 或前端環境，用一句 Prompt 結合 Chart.js 產出可拉動滑桿即時試算 ROI、可離線雙擊開啟的互動式數據看板。",
+        path: "posts/2026-11-04.html",
+        hasYoutube: false,
+        tags: ["數據視覺化", "Single-File HTML", "Chart.js", "Excel轉網頁", "互動儀表板"]
+      },
+      {
+        date: "2026-11-03（週二）",
+        title: "一文看懂 MCP（Model Context Protocol）：幫你的 AI 裝上「萬用 USB 轉接頭」",
+        summary: "白話圖解 MCP 宿主與伺服器通訊架構，盤點 Filesystem、Playwright、GitHub 等 4 個最值得優先串接的高生產力 MCP 工具。",
+        path: "posts/2026-11-03.html",
+        hasYoutube: false,
+        tags: ["MCP", "Model Context Protocol", "工具串接", "Claude Desktop", "自動化"]
+      },
+      {
+        date: "2026-11-02（週一）",
+        title: "進階 Prompt 工程實戰：用「結構化標籤 + 自我反思迴圈」讓 AI 輸出品質翻倍",
+        summary: "善用 <context> 與 <negative_rules> 標籤劃定注意力邊界，並在單次對話內觸發「初稿 ➡️ 毒舌總編挑刺 ➡️ 終稿」自我進化迴圈。",
+        path: "posts/2026-11-02.html",
+        hasYoutube: false,
+        tags: ["Prompt Engineering", "XML標籤", "Self-Reflection", "提示詞模板"]
+      },
+      {
+        date: "2026-11-01（週日）",
+        title: "NotebookLM 進階研究術 ＆ 零幻覺「個人第二大腦（PKM）」自動化工作流",
+        summary: "跳脫單純摘要，用多文獻交叉詰問挖掘資料盲點，並結合「入場即原子化」卡片盒筆記法（Zettelkasten 2.0）打造高信噪比知識庫。",
+        path: "posts/2026-11-01.html",
+        hasYoutube: false,
+        tags: ["NotebookLM", "個人第二大腦", "PKM", "Obsidian", "Notion"]
+      },
+      {
+        date: "2026-10-31（週六）",
+        title: "AI 語音與會議自動化實戰：錄音秒轉結構化 Action Items ＆ 跨國雙向即時翻譯工作流",
+        summary: "從講者分離（Speaker Diarization）與專有名詞詞庫校正，到自動提煉已拍板決策、負責人與完成期限追蹤表，消除 90% 會後整理時間。",
+        path: "posts/2026-10-31.html",
+        hasYoutube: false,
+        tags: ["語音轉寫 ASR", "會議紀錄", "Voice-to-Action", "Whisper", "講者分離"]
+      }
+    ];
+
+    let currentFilter = 'all';
+    let activePath = POSTS[0].path;
+    const openYears = new Set();
+    const openMonths = new Set();
+
+    function extractYearMonth(dateStr) {
+      const m = dateStr.match(/^(\d{4})-(\d{2})/);
+      if (m) return { year: m[1], month: m[2], ym: `${m[1]}-${m[2]}` };
+      return { year: "其他", month: "其他", ym: "其他" };
+    }
+
+    // =====================================================
+    // Device Mode Switching (Desktop / iPhone 15 / iPhone 15 Pro Max)
+    // =====================================================
+    function setDeviceMode(deviceMode) {
+      const isMobileView = (deviceMode === 'iphone15' || deviceMode === 'iphone15pm');
+      const viewMode = isMobileView ? 'mobile' : 'desktop';
+
+      document.documentElement.setAttribute('data-device', deviceMode);
+      document.documentElement.setAttribute('data-view', viewMode);
+      localStorage.setItem('ai-hub-device-mode', deviceMode);
+      localStorage.setItem('ai-hub-view-mode', viewMode);
+
+      // Update active button state
+      document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+      if (deviceMode === 'desktop') document.getElementById('btnDesktop').classList.add('active');
+      if (deviceMode === 'iphone15') document.getElementById('btnIphone15').classList.add('active');
+      if (deviceMode === 'iphone15pm') document.getElementById('btnIphone15pm').classList.add('active');
+
+      // Update indicator label
+      const indicator = document.getElementById('deviceIndicator');
+      if (indicator) {
+        if (deviceMode === 'desktop') indicator.textContent = '💻 電腦版寬螢幕';
+        if (deviceMode === 'iphone15') indicator.textContent = '📱 iPhone 15 (393×852)';
+        if (deviceMode === 'iphone15pm') indicator.textContent = '📱 15 Pro Max (430×932)';
+      }
+
+      // Sync view mode into iframe document
+      syncIframeState();
+    }
+
+    function syncIframeState() {
+      const frame = document.getElementById('contentFrame');
+      if (!frame || !frame.contentWindow) return;
+      try {
+        const docEl = frame.contentWindow.document.documentElement;
+        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const view = document.documentElement.getAttribute('data-view') || 'desktop';
+        docEl.setAttribute('data-theme', theme);
+        docEl.setAttribute('data-view-mode', view);
+        const nav = frame.contentWindow.document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      } catch (e) {}
+    }
+
+    function toggleMobileDrawer(forceOpen) {
+      const shell = document.getElementById('appShell');
+      if (typeof forceOpen === 'boolean') {
+        shell.classList.toggle('drawer-open', forceOpen);
+      } else {
+        shell.classList.toggle('drawer-open');
+      }
+    }
+
+    function stepPost(delta) {
+      const idx = POSTS.findIndex(p => p.path === activePath);
+      if (idx === -1) return;
+      const nextIdx = idx + delta;
+      if (nextIdx >= 0 && nextIdx < POSTS.length) {
+        const target = POSTS[nextIdx];
+        selectPost(target.path, target.date, target.title);
+      }
+    }
+
+    function updatePrevNextButtons() {
+      const idx = POSTS.findIndex(p => p.path === activePath);
+      const prevBtn = document.getElementById('prevDayBtn');
+      const nextBtn = document.getElementById('nextDayBtn');
+      if (prevBtn) prevBtn.disabled = (idx >= POSTS.length - 1);
+      if (nextBtn) nextBtn.disabled = (idx <= 0);
+    }
+
+    function filterFridayMobile() {
+      const fridayChip = document.querySelector('.filter-chip[data-filter="friday"]');
+      setFilter('friday', fridayChip);
+      toggleMobileDrawer(true);
+    }
+
+    function initSelectorsAndDefaultCollapse() {
+      const years = [];
+      const monthsByYear = {};
+
+      POSTS.forEach(p => {
+        const { year, month } = extractYearMonth(p.date);
+        if (!years.includes(year)) years.push(year);
+        if (!monthsByYear[year]) monthsByYear[year] = [];
+        if (!monthsByYear[year].includes(month)) monthsByYear[year].push(month);
+      });
+
+      if (years.length > 0) {
+        openYears.add(years[0]);
+        const newestMonth = monthsByYear[years[0]][0];
+        openMonths.add(`${years[0]}-${newestMonth}`);
+      }
+
+      const yearSelect = document.getElementById('yearSelect');
+      yearSelect.innerHTML = '<option value="ALL">📅 全部年份</option>';
+      years.forEach(y => {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.textContent = `📅 ${y} 年`;
+        yearSelect.appendChild(opt);
+      });
+
+      populateMonthDropdown('ALL');
+    }
+
+    function populateMonthDropdown(selectedYear) {
+      const monthSelect = document.getElementById('monthSelect');
+      const prevVal = monthSelect.value;
+      monthSelect.innerHTML = '<option value="ALL">🗓️ 全部月份</option>';
+
+      const months = [];
+      POSTS.forEach(p => {
+        const { year, month } = extractYearMonth(p.date);
+        if (selectedYear === 'ALL' || year === selectedYear) {
+          if (!months.includes(month)) months.push(month);
+        }
+      });
+
+      months.sort((a, b) => b.localeCompare(a));
+      months.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = `🗓️ ${parseInt(m, 10)} 月`;
+        monthSelect.appendChild(opt);
+      });
+
+      monthSelect.value = months.includes(prevVal) ? prevVal : 'ALL';
+    }
+
+    function onYearChange() {
+      const selectedYear = document.getElementById('yearSelect').value;
+      populateMonthDropdown(selectedYear);
+      if (selectedYear !== 'ALL') openYears.add(selectedYear);
+      renderList();
+    }
+
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderList();
+    }
+
+    function toggleAllMonths(expand) {
+      POSTS.forEach(p => {
+        const { year, ym } = extractYearMonth(p.date);
+        if (expand) {
+          openYears.add(year);
+          openMonths.add(ym);
+        } else {
+          openMonths.delete(ym);
+        }
+      });
+      renderList();
+    }
+
+    function toggleYearGroup(year) {
+      if (openYears.has(year)) openYears.delete(year);
+      else openYears.add(year);
+      renderList();
+    }
+
+    function toggleMonthGroup(ym) {
+      if (openMonths.has(ym)) openMonths.delete(ym);
+      else openMonths.add(ym);
+      renderList();
+    }
+
+    function selectPost(path, date, title) {
+      activePath = path;
+      const { year, ym } = extractYearMonth(date);
+      openYears.add(year);
+      openMonths.add(ym);
+      document.getElementById('contentFrame').src = path;
+      document.getElementById('currentPostLabel').textContent = `正在閱讀：${date}｜${title}`;
+      document.getElementById('openNewTabLink').href = path;
+      toggleMobileDrawer(false); // Auto-close drawer on mobile after picking a post
+      updatePrevNextButtons();
+      renderList();
+    }
+
+    function renderList() {
+      const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      const selectedYear = document.getElementById('yearSelect').value;
+      const selectedMonth = document.getElementById('monthSelect').value;
+      const container = document.getElementById('postList');
+      container.innerHTML = '';
+
+      const filtered = POSTS.filter(p => {
+        const { year, month } = extractYearMonth(p.date);
+        if (selectedYear !== 'ALL' && year !== selectedYear) return false;
+        if (selectedMonth !== 'ALL' && month !== selectedMonth) return false;
+        if (currentFilter === 'friday' && !p.hasYoutube) return false;
+        if (!q) return true;
+        return (
+          p.date.toLowerCase().includes(q) ||
+          p.title.toLowerCase().includes(q) ||
+          p.summary.toLowerCase().includes(q) ||
+          (p.tags || []).some(t => t.toLowerCase().includes(q))
+        );
+      });
+
+      document.getElementById('postCount').textContent = `顯示 ${filtered.length} / 共 ${POSTS.length} 篇`;
+
+      const tree = {};
+      const yearOrder = [];
+      filtered.forEach(p => {
+        const { year, month } = extractYearMonth(p.date);
+        if (!tree[year]) {
+          tree[year] = { months: {}, monthOrder: [], count: 0 };
+          yearOrder.push(year);
+        }
+        if (!tree[year].months[month]) {
+          tree[year].months[month] = [];
+          tree[year].monthOrder.push(month);
+        }
+        tree[year].months[month].push(p);
+        tree[year].count++;
+      });
+
+      const forceExpand = q.length > 0 || selectedMonth !== 'ALL' || currentFilter === 'friday';
+
+      yearOrder.forEach(year => {
+        const yData = tree[year];
+        const isYearOpen = forceExpand || openYears.has(year);
+
+        const yDiv = document.createElement('div');
+        yDiv.className = 'year-group';
+
+        const yHeader = document.createElement('div');
+        yHeader.className = 'year-header' + (isYearOpen ? '' : ' is-closed');
+        yHeader.onclick = () => toggleYearGroup(year);
+        yHeader.innerHTML = `
+          <span><span class="chevron">▼</span>📂 ${year} 年</span>
+          <span class="group-badge">${yData.count} 篇</span>
+        `;
+        yDiv.appendChild(yHeader);
+
+        const mContainer = document.createElement('div');
+        mContainer.className = 'month-container' + (isYearOpen ? '' : ' collapsed');
+
+        yData.monthOrder.forEach(month => {
+          const postsInMonth = yData.months[month];
+          const ym = `${year}-${month}`;
+          const isMonthOpen = forceExpand || openMonths.has(ym);
+
+          const mDiv = document.createElement('div');
+          mDiv.className = 'month-group';
+
+          const mHeader = document.createElement('div');
+          mHeader.className = 'month-header' + (isMonthOpen ? '' : ' is-closed');
+          mHeader.onclick = (e) => {
+            e.stopPropagation();
+            toggleMonthGroup(ym);
+          };
+          mHeader.innerHTML = `
+            <span><span class="chevron">▼</span>🗓️ ${parseInt(month, 10)} 月份學習筆記</span>
+            <span class="group-badge">${postsInMonth.length} 篇</span>
+          `;
+          mDiv.appendChild(mHeader);
+
+          const mPosts = document.createElement('div');
+          mPosts.className = 'month-posts' + (isMonthOpen ? '' : ' collapsed');
+
+          postsInMonth.forEach(p => {
+            const item = document.createElement('div');
+            item.className = 'post-item' + (p.path === activePath ? ' active' : '');
+            item.onclick = (e) => {
+              e.stopPropagation();
+              selectPost(p.path, p.date, p.title);
+            };
+            item.innerHTML = `
+              <div class="post-date">
+                <span>📅 ${p.date}</span>
+                ${p.hasYoutube ? '<span class="friday-tag">🎬 含 YouTube</span>' : ''}
+              </div>
+              <div class="post-title">${p.title}</div>
+              <div class="post-desc">${p.summary}</div>
+            `;
+            mPosts.appendChild(item);
+          });
+
+          mDiv.appendChild(mPosts);
+          mContainer.appendChild(mDiv);
+        });
+
+        yDiv.appendChild(mContainer);
+        container.appendChild(yDiv);
+      });
+    }
+
+    function applyHubTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('hubThemeBtn');
+      if (btn) btn.innerHTML = theme === 'dark' ? '☀️ 淺色' : '🌙 深色';
+      syncIframeState();
+    }
+
+    function toggleHubTheme() {
+      const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      applyHubTheme(cur === 'dark' ? 'light' : 'dark');
+    }
+
+    document.getElementById('contentFrame').addEventListener('load', syncIframeState);
+
+    (function init() {
+      const savedTheme = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyHubTheme(savedTheme);
+
+      // Auto-detect real iPhone / narrow screen on first visit, otherwise restore saved mode
+      const savedDevice = localStorage.getItem('ai-hub-device-mode');
+      if (savedDevice) {
+        setDeviceMode(savedDevice);
+      } else if (window.innerWidth <= 400) {
+        setDeviceMode('iphone15');
+      } else if (window.innerWidth <= 500) {
+        setDeviceMode('iphone15pm');
+      } else {
+        setDeviceMode('desktop');
+      }
+
+      initSelectorsAndDefaultCollapse();
+      updatePrevNextButtons();
+      renderList();
+    })();
+  </script>
+</body>
+</html>
