@@ -695,44 +695,23 @@
     /* Actual Physical Phone Screen Optimization (iPhone 15: 393px / iPhone 15 Pro Max: 430px) */
     @media (max-width: 768px) {
       .global-topbar {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        grid-template-areas:
-          "left right"
-          "switcher switcher";
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 0.45rem;
         padding: 0.5rem 0.75rem;
         padding-top: max(0.5rem, env(safe-area-inset-top));
       }
 
       .topbar-left {
-        grid-area: left;
         min-width: 0;
         overflow: hidden;
       }
 
       .topbar-right {
-        grid-area: right;
         justify-content: flex-end;
         gap: 0.35rem;
         flex-shrink: 0;
-      }
-
-      .device-switcher {
-        grid-area: switcher;
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      .device-btn {
-        justify-content: center;
-        padding: 0.32rem 0.15rem;
-        font-size: 0.72rem;
-      }
-
-      .device-spec {
-        display: none;
       }
 
       /* Hide QR button on real phone screen so topbar fits 100% cleanly */
@@ -741,12 +720,12 @@
       }
 
       .action-btn {
-        padding: 0.32rem 0.52rem;
-        font-size: 0.74rem;
+        padding: 0.32rem 0.55rem;
+        font-size: 0.75rem;
       }
 
       .brand span {
-        font-size: 0.82rem;
+        font-size: 0.85rem;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -758,7 +737,7 @@
       }
     }
 
-    @media (max-width: 460px) {
+    @media (max-width: 380px) {
       .brand span {
         display: none;
       }
@@ -778,22 +757,6 @@
         <div class="brand-icon">AI</div>
         <span>每日 AI 實戰學習站</span>
       </div>
-    </div>
-
-    <!-- One-Click Device Switcher (with Smart Auto-Detect) -->
-    <div class="device-switcher" role="group" aria-label="版面切換">
-      <button class="device-btn active" id="btnAuto" onclick="setDeviceMode('auto')">
-        <span>✨ 自動偵測</span>
-      </button>
-      <button class="device-btn" id="btnDesktop" onclick="setDeviceMode('desktop')">
-        <span>💻 電腦</span>
-      </button>
-      <button class="device-btn" id="btnIphone15" onclick="setDeviceMode('iphone15')">
-        <span>📱 iPhone 15</span>
-      </button>
-      <button class="device-btn" id="btnIphone15pm" onclick="setDeviceMode('iphone15pm')">
-        <span>📱 15 Pro Max</span>
-      </button>
     </div>
 
     <div class="topbar-right">
