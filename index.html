@@ -84,7 +84,8 @@
     .topbar-left {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.5rem;
+      flex-shrink: 0;
     }
 
     .mobile-drawer-btn {
@@ -92,13 +93,15 @@
       background: var(--active-bg);
       border: 1px solid var(--accent-primary);
       color: var(--accent-primary);
-      padding: 0.36rem 0.7rem;
+      padding: 0.36rem 0.65rem;
       border-radius: 8px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.3rem;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .brand {
@@ -686,24 +689,64 @@
       display: grid;
     }
 
-    /* Actual Physical Phone Screen Optimization (iPhone 15 / 15 Pro Max) */
-    @media (max-width: 600px) {
+    /* Actual Physical Phone Screen Optimization (iPhone 15: 393px / iPhone 15 Pro Max: 430px) */
+    @media (max-width: 768px) {
       .global-topbar {
-        padding: 0.45rem 0.7rem;
-        padding-top: max(0.45rem, env(safe-area-inset-top));
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+          "left right"
+          "switcher switcher";
+        gap: 0.45rem;
+        padding: 0.5rem 0.75rem;
+        padding-top: max(0.5rem, env(safe-area-inset-top));
       }
-      .brand span {
-        display: none;
+
+      .topbar-left {
+        grid-area: left;
+        min-width: 0;
       }
+
+      .topbar-right {
+        grid-area: right;
+        justify-content: flex-end;
+        gap: 0.35rem;
+      }
+
+      .device-switcher {
+        grid-area: switcher;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .device-btn {
+        justify-content: center;
+        padding: 0.32rem 0.25rem;
+        font-size: 0.75rem;
+      }
+
       .device-spec {
         display: none;
       }
-      .device-btn {
-        padding: 0.28rem 0.5rem;
-        font-size: 0.74rem;
+
+      /* Hide QR button & raw link text on real phone screen so topbar fits 100% cleanly */
+      .qr-btn-desktop {
+        display: none !important;
       }
+
+      .action-btn {
+        padding: 0.32rem 0.55rem;
+        font-size: 0.75rem;
+      }
+
+      .brand span {
+        font-size: 0.88rem;
+      }
+
       html[data-view="mobile"] .viewer-toolbar {
-        padding-top: 0.55rem;
+        padding: 0.45rem 0.75rem;
+        font-size: 0.75rem;
       }
     }
   </style>
@@ -739,8 +782,8 @@
     </div>
 
     <div class="topbar-right">
-      <button class="action-btn" onclick="toggleQrModal(true)" title="手機掃碼連線">📲 手機外網連線</button>
-      <a id="openNewTabLink" href="posts/2026-11-07.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁開啟</a>
+      <button class="action-btn qr-btn-desktop" onclick="toggleQrModal(true)" title="手機掃碼連線">📲 手機外網連線</button>
+      <a id="openNewTabLink" href="posts/2026-11-07.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
       <button class="action-btn" id="hubThemeBtn" onclick="toggleHubTheme()">☀️ 淺色</button>
     </div>
   </header>
