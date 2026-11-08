@@ -777,7 +777,7 @@
 
     <div class="topbar-right">
       <button class="action-btn qr-btn-desktop" onclick="toggleQrModal(true)" title="手機掃碼連線">📲 手機外網連線</button>
-      <a id="openNewTabLink" href="posts/2026-11-07.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
+      <a id="openNewTabLink" href="posts/2026-11-08.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
       <button class="action-btn" id="hubThemeBtn" onclick="toggleHubTheme()">☀️ 淺色</button>
     </div>
   </header>
@@ -847,18 +847,18 @@
 
         <div class="sidebar-footer">
           <span>🕗 每日 20:00 自動更新</span>
-          <span id="postCount">共 8 篇</span>
+          <span id="postCount">共 9 篇</span>
         </div>
       </aside>
 
       <!-- Right / Full Main Content Frame -->
       <section class="viewer">
         <div class="viewer-toolbar">
-          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-07（週六）｜告別單一問答！2026 多模型全自動工作流</span>
+          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-08（週日）｜AI 深度研究（Deep Research）實戰：15 分鐘產出顧問級競品調研報告</span>
         </div>
 
         <div class="iframe-scroll-wrapper" id="iframeWrapper">
-          <iframe id="contentFrame" src="posts/2026-11-07.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
+          <iframe id="contentFrame" src="posts/2026-11-08.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
         </div>
 
         <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
@@ -892,6 +892,14 @@
 
     // Daily posts manifest — updated automatically by the daily 20:00 automation
     const POSTS = [
+      {
+        date: "2026-11-08（週日）",
+        title: "AI 深度研究（Deep Research）實戰：15 分鐘產出顧問級競品調研報告 ＆ 真偽交叉查核工作流",
+        summary: "從單次搜尋升級為多跳躍自主檢索（Multi-hop Search），掌握 Gemini / Perplexity / ChatGPT 三大 Deep Research 選型與「三角交叉查核法」。",
+        path: "posts/2026-11-08.html",
+        hasYoutube: false,
+        tags: ["Deep Research", "深度研究", "競品分析", "Perplexity", "Gemini"]
+      },
       {
         date: "2026-11-07（週六）",
         title: "告別單一問答！2026 多模型全自動工作流 ＆「Claude Code + Cursor」雙軌實戰指南",
