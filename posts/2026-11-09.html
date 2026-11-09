@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-09｜打造零胡說八道的 AI 知識庫：RAG（檢索增強生成）落地實戰 ＆ 免寫程式工具指南 - 政峰AI學習站</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .badge.tech {
+      background: rgba(129, 140, 248, 0.15);
+      color: var(--accent-secondary);
+      border-color: rgba(129, 140, 248, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-09（週一）</span>
+        <span class="badge level">🎯 入門至進階：工具與實戰應用</span>
+        <span class="badge tech">🧠 核心架構：RAG 企業與個人知識庫</span>
+      </div>
+      <h1>打造零胡說八道的 AI 知識庫：RAG（檢索增強生成）落地實戰 ＆ 免寫程式工具指南</h1>
+      <p>
+        通用大模型再強大，也讀不到你昨晚剛更新的專案規範、內部規章或客戶合約。今天我們將深入拆解生成式 AI 最具商業價值的「RAG（Retrieval-Augmented Generation）」技術，從切塊（Chunking）、語意向量（Embedding）到混合檢索（Hybrid Search + Reranker），並手把手帶你用 Dify 與 AnythingLLM 在 15 分鐘內架構出具備精準引言出處的專屬知識庫問答機器人！
+      </p>
+    </header>
+
+    <!-- Quick Summary Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">檢索精準度提升</div>
+        <div class="kpi-value">65% ➡️ 93%+</div>
+        <div class="kpi-sub">引入 Hybrid Search + Reranker 重排序消滅檢索盲區</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">零程式碼落地時間</div>
+        <div class="kpi-value">15 分鐘快速啟動</div>
+        <div class="kpi-sub">使用 Dify / AnythingLLM 開箱即用架設專屬問答系統</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">幻覺根絕機制</div>
+        <div class="kpi-value">100% 來源引用</div>
+        <div class="kpi-sub">強制每句話標註對應文檔出處，未收錄內容主動拒答</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">資料隱私防護</div>
+        <div class="kpi-value">支援純本地離線</div>
+        <div class="kpi-sub">結合 Ollama 本地模型與本機向量庫，機密文件零外流</div>
+      </div>
+    </section>
+
+    <!-- Focus 1 -->
+    <section class="section">
+      <div class="section-header">
+        <span>🧩</span>
+        <h2>今日焦點一：告別大模型「胡說八道」！RAG 核心原理解構與三大切塊陷阱</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼把整份 PDF 直接塞給對話框不是好主意？</h3>
+        <div class="pain-point">
+          <strong>❌ 常見痛點與誤區：</strong>許多人嘗試把 100 頁的產品手冊或法律條款直接貼給 ChatGPT 或 Claude，結果發現：(1) AI 經常發生<strong>「大海撈針迷失（Lost in the Middle）」</strong>，忽略位於文檔中間章節的關鍵限制；(2) 每次提問都要重複消耗數萬 Token，延遲長且 API 成本驚人；(3) 當文檔中完全沒寫某個細節時，AI 很容易「自作聰明」編造出合乎邏輯卻完全錯誤的答案。
+        </div>
+
+        <p>
+          <strong>RAG（Retrieval-Augmented Generation，檢索增強生成）</strong>的本質就像是<strong>「開卷考試」</strong>。傳統微調（Fine-tuning）就像讓學生死記硬背整本教科書，既耗時費力又容易記錯；而 RAG 是給學生一個隨身圖書館管理員，當你提出問題時，管理員<strong>先去書架上精準抽出最相關的 3 頁紙（Retrieval）</strong>，再把這 3 頁紙與你的問題一併遞給 AI 作答（Generation）。
+        </p>
+
+        <!-- Diagram 1 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart LR
+    A["📄 原始文檔\n(PDF / Word / Notion)"] --> B["🧹 文字清洗與解析\n(Markdown 結構化轉化)"]
+    B --> C["✂️ 語意切塊 Chunking\n(500 tokens + 10% overlap)"]
+    C --> D["🔢 向量化模型 Embedding\n(轉為 1536 維特徵向量)"]
+    D --> E[("🗄️ 向量資料庫 Vector DB\n(Chroma / Qdrant / Weaviate)")]
+    
+    style A fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
+    style B fill:#1e293b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
+    style C fill:#1e293b,stroke:#fbbf24,stroke-width:2px,color:#f8fafc
+    style D fill:#1e293b,stroke:#34d399,stroke-width:2px,color:#f8fafc
+    style E fill:#1e293b,stroke:#fb7185,stroke-width:2px,color:#f8fafc
+          </pre>
+          <div class="diagram-caption">圖 1：知識庫離線向量化入庫管線（Document Ingestion Pipeline）</div>
+        </div>
+
+        <ul class="step-list">
+          <li class="step-item">
+            <span class="step-num">1</span>
+            <div>
+              <strong>文檔切塊（Chunking）的藝術：</strong>
+              不能按固定字數粗暴切斷句子！若剛好把「退款條件：若非人為損壞」與「恕不接受退貨」切成兩半，語意將完全顛倒。最佳做法是<strong>按語意段落（如 Markdown 標題層級 #, ##）切分</strong>，區塊大小建議為 300~600 Token，並設定 10%~15% 的<strong>區塊重疊（Overlap）</strong>，確保前後上下文語意不中斷。
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">2</span>
+            <div>
+              <strong>向量化（Embedding）是什麼？</strong>
+              Embedding 模型（如 OpenAI text-embedding-3 或開源 bge-m3）會把每一小塊文本轉化為由數百到數千個數字組成的「多維空間座標」。意義相近的句子（例如「如何請假」與「特休申請手續」），在多維空間中的距離會非常接近（餘弦相似度 Cosine Similarity 極高），這就是 AI 能「聽懂意思」而不只是比對關鍵字的祕密。
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">3</span>
+            <div>
+              <strong>中繼資料（Metadata）賦能精確過濾：</strong>
+              除了向量座標外，務必替每個 Chunk 打上標籤，例如 <code>{"file": "2026人事規章.pdf", "dept": "HR", "version": "v2.1", "year": 2026}</code>。當使用者詢問「今年的育嬰假新規」時，系統可以直接依年份與部門做 Pre-filtering（前置過濾），避免檢索到五年前過期的舊規章。
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Focus 2 -->
+    <section class="section">
+      <div class="section-header">
+        <span>🚀</span>
+        <h2>今日焦點二：免寫 Code 也能落地！Dify 與 AnythingLLM 雙工具選型 ＆ 混合檢索調優</h2>
+      </div>
+
+      <div class="card">
+        <h3>從「玩具展示」跨入「生產環境」的四大必殺技</h3>
+        <div class="pain-point">
+          <strong>❌ 傳統純向量 RAG 致命死穴：</strong>只靠向量相似度搜尋，遇到專有名詞、專案代號（如「Project-Apex」）、料號（如「IC-9021B」）或縮寫時，向量相似度表現往往極差。
+        </div>
+
+        <p>
+          2026 年成熟的工業級知識庫標配是<strong>「混合檢索（Hybrid Search）+ 語意重排序（Reranking）」</strong>：先用傳統 BM25 關鍵字搜尋保證型號精準命中，同步用向量搜尋捕捉口語語意，再交由 Cross-Encoder Reranker（如 Cohere Rerank 3 或 BAAI Reranker）精確挑出最強相關的 3 篇，最後才送入大模型生成答案。
+        </p>
+
+        <!-- Diagram 2 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    User(["🙋 使用者提問 (User Query)"]) --> Fork{"⚡ 雙路並行檢索"}
+    Fork -->|"關鍵字檢索 (BM25)"| PathA["🎯 型號與專有名詞精準命中\n(Top 20 候選文檔)"]
+    Fork -->|"語意向量搜尋 (Dense Vector)"| PathB["💡 口語與同義概念關聯命中\n(Top 20 候選文檔)"]
+    PathA --> Merge["🔄 候選集合合併去重 (Top 40)"]
+    PathB --> Merge
+    Merge --> Rerank["⚖️ 語意重排序模型 (Reranker)\nCross-Encoder 深度打分評估"]
+    Rerank --> TopK["⭐ 黃金相關片段 (Top 3~5 Chunks)"]
+    TopK --> LLM["🤖 LLM 大模型裝配 Prompt\n【嚴格根據上下文回答】"]
+    LLM --> Answer(["✅ 精準回答 ＋ 帶引言文檔標籤"])
+
+    style User fill:#0284c7,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style Fork fill:#1e293b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
+    style PathA fill:#161f33,stroke:#38bdf8,stroke-width:1px,color:#f8fafc
+    style PathB fill:#161f33,stroke:#34d399,stroke-width:1px,color:#f8fafc
+    style Rerank fill:#1e293b,stroke:#fbbf24,stroke-width:2px,color:#f8fafc
+    style TopK fill:#1e293b,stroke:#34d399,stroke-width:2px,color:#f8fafc
+    style LLM fill:#1e293b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
+    style Answer fill:#059669,stroke:#34d399,stroke-width:2px,color:#fff
+          </pre>
+          <div class="diagram-caption">圖 2：使用者查詢動態檢索與生成閉環（Hybrid Retrieval & Rerank Pipeline）</div>
+        </div>
+
+        <ul class="step-list">
+          <li class="step-item">
+            <span class="step-num">1</span>
+            <div>
+              <strong>開源選型一：Dify（企業與工作流首選）</strong><br/>
+              具備目前最優秀的知識庫視覺化介面。支援 PDF 預處理預覽、自動分塊測試、可自訂 Hybrid Search 權重（如 關鍵字 0.3 + 向量 0.7），並能一鍵發布為對話網頁或嵌入既有系統的 API。
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">2</span>
+            <div>
+              <strong>開源選型二：AnythingLLM（個人與高隱私離線首選）</strong><br/>
+              支援 Windows / Mac 桌面版「一鍵安裝包」。內建向量庫（LanceDB），可無縫串接本機 Ollama 運行的模型（如 Llama-3 或 Qwen-2.5），全程在本地記憶體與硬碟完成，敏感商業數據絕不上雲。
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">3</span>
+            <div>
+              <strong>文檔清洗核心原則：垃圾進，垃圾出（Garbage in, Garbage out）</strong><br/>
+              在上傳前，盡量將掃描版 PDF 透過 OCR 轉成文字檔，並刪除重複的頁眉、頁腳、公司抬頭與版權宣告。這些無意義的重複文字會大幅稀釋向量權重，導致檢索器抓到一堆頁腳廢話。
+            </div>
+          </li>
+        </ul>
+
+        <!-- Comparison Table -->
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>檢索技術架構</th>
+                <th>核心機制</th>
+                <th>專有名詞/型號</th>
+                <th>口語/概念搜尋</th>
+                <th>運算成本與複雜度</th>
+                <th>最適合應用場景</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>全文檢索 (BM25)</strong></td>
+                <td>詞頻與逆文件頻率匹配</td>
+                <td>⭐⭐⭐⭐⭐（極精準）</td>
+                <td>⭐（無語意擴展能力）</td>
+                <td>極低，普通 CPU 即可</td>
+                <td>電商料號、精確法規條號查詢</td>
+              </tr>
+              <tr>
+                <td><strong>純向量檢索 (Vector)</strong></td>
+                <td>Embedding 語意空間距離</td>
+                <td>⭐⭐（常因冷門詞失真）</td>
+                <td>⭐⭐⭐⭐（能懂同義詞）</td>
+                <td>中等，需向量資料庫</td>
+                <td>一般問答、客服對話、模糊意圖理解</td>
+              </tr>
+              <tr>
+                <td><strong>混合檢索 ＋ 重排<br/>(Hybrid + Reranker)</strong></td>
+                <td>BM25 + 向量雙路檢索，<br/>經 Cross-Encoder 重新打分</td>
+                <td>⭐⭐⭐⭐⭐（雙重保證）</td>
+                <td>⭐⭐⭐⭐⭐（兼具廣度深度）</td>
+                <td>較高，需額外 100ms 重排序</td>
+                <td><strong>2026 企業知識庫、醫療、法務與金融標準方案</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Micro-Action Section -->
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）：企業級 RAG「防幻覺約束 ＆ 精準引言」Prompt 模板</h2>
+      </div>
+      <div class="card">
+        <h3>當你在 Dify、AnythingLLM 或自建 API 設定 System Prompt 時，請直接採用這套黃金指令：</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 0.8rem; font-size: 0.93rem;">
+          這套 Prompt 能有效封印大模型「為了討好使用者而胡編亂造」的傾向，並強制輸出<strong>「原文引用依據」</strong>與<strong>「資訊不足時的優雅拒答」</strong>。
+        </p>
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 複製 Prompt</button>
+          <pre id="dailyPrompt"># Role: 嚴謹客觀的企業內部知識庫專用助理
+
+## Mission
+你的唯一任務是依據下方【檢索到的參考文檔片段】精確回答使用者的提問。你必須展現專業、誠實且高度可驗證的態度。
+
+## 核心準則（嚴格執行）
+1. 【零腦補與忠實性】：
+   - 你只能使用【參考文檔片段】中明確提及的事實來回答。
+   - 嚴禁利用你在預訓練階段學到的外部常識進行無依據推論或延伸補全。
+2. 【優雅拒答原則】：
+   - 若【參考文檔片段】未包含回答該問題所需的關鍵事實，或資訊存在矛盾時，請直接回答：「抱歉，在現有內部知識庫文檔中未查獲相關依據。建議您諮詢 [相關業務負責人/部門] 進一步確認。」嚴禁編造任何細節。
+3. 【精確引言標註規範】：
+   - 輸出的每一個具體結論、條款或數據後方，必須使用角標標註對應的文檔來源，格式為：`[文檔名稱 - 章節/段落]`。
+4. 【條理分明輸出】：
+   - 採用結構化條列式（Bullet points）回答，優先給出結論，隨後附上具體規章或操作步驟。
+
+---
+【檢索到的參考文檔片段開始】
+{{#context#}}
+【檢索到的參考文檔片段結束】
+
+---
+【使用者提問】：{{#query#}}</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
