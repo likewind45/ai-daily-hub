@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-10｜告別機密外洩焦慮！本機離線 AI（Local LLM）實戰：用 Ollama + Open WebUI 打造 100% 私有安全 AI 助理 - 政峰AI學習站</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .badge.tech {
+      background: rgba(251, 191, 36, 0.14);
+      color: var(--accent-amber);
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .solution-box {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 4px solid var(--accent-primary);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .solution-box strong {
+      color: var(--accent-primary);
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.35rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.35rem;
+      line-height: 1.35;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.8rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.95rem 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.18rem;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .pain-point,
+    html[data-view-mode="mobile"] .solution-box {
+      font-size: 0.88rem;
+      padding: 0.75rem 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.75rem 0.85rem;
+      gap: 0.65rem;
+      font-size: 0.88rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.78rem;
+      padding: 0.95rem 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-10（週二）</span>
+        <span class="badge level">🎯 入門至進階：工具與實戰應用</span>
+        <span class="badge tech">🛡️ 隱私安全：Local LLM ＆ 本機私有化工作站</span>
+      </div>
+      <h1>告別機密外洩焦慮！本機離線 AI（Local LLM）實戰：用 Ollama + Open WebUI 打造 100% 私有安全 AI 助理</h1>
+      <p>
+        想讓 AI 幫忙審閱商業合約、分析財務報表或除錯未公開的軟體原始碼，卻礙於企業合規、客戶保密協定（NDA）或個資隱私，不敢將敏感資料上傳給 ChatGPT 或 Claude？今天我們將徹底破除「跑本機大模型需要數十萬昂貴顯卡」的迷思，用白話科普解密 GGUF 量化技術與顯存速算公式，手把手帶你用 Ollama 搭配 Open WebUI，在 10 分鐘內於個人電腦上架構出「外觀媲美 ChatGPT、斷網也能順暢運行、數據 100% 留在硬碟」的私有化 AI 獨立王國！
+      </p>
+    </header>
+
+    <!-- Quick Summary Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">資料外洩與合規風險</div>
+        <div class="kpi-value">0% 實體隔離</div>
+        <div class="kpi-sub">全程本機離線推論，無對外 API 連線，不被拿去訓練模型</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">硬體門檻大解密</div>
+        <div class="kpi-value">16GB RAM 順跑</div>
+        <div class="kpi-sub">Apple Silicon 或一般 PC 透過 4-bit 量化秒開 8B~14B SOTA 模型</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">模型切換與熱插拔</div>
+        <div class="kpi-value">&lt; 10 秒即時更換</div>
+        <div class="kpi-sub">Ollama 容器化指令一鍵換裝：通識、編程、多語言模型隨插即用</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">私有化完整生態</div>
+        <div class="kpi-value">100% 本機 RAG 與 UI</div>
+        <div class="kpi-sub">搭配 Open WebUI 具備對話管理、本地文件檢索與多模型並排盲測</div>
+      </div>
+    </section>
+
+    <!-- Focus 1 -->
+    <section class="section">
+      <div class="section-header">
+        <span>🧩</span>
+        <h2>今日焦點一：白話解構 Local LLM——Ollama 核心精要、GGUF 量化與記憶體速算公式</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼「本地端運行 AI」在 2026 年成為企業與專業人士的必修課？</h3>
+        <div class="pain-point">
+          <strong>❌ 雲端 AI 隱私的三大痛點與潛在危機：</strong>
+          <br>1. <strong>合約與營業秘密法合規：</strong>律師事務所、會計師事務所或研發機構，將客戶合約、未發布專利草稿貼到雲端，一旦遭第三方日誌記錄或合約外洩，將面臨巨額法律訴訟與合規罰鍰。
+          <br>2. <strong>網路中斷與服務依賴：</strong>飛機出差、保密會議室或無網環境下，所有雲端 AI 工具瞬間癱瘓；遇到 OpenAI 或 Anthropic 全球服務當機，重要工作進度直接停擺。
+          <br>3. <strong>長文本 API 成本無底洞：</strong>每日高頻率處理大量內部日誌（Logs）、全套財報分析時，雲端 Token 費用累積十分驚人。
+        </div>
+
+        <div class="solution-box">
+          <strong>💡 破解迷思：本地跑大模型一定要百萬工作站或 RTX 4090 嗎？</strong>
+          <br>答案是：<strong>完全不需要！</strong>得益於 2024~2026 年開源模型生態的爆發（如阿里 Qwen 2.5、Meta Llama 3.3、DeepSeek Coder）以及 <code>llama.cpp</code> 底層架構的成熟，現代 7B~14B 參數量級的小鋼炮模型，在常識問答、邏輯摘要與程式輔助上，已經能夠媲美早期 GPT-4。更重要的是，透過 <strong>GGUF 4-bit 量化技術</strong>，一台配置 16GB 或 24GB 統一記憶體（Unified Memory）的 M 系列 Mac 筆電，或是配備 RTX 4060/3060 的 Windows PC，就能以 <strong>30~45 tokens/sec</strong> 的極速推論（遠超人類每秒 5~10 字的閱讀速度）！
+        </div>
+
+        <p>
+          在深入實作前，我們先透過下圖看懂<strong>「雲端公有 AI」</strong>與<strong>「本機私有化 AI（Local LLM）」</strong>在安全邊界與資料流向上的根本差異：
+        </p>
+
+        <!-- Diagram 1 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    subgraph CloudEnv["☁️ 傳統雲端方案 (SaaS Public AI)"]
+        UserA["🙋 使用者輸入\n(商業合約 / 研發程式碼 / 財務個資)"] -->|"網際網路傳輸 (Public Internet)"| SSL["🔒 HTTPS 加密傳輸"]
+        SSL -->|"出境離開公司內網"| CloudServer["🏢 第三方雲端伺服器 (OpenAI / Anthropic)"]
+        CloudServer -->|"API 處理與暫存"| ModelCloud["🧠 雲端大模型運算 (GPU 叢集)"]
+        CloudServer -.->|"潛在訓練回流 / 日誌稽核存取"| Risk["⚠️ 合規審計 / 隱私外洩風險"]
+    end
+
+    subgraph LocalEnv["💻 本機私有化方案 (Air-Gapped Local LLM)"]
+        UserB["🙋 使用者輸入\n(完全機密資料)"] -->|"本機 Loopback 通訊 (127.0.0.1)"| LocalPipe["⚡ 內部安全通道 (Zero Internet)"]
+        LocalPipe -->|"純本機記憶體調度"| OllamaEngine["🦙 Ollama 守護行程 (llama.cpp)"]
+        OllamaEngine -->|"Apple Metal / NVIDIA CUDA"| LocalVRAM["💾 本機 GPU / 統一記憶體 (VRAM)"]
+        LocalVRAM -->|"GGUF 4-bit 量化模型權重"| EdgeInference["🛡️ 100% 離線推論生成"]
+        EdgeInference -->|"零外網傳輸"| SafeResult["✅ 回傳結果，數據 0 留在外部"]
+    end
+
+    style CloudEnv fill:#1e293b,stroke:#fb7185,stroke-width:2px,color:#f8fafc
+    style LocalEnv fill:#1e293b,stroke:#34d399,stroke-width:2px,color:#f8fafc
+    style Risk fill:#7f1d1d,stroke:#fb7185,stroke-width:1px,color:#fecdd3
+    style SafeResult fill:#064e3b,stroke:#34d399,stroke-width:1px,color:#a7f3d0
+          </pre>
+          <div class="diagram-caption">圖一：雲端 SaaS AI 與本機私有化 AI（Local LLM）資料流向與安全邊界對比架構圖</div>
+        </div>
+
+        <h3>什麼是 GGUF 量化？記憶體速算公式一分鐘搞懂</h3>
+        <p>
+          大模型原始出廠權重通常是 <strong>16-bit 浮點數（FP16）</strong>，代表每個參數需要 2 個 Bytes（16 位元）來儲存。例如一個 80 億參數（8B）的模型，光是把權重載入記憶體就需要 <code>8 × 2 = 16 GB</code>，還不包含上下文運算空間，一般電腦直接記憶體溢出（OOM）。
+        </p>
+        <p>
+          <strong>GGUF（GPT-Generated Unified Format）量化</strong>技術，是將 16-bit 浮點數權重透過分組縮放壓縮為 <strong>4-bit 整數（Q4_K_M）</strong>。相當於把原本需要 16 個刻度的精細尺子，優化為 4 位元動態區間，<strong>模型體積直接縮減 72%</strong>，而綜合基準評測（MMLU）準確率損耗僅在 <strong>0.8%~1.2%</strong> 之間，人眼幾乎無法察覺差異！
+        </p>
+
+        <div class="pain-point" style="border-left-color: var(--accent-primary); background: rgba(56, 189, 248, 0.08);">
+          <strong>📐 本機記憶體需求速算黃金公式：</strong>
+          <br><code>所需 RAM/VRAM (GB) ≈ [ 模型參數量 (B) × 量化位元數 (bits) ÷ 8 ] × 1.25 (系統緩衝) ＋ 上下文快取 (約 1.5~2 GB)</code>
+          <br><br>
+          • <strong>8B 模型 Q4 量化（如 Llama 3.3 8B / Qwen 2.5 7B）：</strong> <code>(8 × 4 ÷ 8) × 1.25 + 1.5 ≈ 6.5 GB</code> ➡️ <strong>16GB RAM 即可絲滑順跑！</strong>
+          <br>• <strong>14B 模型 Q4 量化（如 Qwen 2.5 14B）：</strong> <code>(14 × 4 ÷ 8) × 1.25 + 2.0 ≈ 10.7 GB</code> ➡️ <strong>24GB / 32GB 記憶體可順跑！</strong>
+          <br>• <strong>32B 模型 Q4 量化（如 Qwen 2.5 32B）：</strong> <code>(32 × 4 ÷ 8) × 1.25 + 3.0 ≈ 23.0 GB</code> ➡️ <strong>MacBook 36GB/64GB 或雙顯卡工作站首選！</strong>
+        </div>
+
+        <h3>Ollama 核心實戰四步驟：5 分鐘終端機跑出你的第一個本機 AI</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <span class="step-num">1</span>
+            <div>
+              <strong>安裝 Ollama：</strong> 前往 <a href="https://ollama.com" target="_blank" rel="noopener" style="color:var(--accent-primary);">ollama.com</a> 下載對應作業系統（macOS / Windows / Linux）的安裝檔。安裝完成後，Ollama 會在背景常駐一個輕量級推理伺服器，監聽 <code>http://localhost:11434</code>。
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">2</span>
+            <div>
+              <strong>拉取並運行 2026 年王牌中文模型：</strong> 打開終端機（Terminal 或 PowerShell），輸入下方指令，Ollama 會自動從官方倉庫下載量化權重並直接啟動對話：
+              <div class="code-wrapper" style="margin-top:0.5rem;">
+                <button class="copy-btn" onclick="copySnippet(this, 'ollama run qwen2.5:7b')">複製指令</button>
+                <pre><code># 推薦一：中文語意與長文理解第一名（阿里開源 7B）
+ollama run qwen2.5:7b
+
+# 推薦二：綜合通識與多輪對話王者（Meta Llama 3.3 8B）
+ollama run llama3.3:latest
+
+# 推薦三：程式碼除錯與腳本生成專用（DeepSeek Coder 6.7B）
+ollama run deepseek-coder:6.7b</code></pre>
+              </div>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">3</span>
+            <div>
+              <strong>自訂 Modelfile（注入個人角色設定與參數）：</strong> 類似 Dockerfile，建立一個名為 <code>Modelfile</code> 的檔案，客製專屬的「繁體中文商業顧問」：
+              <div class="code-wrapper" style="margin-top:0.5rem;">
+                <button class="copy-btn" onclick="copySnippet(this, `FROM qwen2.5:7b\nPARAMETER temperature 0.3\nPARAMETER num_ctx 8192\nSYSTEM 你是政峰AI學習站專屬的本機高階商業法務與資安分析專家，請始終使用台灣繁體中文，給出條理嚴謹、客觀且具備法律與商業邏輯的建議。`)">複製 Modelfile</button>
+                <pre><code>FROM qwen2.5:7b
+PARAMETER temperature 0.3
+PARAMETER num_ctx 8192
+SYSTEM """
+你是政峰AI學習站專屬的本機高階商業法務與資安分析專家。
+1. 嚴格遵守台灣商業規範與繁體中文（正體中文）術語。
+2. 進行合約審核時，主動標記出對委託方不利之免責陷阱與條款漏洞。
+3. 絕不主動對外部網路傳輸任何內部資訊。
+"""</code></pre>
+              </div>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:0.4rem;">
+                在終端機執行 <code>ollama create my-advisor -f ./Modelfile</code> 即可建立專屬私有模型！
+              </p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">4</span>
+            <div>
+              <strong>REST API 驗證（供外部軟體呼叫）：</strong> Ollama 本身就是一個標準的 REST 伺服器，任何支援 HTTP 呼叫的應用（如 Python、Node.js、cURL）都能直接推論：
+              <div class="code-wrapper" style="margin-top:0.5rem;">
+                <button class="copy-btn" onclick="copySnippet(this, `curl http://localhost:11434/api/generate -d '{\n  &quot;model&quot;: &quot;qwen2.5:7b&quot;,\n  &quot;prompt&quot;: &quot;用一句話白話解釋什麼是本機離線 AI？&quot;,\n  &quot;stream&quot;: false\n}'`)">複製 cURL</button>
+                <pre><code>curl http://localhost:11434/api/generate -d '{
+  "model": "qwen2.5:7b",
+  "prompt": "用一句話白話解釋什麼是本機離線 AI？",
+  "stream": false
+}'</code></pre>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Focus 2 -->
+    <section class="section">
+      <div class="section-header">
+        <span>🚀</span>
+        <h2>今日焦點二：Open WebUI 私有部署實戰——10 分鐘打造外觀媲美 ChatGPT 的安全工作站</h2>
+      </div>
+
+      <div class="card">
+        <h3>告別冰冷黑底命令列！給本機 AI 一個現代化優雅圖形介面</h3>
+        <div class="pain-point">
+          <strong>❌ 終端機對話的實務缺陷：</strong>Ollama 預設的 CLI 視窗雖然輕快，但無法保存多重主題的歷史紀錄對話串、無法拖曳上傳 50 頁 PDF 或 Excel 進行即時分析、不支援 Markdown 程式碼高亮排版，更無法為團隊同仁設定權限分工。
+        </div>
+
+        <p>
+          <strong>Open WebUI（原名 Ollama WebUI）</strong>是目前 GitHub 上超過 60,000+ Stars、最炙手可熱的開源 AI 圖形介面。它不僅具備<strong>極致仿 ChatGPT 的流暢操作體驗</strong>，更原生支援：
+        </p>
+        <ul style="padding-left:1.5rem; margin:0.8rem 0; color:var(--text-secondary); display:grid; gap:0.4rem;">
+          <li>📁 <strong>完全離線的本機文檔 RAG：</strong>將機密 PDF/Word 拖進輸入框，自動在本地切塊並建立向量索引，零外傳進行精準問答。</li>
+          <li>⚖️ <strong>雙模型並排盲測（Arena Mode）：</strong>同一句 Prompt 同步送給 <code>qwen2.5:7b</code> 與 <code>llama3.3:8b</code>，並列比較生成品質與回應速度。</li>
+          <li>🗣️ <strong>本機語音辨識（Whisper 本地端整合）：</strong>用語音直接與本機 AI 交談，語音資料完全不離開筆電。</li>
+          <li>🔑 <strong>完全相容 OpenAI API 規範：</strong>支援反向代理，可把本機 Ollama 封裝為標準 API Key，直接串接 Cursor、VS Code 或 Obsidian。</li>
+        </ul>
+
+        <p>
+          下圖展示了從「使用者在瀏覽器操作」到「本機 Docker 與 Ollama 推論引擎」的完整協作拓撲流程：
+        </p>
+
+        <!-- Diagram 2 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart LR
+    Browser["🖥️ 瀏覽器操作介面\n(http://localhost:3000)\n繁中介面 / Markdown / 拖拉文件"] -->|"HTTP / WebSocket"| WebUI["🐳 Open WebUI 容器 (Docker)\n- 多用戶權限與會話歷史紀錄\n- 本地 ChromaDB 向量檢索 (RAG)\n- 繁中 Embedding 模型 (bge-m3)"]
+    
+    WebUI -->|"REST API (11434 埠號)\nOpenAI 相容協定"| Ollama["🦙 Ollama 守護行程\n(本機原生守護行程)"]
+    
+    Ollama -->|"GGUF 權重映射 (mmap)"| RAM["💾 本機記憶體 / 統一記憶體\nQ4_K_M 量化權重庫"]
+    
+    RAM -->|"GPU 硬體加速"| Core["⚡ 推論核心運算\n- Apple Silicon (Metal API)\n- NVIDIA RTX (CUDA Core)\n- Intel / AMD CPU (AVX-512)"]
+    
+    Core -.->|"Token 流式回傳 (Stream SSE)"| Browser
+
+    style Browser fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
+    style WebUI fill:#1e293b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
+    style Ollama fill:#1e293b,stroke:#fbbf24,stroke-width:2px,color:#f8fafc
+    style RAM fill:#1e293b,stroke:#34d399,stroke-width:2px,color:#f8fafc
+    style Core fill:#1e293b,stroke:#fb7185,stroke-width:2px,color:#f8fafc
+          </pre>
+          <div class="diagram-caption">圖二：Open WebUI ＋ Ollama 本機私有化推論流水線與資料通訊拓撲</div>
+        </div>
+
+        <h3>Open WebUI 落地三部曲：一行 Docker 搞定所有配置</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <span class="step-num">1</span>
+            <div>
+              <strong>透過 Docker 一行指令啟動 Open WebUI：</strong>
+              <br>只要本機已安裝 Docker Desktop，在終端機貼上下方指令，即可自動下載容器並連結到本機已運行的 Ollama：
+              <div class="code-wrapper" style="margin-top:0.5rem;">
+                <button class="copy-btn" onclick="copySnippet(this, 'docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main')">複製 Docker 指令</button>
+                <pre><code>docker run -d -p 3000:8080 \
+  --add-host=host.docker.internal:host-gateway \
+  -v open-webui:/app/backend/data \
+  --name open-webui \
+  --restart always \
+  ghcr.io/open-webui/open-webui:main</code></pre>
+              </div>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:0.4rem;">
+                📌 提示：啟動後打開瀏覽器訪問 <code>http://localhost:3000</code>，第一個註冊的帳號即為管理員（Admin），所有資料均持久化儲存於本機 <code>open-webui</code> Volume。
+              </p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">2</span>
+            <div>
+              <strong>配置完全離線的本機 RAG 向量知識庫：</strong>
+              <br>進入 Open WebUI 的「管理員面板」➡️「文件 (Documents)」設定：
+              <ul style="padding-left:1.2rem; margin-top:0.3rem; font-size:0.9rem;">
+                <li>將 Embedding 模型引擎選為 <strong>Ollama</strong>，並在 Ollama 下載 <code>ollama run bge-m3</code>（目前開源最強中文/跨語言 Embedding 模型）。</li>
+                <li>從此只要在對話視窗點擊 <strong>「📎 附加檔案」</strong>，上傳公司的《內部請假規範.pdf》或《供應商合約.docx》，系統就會在本地端自動切塊、向量化並存入本機 Chroma 向量庫，任何查詢都百分之百在內網完成！</li>
+              </ul>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">3</span>
+            <div>
+              <strong>無縫串接常用開發工具（Cursor / VS Code / Obsidian）：</strong>
+              <br>進入「個人設定」➡️「帳號」➡️ 點擊 <strong>產生 API Key</strong>。
+              現在你的本機已經具備了一套標準 OpenAI 規格的伺服器！例如在 Cursor 的 <code>OpenAI API Key</code> 填入產生的金鑰，並將 Base URL 設為 <code>http://localhost:3000/api</code>，就能免費、無限制、無延遲地讓本地模型協助你撰寫內部敏感軟體專案。
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Comparison Table Section -->
+    <section class="section">
+      <div class="section-header">
+        <span>⚖️</span>
+        <h2>今日焦點三：雲端旗艦 API vs 本機開源量化模型——六大維度全方位決策矩陣</h2>
+      </div>
+
+      <div class="card">
+        <h3>何時該用雲端？何時必須切換至本地端？</h3>
+        <p>
+          「本地端 AI 是否能全面取代雲端大模型？」客觀來說，目前 70B+ 的雲端旗艦（如 Claude 3.5 Sonnet 或 GPT-4o）在<strong>超長多跳躍程式重構、前沿數學推理、複雜 Agent 工具鏈</strong>上仍保持領先。然而，在日常 80% 的摘要、改寫、特定領域審查與機密數據處理上，本機模型已經完全能夠勝任，且具備雲端無法比擬的零成本與隱私優勢。
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>評估維度</th>
+                <th>☁️ 雲端旗艦大模型 (Claude 3.5 / GPT-4o)</th>
+                <th>💻 本機量化開源模型 (Qwen 2.5 / Llama 3.3)</th>
+                <th>🎯 實戰決策建議</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>隱私與合規安全</strong></td>
+                <td>資料須經網際網路傳送至第三方伺服器；有合約與企業審計疑慮</td>
+                <td><strong>100% 實體隔離 (Air-Gapped)</strong>，資料永不離開硬碟</td>
+                <td>機密合約、內部代碼、財務個資<strong>強制選用本機端</strong></td>
+              </tr>
+              <tr>
+                <td><strong>使用成本與費用</strong></td>
+                <td>採 Token 計費制，百萬 Tokens 累積成本高昂</td>
+                <td><strong>0 元 API 費用</strong>，硬體購置後無限次調用</td>
+                <td>批次大量清洗文本、每日內部監控首選本機</td>
+              </tr>
+              <tr>
+                <td><strong>網路依賴性</strong></td>
+                <td>必須處於高速連線狀態，斷網即停擺</td>
+                <td><strong>完全離線可用</strong>，飛機、山區、保密內網暢行無阻</td>
+                <td>經常出差或在高資安封閉網路環境必備本機</td>
+              </tr>
+              <tr>
+                <td><strong>複雜推理與編程上限</strong></td>
+                <td>極強，百萬級 Context，複雜演算法與架構能力拔尖</td>
+                <td>8B~14B 模型在常規任務優秀，但超複雜邏輯偶有幻覺</td>
+                <td>前沿重大決策或全端系統架構設計可交給雲端</td>
+              </tr>
+              <tr>
+                <td><strong>推論速度與延遲</strong></td>
+                <td>受伺服器尖峰負載與網路排隊影響，偶有卡頓</td>
+                <td><strong>穩定 30~50 tokens/sec</strong>，隨叫隨到零排隊延遲</td>
+                <td>追求極致即時回應與流暢體驗選用本機</td>
+              </tr>
+              <tr>
+                <td><strong>客製化與微調彈性</strong></td>
+                <td>僅能透過 Prompt 或平台封閉式 Fine-tuning，權重不可控</td>
+                <td><strong>完全可控</strong>，支援 LoRA 微調、自訂 Modelfile 系統層參數</td>
+                <td>打造企業專屬領域分身或特用模型選用本機</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="solution-box" style="margin-top:1.2rem;">
+          <strong>💡 2026 最佳實踐：混合雙軌架構（Hybrid AI Strategy）</strong>
+          <br>聰明的 AI 實戰家不會非黑即白：將「公開資訊調研、巨型架構頭腦風暴」交給雲端模型；而一旦涉及到<strong>「客戶姓名、病歷數據、公司財報、未發布專利、合約草稿」</strong>，則一鍵無縫切換到本機 Ollama 處理，既享受最頂尖的智力支援，又固若金湯地守住資安底線！
+        </div>
+      </div>
+    </section>
+
+    <!-- Micro-Action Section -->
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）</h2>
+      </div>
+
+      <div class="card">
+        <h3>【本機專用】商業合約高風險條款審查 ＆ 個資去識別化（Local Redaction）Prompt</h3>
+        <p>
+          這段 Prompt 是專門為 <code>qwen2.5:7b</code> 或 <code>llama3.3:8b</code> 本機模型精心優化的結構化提示詞。你可以直接將它設定為 Open WebUI 的專屬 System Prompt，或貼到對話框中。它能零資料外洩地替你標記出隱藏的法律責任地雷，並將所有敏感個資替換為匿名代號：
+        </p>
+
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">一鍵複製 Prompt</button>
+          <pre id="dailyPrompt"># Role: 嚴謹客觀的企業本機資深法務審查專家
+
+## Context & Security Constraint
+你正在執行【完全本機離線環境下的合約風險評估】。你的首要任務是保護企業商業利益，並執行嚴格的隱私資料去識別化（Data De-identification）。
+
+## Task 1：機密個資與商業數字去識別化（Redaction）
+在分析文檔時，若偵測到以下資訊，請在輸出報告中強制採用標準代號遮蔽：
+- 自然人人名 ➡️ 替換為 `[PERSON_A]`、`[PERSON_B]`
+- 公司法人名稱 ➡️ 替換為 `[PARTY_ALPHA]`、`[PARTY_BETA]`
+- 具體金錢數字與百分比 ➡️ 替換為 `[AMOUNT_X]`、`[RATIO_Y]`
+- 聯絡方式（電話/統編/地址/Email） ➡️ 替換為 `[CONTACT_INFO]`
+
+## Task 2：合約高危漏洞與霸王條款深度審查
+請從以下四個維度逐條審核輸入的合約條文：
+1. 【無限責任與賠償陷阱】：是否存在「賠償責任無上限（No Cap of Liability）」或連帶間接損失（Consequential Damages）條款？
+2. 【智慧財產權（IPR）歸屬】：委託開發標的之著作財產權與衍生專利是否被惡意掠奪或永久無償授權？
+3. 【終止條款與違約金不對稱】：雙方提前終止合約的通知期是否對等？違約金是否過高且不合常理？
+4. 【準據法與爭議管轄】：管轄法院是否偏向對方所在地？是否有排他性仲裁陷阱？
+
+## Output Format（請嚴格遵守以下結構輸出繁體中文報告）
+### 🛡️ 審核總結概況
+- 合約風險等級評定：【🔴 高風險 / 🟡 中風險 / 🟢 低風險】
+- 核心爭議條款數量：共計 X 處
+
+### 🔍 具體風險條款逐項拆解（表格呈现）
+| 條款編號與原文摘要 | 風險類別 | 潛在法律或財務危害 | 具體修改建議（條文替換範本） |
+| :--- | :--- | :--- | :--- |
+| 例：第 8.2 條 ... | 無限責任條款 | 若發生輕微疏失即可能面臨全額求償 | 建議增訂「賠償上限以本合約過去 12 個月實收總額為限」 |
+
+### 📝 脫敏去識別化後的關鍵文檔備案
+[此處輸出經過 Task 1 替換代號後的合約核心條文摘要]
+
+---
+【待審查的合約內容開始】
+{{請將你的機密合約文本貼於此處}}
+【待審查的合約內容結束】</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Snippet helper
+    function copySnippet(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
