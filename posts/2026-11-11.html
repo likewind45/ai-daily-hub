@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-11｜讓 AI 長出眼睛與滑鼠！自主瀏覽器 Agent（Browser-Use）實戰 ＆ 智慧網頁萃取（Firecrawl）雙合璧指南 - 政峰AI學習站</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .badge.tech {
+      background: rgba(251, 191, 36, 0.14);
+      color: var(--accent-amber);
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .solution-box {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 4px solid var(--accent-primary);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .solution-box strong {
+      color: var(--accent-primary);
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.35rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.35rem;
+      line-height: 1.35;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.8rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.95rem 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.18rem;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .pain-point,
+    html[data-view-mode="mobile"] .solution-box {
+      font-size: 0.88rem;
+      padding: 0.75rem 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.75rem 0.85rem;
+      gap: 0.65rem;
+      font-size: 0.88rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.78rem;
+      padding: 0.95rem 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-11（週三）</span>
+        <span class="badge level">🎯 入門至進階：工具與實戰應用</span>
+        <span class="badge tech">🤖 AI Agent 工作流：自主瀏覽器操作 ＆ 智慧數據萃取</span>
+      </div>
+      <h1>讓 AI 長出眼睛與滑鼠！自主瀏覽器 Agent（Browser-Use）實戰 ＆ 智慧網頁萃取（Firecrawl）雙合璧指南</h1>
+      <p>
+        傳統自動化腳本或爬蟲只要遇到網頁小改版、動態驗證碼或彈跳廣告就會立刻崩潰，維護成本極高。今天我們將深入拆解現代 AI 如何透過「視覺截圖標記 + 無障礙樹（Accessibility Tree）」真正看懂網頁介面，自主滑動、點擊與跨頁填表；並搭配 Firecrawl / Jina Reader 將混亂動態網頁秒變純淨 Markdown 與 JSON，打造零維護成本的自動化情報蒐集管線！
+      </p>
+    </header>
+
+    <!-- Quick KPI Overview -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">今日核心突破</div>
+        <div class="kpi-value">視覺與無障礙樹雙軌驅動</div>
+        <div class="kpi-sub">告別死板 CSS Selector，改以語意目標自主操作</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">破解最大痛點</div>
+        <div class="kpi-value">網頁改版抗性 85%+</div>
+        <div class="kpi-sub">動態類名變更不失效，自帶反思修正重試機制</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">實戰黃金組合</div>
+        <div class="kpi-value">Browser-Use + Firecrawl</div>
+        <div class="kpi-sub">前者專攻「動態點擊交互」，後者專精「深層內容萃取」</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">上手實踐門檻</div>
+        <div class="kpi-value">免裝環境 ~ 10 行代碼</div>
+        <div class="kpi-sub">入門者加網址前綴即用，進階者 Python 腳本自託管</div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: Browser-Use Deep Dive -->
+    <section class="section">
+      <div class="section-header">
+        <h2>💡 今日焦點一：自主操作瀏覽器的 AI Agent（Browser-Use 深度拆解）</h2>
+      </div>
+
+      <div class="card">
+        <h3>1. 痛點剖析：傳統自動化爬蟲與 RPA 的三大惡夢</h3>
+        <p>過去無論是用 Python 的 Selenium、Puppeteer 還是商用 RPA（如 UiPath），自動化流程最痛苦的地方從來不是「寫出腳本」，而是「永無止境的修復維護」：</p>
+        <div class="pain-point">
+          <strong>⚠️ 傳統自動化三大致命傷：</strong>
+          <br>1. <strong>前端類名動態化（Dynamic Class）：</strong>現代前端框架（React / Next.js / Tailwind）常在打包時生成隨機字串（如 <code>class="btn_x9z7"</code>），一次小改版原本的 XPath / Selector 就全數陣亡。
+          <br>2. <strong>意外彈窗阻斷流程：</strong>促銷橫幅、Cookie 同意按鈕、新功能引導彈窗毫無預警彈出，傳統腳本無法理解突發事件，直接超時當機。
+          <br>3. <strong>複雜跨頁狀態追蹤：</strong>非同步 AJAX 載入、無限滾動分頁（Infinite Scroll）時，腳本難以確認資料是否已經完全算繪出來。
+        </div>
+
+        <h3>2. 核心原理解密：AI 是如何像真人一樣操作網頁的？</h3>
+        <p>開源熱門專案 <strong>Browser-Use</strong> 的精妙之處，在於它巧妙解決了「大語言模型無法直接看幾萬行 HTML」與「無法精確定位座標」的雙重瓶頸：</p>
+        
+        <div class="solution-box">
+          <strong>✨ Browser-Use 的三大核心黑科技：</strong>
+          <br>• <strong>Accessibility Tree（無障礙樹）過濾：</strong>一般的 HTML 充滿了雜亂的 <code>&lt;div&gt;</code>、SVG、CSS 與腳本，動輒數萬 Token。Browser-Use 提取專供盲人閱讀器使用的「無障礙樹」，只保留「可點擊按鈕、可輸入框、標題與文字語意」，將 Token 消耗暴跌 90%！
+          <br>• <strong>Set-of-Mark（SoM）視覺座標標註：</strong>在 Playwright 渲染後的網頁截圖上，給所有可互動元件動態覆蓋上醒目的彩色編號標籤（例如 <code>[12] 搜尋框</code>、<code>[15] 加入購物車</code>）。視覺大模型（如 Claude 3.5 Sonnet 或 GPT-4o）不需要精準預測像素座標，只要回答「點擊編號 15」即可。
+          <br>• <strong>Perception-Action-Reflection 閉環：</strong>點擊後，AI 不會直接盲目往下走，而是重新截圖驗證「網頁是否如預期跳轉？」。若跳出彈窗，AI 會優先決策「關閉彈窗」再繼續原本任務。
+        </div>
+
+        <!-- Diagram 1: Browser-Use Architecture -->
+        <div class="diagram-box">
+          <div class="mermaid">
+flowchart TD
+    subgraph S1 ["1. 任務與環境初始化"]
+        A["使用者輸入自然語言目標<br/>（例：查詢競品最新方案並整理）"] --> B["Browser-Use 啟動 Playwright 瀏覽器"]
+        B --> C["載入目標網頁並等待動態渲染"]
+    end
+
+    subgraph S2 ["2. 視覺與語意雙軌感知"]
+        C --> D["截取目前網頁畫面 (Screenshot)"]
+        C --> E["提煉無障礙樹 (Accessibility Tree)<br/>過濾掉 90% 無用樣式與雜訊標籤"]
+        D --> F["Set-of-Mark 數位標記<br/>在按鈕/輸入框打上互動序號 [1], [2]..."]
+        E --> G["精簡語意結構清單"]
+        F --> H["多模態 LLM (Claude / GPT-4o)<br/>綜合分析視覺截圖 + 互動元件序號"]
+        G --> H
+    end
+
+    subgraph S3 ["3. 意圖推理與動作執行"]
+        H --> I{"是否觸發敏感操作？<br/>（如支付結帳 / 隱私刪除）"}
+        I -- 是 --> J["Human-in-the-Loop<br/>暫停並提示使用者手動接管"]
+        I -- 否 --> K["產生結構化 Action 指令<br/>（例：click(14), type('AI工具')）"]
+        J --> K
+        K --> L["Playwright 模擬真人滑鼠軌跡與鍵盤輸入"]
+    end
+
+    subgraph S4 ["4. 自我驗證與閉環反思"]
+        L --> M["重新截圖並比對狀態變化"]
+        M --> N{"目標是否達成？"}
+        N -- 尚未完成 / 遇到阻礙 --> O["自動反思與調整策略<br/>（例：關閉阻擋彈窗、向下滾動）"]
+        O --> H
+        N -- 已達成目標 --> P["彙整數據並輸出結構化結果 (CSV / JSON)"]
+    end
+          </div>
+          <div class="diagram-caption">圖 1：Browser-Use 自主感知、Set-of-Mark 視覺標記、動作執行與自我反思之完整閉環流程</div>
+        </div>
+
+        <h3>3. 落地實操步驟（Step-by-step）</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <span class="step-num">1</span>
+            <div>
+              <strong>安裝核心依賴套件：</strong>
+              <p>需要 Python 3.11 以上環境，直接透過 pip 安裝 Browser-Use 與 Playwright 瀏覽器核心：</p>
+              <div class="code-wrapper">
+                <button class="copy-btn" onclick="copySnippet(this, 'pip install browser-use playwright langchain-openai langchain-anthropic\nplaywright install')">📋 複製指令</button>
+                <pre>pip install browser-use playwright langchain-openai langchain-anthropic
+playwright install</pre>
+              </div>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">2</span>
+            <div>
+              <strong>編寫極簡自動化 Agent 腳本：</strong>
+              <p>僅需約 15 行 Python 代碼，就能讓 AI 自主開啟瀏覽器、前往 GitHub 搜尋最新熱門 AI 專案，並將專案名稱與 Star 數自動存儲：</p>
+              <div class="code-wrapper">
+                <button class="copy-btn" onclick="copySnippet(this, 'import asyncio\nfrom langchain_anthropic import ChatAnthropic\nfrom browser_use import Agent\n\nasync def main():\n    # 1. 初始化具備強大多模態與推理能力的模型\n    llm = ChatAnthropic(model_name=\"claude-3-5-sonnet-20241022\")\n    \n    # 2. 定義自然語言目標任務\n    task = (\n        \"前往 https://github.com/trending ，找出今天 Trending 榜單上的前 3 個 AI 專案，\"\n        \"提取專案名稱、簡介與 Star 數量，並以繁體中文整理後印出。\"\n    )\n    \n    # 3. 建立並啟動 Agent\n    agent = Agent(task=task, llm=llm)\n    result = await agent.run()\n    print(\"\\n=== 執行結果 ===\\n\", result)\n\nif __name__ == \"__main__\":\n    asyncio.run(main())')">📋 複製代碼</button>
+                <pre><code class="language-python">import asyncio
+from langchain_anthropic import ChatAnthropic
+from browser_use import Agent
+
+async def main():
+    # 1. 初始化具備強大多模態與推理能力的模型（推薦 Claude 3.5 Sonnet 或 GPT-4o）
+    llm = ChatAnthropic(model_name="claude-3-5-sonnet-20241022")
+    
+    # 2. 定義自然語言目標任務
+    task = (
+        "前往 https://github.com/trending ，找出今天 Trending 榜單上的前 3 個 AI 專案，"
+        "提取專案名稱、簡介與 Star 數量，並以繁體中文整理後印出。"
+    )
+    
+    # 3. 建立並啟動 Agent（可設定 headless=False 透過可視化視窗觀看 AI 滑鼠操作）
+    agent = Agent(task=task, llm=llm)
+    result = await agent.run()
+    print("\n=== 執行結果 ===\n", result)
+
+if __name__ == "__main__":
+    asyncio.run(main())</code></pre>
+              </div>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">3</span>
+            <div>
+              <strong>設置安全護欄（Human-in-the-Loop）：</strong>
+              <p>在生產或日常使用中，絕不能讓 AI 擁有無限授權。透過 Controller 攔截敏感動作（如支付按鈕、包含 <code>submit</code> 或 <code>pay</code> 的表單），強制切換回手動控制或要求終端機確認，保障帳戶與資料安全。</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Firecrawl & Jina Reader Deep Dive -->
+    <section class="section">
+      <div class="section-header">
+        <h2>⚡ 今日焦點二：智慧網頁數據萃取（Firecrawl ＆ Jina Reader 實戰）</h2>
+      </div>
+
+      <div class="card">
+        <h3>1. 痛點剖析：為什麼不能直接把網頁 HTML 丟給 LLM？</h3>
+        <p>很多初學者在做 AI 知識庫（RAG）或競品研究時，會直接爬取網頁原始碼丟進 Prompt，但這會引發嚴重的技術災難：</p>
+        <div class="pain-point">
+          <strong>⚠️ 原始網頁餵給 AI 的三大浪費與風險：</strong>
+          <br>1. <strong>80% 以上是無用雜訊：</strong>現代網頁充斥 Google Analytics 代碼、CSS 樣式表、導航列（Nav）與頁尾宣告（Footer），嚴重浪費模型 Context Window 與 API 費用。
+          <br>2. <strong>SPA（單頁應用）客戶端算繪抓不到：</strong>許多網站核心內容是透過 JavaScript 非同步渲染，傳統 <code>requests.get()</code> 抓下來只有一片空白的 <code>&lt;div id="root"&gt;&lt;/div&gt;</code>。
+          <br>3. <strong>雜訊干擾引發幻覺：</strong>頁首頁尾的不相干促銷文字常讓大模型誤以為是內文，導致摘要產出嚴重偏差。
+        </div>
+
+        <h3>2. 核心原理解密：專為大語言模型而生的「乾淨資訊抽取引擎」</h3>
+        <p>為了解決上述痛點，AI 社群誕生了專門將網頁即時「除水去雜」的強大神器：</p>
+        
+        <div class="solution-box">
+          <strong>🛠️ 兩大熱門開源/雲端工具選型指南：</strong>
+          <br>• <strong>Jina Reader（極簡零門檻）：</strong>只需在任何想要閱讀的公開網址前面加上 <code>https://r.jina.ai/</code>（例如 <code>https://r.jina.ai/https://news.ycombinator.com</code>），Jina 就會自動在無頭瀏覽器執行 JS、剔除導覽列與廣告，直接回傳閱讀體驗極佳的乾淨 Markdown 格式！完全免費且不需註冊。
+          <br>• <strong>Firecrawl（深層爬取與結構化專家）：</strong>專為 AI 應用打造的開源爬蟲服務。不僅支援單頁轉換（<code>/scrape</code>），更支援給予網域名稱後全自動遞迴爬行全站所有子頁面（<code>/crawl</code>），甚至能搭配指定 <strong>JSON Schema</strong>，讓 AI 在爬取當下直接輸出吻合規格的結構化欄位（<code>/extract</code>）。
+        </div>
+
+        <!-- Diagram 2: Evolution Comparison -->
+        <div class="diagram-box">
+          <div class="mermaid">
+flowchart LR
+    subgraph Traditional ["傳統網頁爬取與 RPA 管線 (脆弱易碎)"]
+        T1["目標網頁"] --> T2["發送純 HTTP Request"]
+        T2 --> T3["手寫脆弱的 CSS/XPath Selector<br/>（例：div.item-card > span.val）"]
+        T3 --> T4["遇 JS 渲染或樣式改版<br/>❌ 腳本崩潰報錯，需人工反覆除錯"]
+    end
+
+    subgraph ModernAI ["現代 AI 語意萃取管線 (自適應強韌)"]
+        M1["目標網頁"] --> M2["智慧無頭瀏覽器 (JS Hydration)"]
+        M2 --> M3["去除廣告導航雜訊 (Jina / Firecrawl)<br/>轉化為純淨 Markdown 語意內容"]
+        M3 --> M4["LLM 依 JSON Schema 結構化輸出<br/>✅ 網頁隨意改版依然精準識別，零維護成本"]
+    end
+          </div>
+          <div class="diagram-caption">圖 2：傳統爬蟲（依賴寫死節點）vs 現代 AI 智慧萃取（依賴語意與結構化 Schema）之架構演進</div>
+        </div>
+
+        <h3>3. 網頁自動化技術全方位橫向比較</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>比較面向</th>
+                <th>傳統腳本 (Selenium / Scrapy)</th>
+                <th>智慧萃取 (Jina / Firecrawl)</th>
+                <th>自主行為 Agent (Browser-Use)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>核心任務</strong></td>
+                <td>按固定軌跡爬取固定結構</td>
+                <td>將網頁雜訊過濾為純淨 Markdown/JSON</td>
+                <td>像真人般自主瀏覽、填表、點擊、探索</td>
+              </tr>
+              <tr>
+                <td><strong>動態 JS 渲染支援</strong></td>
+                <td>需手動配置 Wait 或 Headless 驅動</td>
+                <td>內建無頭渲染引擎自動等待 Hydration</td>
+                <td>完全支援，基於真實 Playwright 實例運行</td>
+              </tr>
+              <tr>
+                <td><strong>抗網頁改版能力</strong></td>
+                <td>極低（Class 名稱一變即報錯）</td>
+                <td>極高（基於正文語意演算法抓取核心）</td>
+                <td>極高（結合視覺截圖與語意意圖推理）</td>
+              </tr>
+              <tr>
+                <td><strong>Token 消耗</strong></td>
+                <td>零（不走大語言模型）</td>
+                <td>極低（大幅精簡無用 HTML 標籤）</td>
+                <td>中高（每輪點擊需截圖與分析無障礙樹）</td>
+              </tr>
+              <tr>
+                <td><strong>多步驟表單交互</strong></td>
+                <td>可做，但代碼量大且維護極難</td>
+                <td>僅支援內容讀取，無點擊交互能力</td>
+                <td>強項（自動辨識登入框、下拉選單、分頁按鈕）</td>
+              </tr>
+              <tr>
+                <td><strong>最佳應用場景</strong></td>
+                <td>高頻率、毫秒級的固定 API 批量抓取</td>
+                <td>RAG 知識庫入庫、新聞速讀、競品頁面分析</td>
+                <td>跨網站資料整合、訂票比價、自動填寫報表</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top: 1.5rem;">4. 快速上手落地技巧</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <span class="step-num">★</span>
+            <div>
+              <strong>技巧一：瀏覽器書籤小工具（Bookmarklet）一秒轉 Markdown</strong>
+              <p>在瀏覽器書籤新增一個連結，網址欄填入以下 JavaScript。以後瀏覽任何繁雜長文或官方文件時，點一下書籤就能瞬間跳轉到 Jina Reader 的乾淨排版頁面：</p>
+              <div class="code-wrapper">
+                <button class="copy-btn" onclick="copySnippet(this, 'javascript:location.href=\'https://r.jina.ai/\'+location.href;')">📋 複製書籤腳本</button>
+                <pre>javascript:location.href='https://r.jina.ai/'+location.href;</pre>
+              </div>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">★</span>
+            <div>
+              <strong>技巧二：利用 Firecrawl API 實現「零寫解析代碼」的結構化提煉</strong>
+              <p>使用 Firecrawl 的 <code>/extract</code> 端點，只需傳入網址與預期的 JSON Schema（如：產品名稱、方案價格、支援功能），不需要寫任何正則表達式，AI 會自動從頁面中精準抽出對應數據！</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Micro-Action 5-min Practice -->
+    <section class="section">
+      <div class="section-header">
+        <h2>🎯 今日 5 分鐘實戰練習（Micro-Action）</h2>
+      </div>
+
+      <div class="card">
+        <h3>全自動競品情報與定價結構化萃取 Prompt 模板</h3>
+        <p>
+          這是一套設計嚴密的結構化提示詞，結合了 <strong>XML 邊界標籤、強型別 Schema 約束與負向限制（Negative Rules）</strong>。你可以搭配 Jina Reader 產出的乾淨 Markdown，或者直接貼進支援網頁讀取的 AI（如 Claude 3.5 Sonnet、Perplexity、ChatGPT），在 3 分鐘內產出商業諮詢等級的競品分析表格！
+        </p>
+
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 一鍵複製 Prompt 模板</button>
+          <pre id="dailyPrompt">&lt;role&gt;
+你是一位資深的商業智慧（BI）與競品研究分析專家，專精於從複雜非結構化的產品官網中提取關鍵商業決策數據。
+&lt;/role&gt;
+
+&lt;task&gt;
+請仔細分析下方 &lt;web_content&gt; 標籤內的網頁內容（或前往使用者提供的目標網址），嚴格依照指定的 JSON/Markdown 規格提煉產品核心定價與功能情報。
+&lt;/task&gt;
+
+&lt;extraction_schema&gt;
+請產出包含以下結構化維度的綜合 Markdown 報告：
+1. 【基本資訊】：產品名稱、核心定位（一句話說明解決什麼問題）、目標客群（個人/團隊/企業）。
+2. 【方案價格矩陣】（請整理為 Markdown 表格）：
+   - 方案名稱（Plan Name）
+   - 計費方式（免費 / 月繳 / 年繳折抵 / 席位制）
+   - 價格數額（含幣別）
+   - 關鍵權益與用量上限（如儲存空間、API 呼叫次數、席位數）
+3. 【隱形限制與商業策略亮點】：
+   - 免費版是否存在嚴重限制（例如帶浮水印、匯出格式受限、歷史紀錄天數）？
+   - 是否具備企業級安全合規（SSO, SOC2, 私有化部署）？
+4. 【一句話選型總結】：適合什麼樣階段的團隊？不適合誰？
+&lt;/extraction_schema&gt;
+
+&lt;negative_constraints&gt;
+1. 嚴禁腦補或揣測：若網頁中未提及具體價格（例如僅標註「Contact Sales」），請如實註明「需洽詢業務」，切勿胡亂猜測金額。
+2. 數據需具備引言出處：在提及重要數額或功能限制時，請在括號內附上網頁中的原文關鍵字作為佐證。
+3. 剔除宣傳廢話：請忽略「業界領先」、「革命性體驗」等行銷形容詞，聚焦於硬性規格與客觀指標。
+&lt;/negative_constraints&gt;
+
+&lt;web_content&gt;
+[在此處貼上欲分析之網頁內容（建議先用 https://r.jina.ai/ 轉換為乾淨 Markdown）或直接貼上目標產品官網網址]
+&lt;/web_content&gt;</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Snippet helper
+    function copySnippet(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
