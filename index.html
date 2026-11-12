@@ -777,7 +777,7 @@
 
     <div class="topbar-right">
       <button class="action-btn qr-btn-desktop" onclick="toggleQrModal(true)" title="手機掃碼連線">📲 手機外網連線</button>
-      <a id="openNewTabLink" href="posts/2026-11-11.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
+      <a id="openNewTabLink" href="posts/2026-11-12.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
       <button class="action-btn" id="hubThemeBtn" onclick="toggleHubTheme()">☀️ 淺色</button>
     </div>
   </header>
@@ -854,11 +854,11 @@
       <!-- Right / Full Main Content Frame -->
       <section class="viewer">
         <div class="viewer-toolbar">
-          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-11（週三）｜讓 AI 長出眼睛與滑鼠！自主瀏覽器 Agent（Browser-Use）實戰 ＆ 智慧網頁萃取（Firecrawl）雙合璧指南</span>
+          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-12（週四）｜告別單打獨鬥！多 Agent 團隊協同（Multi-Agent System）實戰：用 CrewAI 打造角色分工流水線 ＆ 人機協同（Human-in-the-Loop）安全閘門</span>
         </div>
 
         <div class="iframe-scroll-wrapper" id="iframeWrapper">
-          <iframe id="contentFrame" src="posts/2026-11-11.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
+          <iframe id="contentFrame" src="posts/2026-11-12.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
         </div>
 
         <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
@@ -892,6 +892,14 @@
 
     // Daily posts manifest — updated automatically by the daily 20:00 automation
     const POSTS = [
+      {
+        date: "2026-11-12（週四）",
+        title: "告別單打獨鬥！多 Agent 團隊協同（Multi-Agent System）實戰：用 CrewAI 打造角色分工流水線 ＆ 人機協同（Human-in-the-Loop）安全閘門",
+        summary: "擺脫單一 LLM 處理長鏈條任務時的「注意力稀釋」與「幻覺滾雪球」困境！深入拆解多 Agent 系統（MAS）的「角色設定、任務交接與階層監督」核心運作機制；手把手以 CrewAI 打造專屬 AI 專家智囊團，並搭配 Human-in-the-Loop（人機協同安全閘門）與狀態機控制，讓 AI 團隊自主運作的同時兼具 100% 業務安全。",
+        path: "posts/2026-11-12.html",
+        hasYoutube: false,
+        tags: ["Multi-Agent", "CrewAI", "LangGraph", "Human-in-the-Loop", "AI工作流", "角色分工", "狀態機"]
+      },
       {
         date: "2026-11-11（週三）",
         title: "讓 AI 長出眼睛與滑鼠！自主瀏覽器 Agent（Browser-Use）實戰 ＆ 智慧網頁萃取（Firecrawl）雙合璧指南",

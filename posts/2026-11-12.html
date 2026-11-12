@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-12｜告別單打獨鬥！多 Agent 團隊協同（Multi-Agent System）實戰：用 CrewAI 打造角色分工流水線 ＆ 人機協同（Human-in-the-Loop）安全閘門 - 政峰AI學習站</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.level {
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+      background: rgba(52, 211, 153, 0.1);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      line-height: 1.35;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* KPI Highlights */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem;
+      text-align: center;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-primary);
+    }
+
+    .kpi-value {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--accent-primary);
+      margin-bottom: 0.3rem;
+    }
+
+    .kpi-label {
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Section Styles */
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+    }
+
+    p strong {
+      color: var(--text-primary);
+    }
+
+    /* Pain Points Box */
+    .pain-point {
+      background: rgba(251, 113, 133, 0.08);
+      border-left: 4px solid var(--accent-rose);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1.2rem 0;
+    }
+
+    .pain-point h4 {
+      color: var(--accent-rose);
+      font-size: 0.98rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    /* Diagram Wrap */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem 1rem;
+      margin: 1.5rem 0;
+      text-align: center;
+      overflow-x: auto;
+    }
+
+    .diagram-caption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.8rem;
+      font-weight: 500;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    th {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 0.85rem 1.1rem;
+      font-weight: 700;
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.85rem 1.1rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      background: var(--bg-card);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: var(--bg-card-hover);
+    }
+
+    /* Steps List */
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin: 1.5rem 0;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 1.1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.2rem;
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--accent-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+    }
+
+    /* Code Blocks & Copy Button */
+    .code-wrapper {
+      position: relative;
+      margin: 1.2rem 0;
+    }
+
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2.6rem 1.2rem 1.2rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-primary);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    /* =====================================================
+       Responsive & Auto Resolution Adaptation Styles
+       ===================================================== */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="viewModeToggle" onclick="togglePostViewMode()">📱 手機版</button>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-12（週四）</span>
+        <span class="badge">🤖 多 Agent 團隊協同</span>
+        <span class="badge">⚙️ CrewAI ＆ LangGraph</span>
+        <span class="badge level">⭐ 難度：入門至進階</span>
+      </div>
+      <h1>告別單打獨鬥！多 Agent 團隊協同（Multi-Agent System）實戰：用 CrewAI 打造角色分工流水線 ＆ 人機協同（Human-in-the-Loop）安全閘門</h1>
+      <p>擺脫單一 LLM 處理長鏈條任務時的「注意力稀釋（Lost in the Middle）」與「幻覺滾雪球」困境！深入拆解多 Agent 系統（MAS）的「角色設定、任務交接與階層監督」核心運作機制；手把手以 CrewAI 打造專屬 AI 專家智囊團，並搭配 Human-in-the-Loop（人機協同安全閘門）與狀態機控制，讓 AI 團隊自主運作的同時兼具 100% 業務安全。</p>
+    </header>
+
+    <!-- KPI Grid -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-value">78% ↑</div>
+        <div class="kpi-label">複雜任務成功率</div>
+        <div class="kpi-sub">獨立角色推理與相互質詢，消滅邏輯中斷</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">Context 隔離</div>
+        <div class="kpi-label">擺脫長文本遺忘</div>
+        <div class="kpi-sub">各 Agent 僅掌握專屬資訊，消除注意力稀釋</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">100% 安全</div>
+        <div class="kpi-label">關鍵副作用攔截</div>
+        <div class="kpi-sub">HITL 安全閘門暫停掛起，發信/扣款零風險</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">模組化協同</div>
+        <div class="kpi-label">團隊隨插即用</div>
+        <div class="kpi-sub">從循序流水線到主管分派，標準化排程調度</div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: Focus 1 -->
+    <section class="section">
+      <div class="section-header">
+        <h2>💡 今日焦點一：多 Agent 協同架構（CrewAI 角色分工與階層派工實戰）</h2>
+      </div>
+
+      <div class="card">
+        <h3>1. 痛點剖析：單一提示詞（Mega-Prompt）的「全知上帝陷阱」</h3>
+        <p>過去許多開發者在設計 AI 自動化流程時，常習慣寫出一篇長達數千字的「超級提示詞（Mega-Prompt）」，試圖要求同一個 LLM 在一次對話中同時扮演「市場研究員、資深文案師、財務稽核員與法務顧問」。這種做法在實際落地時必然遭遇三大崩潰惡夢：</p>
+
+        <div class="pain-point">
+          <h4>⚠️ 惡夢一：多任務超載引發的「注意力稀釋（Lost in the Middle）」</h4>
+          <p>當 Prompt 中塞滿了十幾種不同目標與約束時，LLM 的注意力矩陣會被大幅稀釋。模型往往只專注處理開頭與結尾的要求，中間段落的細節規範與驗收條件被拋諸腦後，產出表面看似完整、實則敷衍空洞的內容。</p>
+        </div>
+
+        <div class="pain-point">
+          <h4>⚠️ 惡夢二：上下文污染（Context Pollution）與幻覺滾雪球</h4>
+          <p>在單一長對話中，若前半段推理出現些微偏差或捏造了虛假數據，後半段的 LLM 會將前段輸出當作「絕對事實」繼續推演，導致幻覺如雪崩般不可收拾。</p>
+        </div>
+
+        <div class="pain-point">
+          <h4>⚠️ 惡夢三：缺乏批判與反思機制的「自負盲區」</h4>
+          <p>由同一個模型同時負責「生成」與「自我檢查」，通常只能挑出錯別字。因為生成時的偏見與邏輯盲點，在自我審查時依然存在。必須引進「具備不同立場與評估標準的第三方獨立 Agent」進行挑刺與交叉辯論，才能逼近真相。</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2. 核心原理解密：多 Agent 系統（MAS）的運作哲學</h3>
+        <p><strong>CrewAI</strong> 是目前開源界最火紅且工程落地最優雅的多 Agent 框架之一。它的核心哲學是將大型任務拆解為「專業分工的虛擬團隊」，由四大核心積木組合而成：</p>
+        
+        <ul style="margin: 0 0 1.2rem 1.4rem; color: var(--text-secondary); line-height: 1.8;">
+          <li><strong>Agent（智能體）：</strong> 定義其 <code>Role</code>（職位名稱）、<code>Goal</code>（明確量化目標）、<code>Backstory</code>（性格與背景視角）以及可使用的 <code>Tools</code>（工具箱）。Backstory 能強力錨定其推理風格，例如指派一位「專門挑剔數據真偽的品管員」。</li>
+          <li><strong>Task（任務單）：</strong> 包含 <code>description</code>（清晰動作說明）、<code>expected_output</code>（具體輸出格式，如 Markdown 表格或 JSON）以及指定負責的 Agent。任務之間可以設置依賴鏈條（Context）。</li>
+          <li><strong>Process（協同流程）：</strong> 支援 <code>Sequential</code>（循序管線）與 <code>Hierarchical</code>（主管分派）。在階層模式下，會自動指派一位高階主管 Agent（Manager Agent），由主管根據任務難度動態指派組員、檢查產出並駁回重修。</li>
+          <li><strong>Crew（團隊容器）：</strong> 將 Agents、Tasks 與 Process 綁定封裝，提供一鍵 <code>crew.kickoff()</code> 執行與結果聚合。</li>
+        </ul>
+
+        <!-- Mermaid Diagram 1 -->
+        <div class="diagram-box">
+          <div class="mermaid">
+flowchart TD
+    subgraph Bottleneck ["傳統單一 LLM 處理複雜任務的崩潰困境"]
+        U1["用戶輸入複合大型任務<br/>（市場調研 + 撰寫報告 + 合規檢查）"] --> P1["單一全知 Prompt 塞入所有要求"]
+        P1 --> LLM1["單一 LLM 運算運作"]
+        LLM1 -.-> E1["⚠️ 注意力稀釋（Lost-in-the-Middle）<br/>遺忘關鍵約束條件"]
+        LLM1 -.-> E2["⚠️ 幻覺滾雪球（Hallucination Cascade）<br/>自己相信前段錯誤假設"]
+        LLM1 -.-> E3["⚠️ 缺乏自我批判機制<br/>產出內容空洞且難以落地"]
+    end
+
+    subgraph CrewAIMAS ["CrewAI 專業分工與階層協同架構 (SOTA)"]
+        U2["用戶輸入複合任務"] --> Supervisor["👔 專案主管 Agent (Crew Manager)<br/>模型：Claude 3.5 Sonnet / o1"]
+        
+        Supervisor -->|"1. 派發深研任務"| A1["🔍 調研情報官 (Researcher)<br/>工具：Web Search / Serper<br/>焦點：採集客觀事實與數據"]
+        Supervisor -->|"2. 交付結構化素材"| A2["✍️ 首席內容架構師 (Writer)<br/>工具：Markdown Formatter<br/>焦點：邏輯梳理與痛點分析"]
+        
+        A1 -->|"產出原始研析數據"| A2
+        A2 -->|"提交初稿交付物"| A3["🛡️ 品質稽核官 (Critic / Fact-Checker)<br/>工具：Verification Rules<br/>焦點：真偽查核與邏輯挑刺"]
+        
+        A3 -->|"❌ 發現漏洞 / 駁回重修"| A2
+        A3 -->|"✅ 驗收通過"| Supervisor
+        Supervisor --> Out["🏆 產出高品質無幻覺專業交付物"]
+    end
+          </div>
+          <div class="diagram-caption">圖 1：單一全能 Agent 的崩潰困境 vs. CrewAI 階層式多 Agent 專業協同流程圖</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>3. Step-by-step 落地實操：打造「24 小時自主 AI 科技週報智囊團」</h3>
+        <p>以下我們透過 Python 與 CrewAI 構建一個具備「情報檢索、專欄編寫、事實查核」的三人 AI 專家團隊：</p>
+
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>安裝 CrewAI 與核心工具庫</h4>
+              <p>在終端機安裝 crewai 及其內建工具包：</p>
+              <div class="code-wrapper">
+                <button class="copy-btn" onclick="copySnippet(this, 'pip install crewai crewai-tools langchain-openai')">複製指令</button>
+                <pre><code>pip install crewai crewai-tools langchain-openai</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>編寫 CrewAI 協同程式碼（完整可執行腳本）</h4>
+              <p>透過角色分工、明確驗收標準與順序執行管線，實現自動化高精度產出：</p>
+              <div class="code-wrapper">
+                <button class="copy-btn" onclick="copySnippet(this, document.getElementById('crewCode').innerText)">複製程式碼</button>
+                <pre><code id="crewCode">import os
+from crewai import Agent, Task, Crew, Process
+from crewai_tools import SerperDevTool
+
+# 1. 配置 API Key（支援 OpenAI / Anthropic / Google Gemini 等）
+os.environ["OPENAI_API_KEY"] = "your-api-key"
+os.environ["SERPER_API_KEY"] = "your-serper-key"  # 聯網搜尋工具
+
+# 2. 定義各司其職的專家 Agent
+search_tool = SerperDevTool()
+
+researcher = Agent(
+    role="資深 AI 趨勢情報研究員",
+    goal="蒐集並提煉過去 24 小時內全球最具突破性的 AI 工具與開源進展",
+    backstory=(
+        "你是一位對技術極度敏感的科技調研專家，擅長從混亂的技術推文與 GitHub Repo "
+        "中萃取核心價值，討厭空泛的公關宣傳詞，只關注真正的架構突破與工程落地價值。"
+    ),
+    tools=[search_tool],
+    verbose=True,
+    memory=True
+)
+
+writer = Agent(
+    role="繁體中文科技專欄主筆",
+    goal="將調研員提供的硬核技術素材，轉化為繁體中文讀者易懂、具備商業洞察與實操步驟的高質量專欄",
+    backstory=(
+        "你曾任知名科技媒體總編，文字凝練流暢，擅長使用生活化比喻解釋複雜架構，"
+        "堅持結構化排版，並精準點出企業落地時的真正痛點。"
+    ),
+    verbose=True
+)
+
+critic = Agent(
+    role="首席事實查核與品質稽核官",
+    goal="審查文章草案中的數據真實性、技術術語準確度，確保無任何 AI 幻覺，並對邏輯不通處提出具體修改建議",
+    backstory=(
+        "你是一位以嚴謹著稱的軟體架構師，對事實查核有強迫症，絕不放過任何未經證實的誇大宣稱，"
+        "只有真正符合邏輯與可驗證事實的內容才能通過你的驗收。"
+    ),
+    verbose=True
+)
+
+# 3. 定義具體任務（明確 Expected Output）
+research_task = Task(
+    description="針對主題「Multi-Agent 系統與 CrewAI」進行情報檢索，找出 3 個核心優勢與 2 個落地瓶頸，提供具體數據與案例。",
+    expected_output="一份條列式的關鍵事實與數據清單，附帶來源引用與客觀技術評估。",
+    agent=researcher
+)
+
+writing_task = Task(
+    description="依據 research_task 的成果，撰寫一篇 1200 字深度分析專欄，包含痛點、架構解析與落地步驟。",
+    expected_output="符合專業 Markdown 格式的高品質專欄文章草案，語氣白話科普且富含洞察。",
+    agent=writer
+)
+
+review_task = Task(
+    description="嚴格審查 writing_task 的草案。若發現事實錯誤或邏輯跳躍，要求 writer 修改；若達到出版標準則給予最終審定版。",
+    expected_output="審定後的最終完整文章，文末附帶 3 點品質評核簡評。",
+    agent=critic
+)
+
+# 4. 組裝 Crew 團隊並啟動
+tech_crew = Crew(
+    agents=[researcher, writer, critic],
+    tasks=[research_task, writing_task, review_task],
+    process=Process.sequential,  # 順序執行管線（亦可設為 hierarchical 階層派工）
+    verbose=True
+)
+
+print("🚀 啟動 AI 專家團隊協同作業...")
+final_output = tech_crew.kickoff()
+print("
+=== 最終交付成果 ===")
+print(final_output)</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>實戰調優密技：異質模型混搭（Model Routing）降低 70% 成本</h4>
+              <p>在 CrewAI 中，<strong>不需要每個 Agent 都使用最貴的旗艦模型</strong>！最佳工程實踐是：主管 Agent 與審查 Critic 使用推理最強的 <code>Claude 3.5 Sonnet</code> 或 <code>o1-preview</code>；而負責大量網路檢索與粗篩資料的 Researcher 則配置速度快、單價極低的 <code>GPT-4o-mini</code> 或 <code>Gemini 1.5 Flash</code>。兼顧頂級推理品質與低廉運作成本！</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Focus 2 -->
+    <section class="section">
+      <div class="section-header">
+        <h2>⚡ 今日焦點二：人機協同安全閉環（Human-in-the-Loop, HITL）與狀態審批實戰</h2>
+      </div>
+
+      <div class="card">
+        <h3>1. 痛點剖析：AI Agent 的「自主毀滅危機」</h3>
+        <p>當我們賦予 AI Agent 使用工具（Tool Calling）的能力時，它便具備了操作外部世界的「手臂」——它可以發送 HTTP 請求、調用 API、寫入資料庫甚至發送信件。如果缺乏嚴謹的安全防護網，自主 Agent 隨時可能引發毀滅性後果：</p>
+
+        <div class="pain-point">
+          <h4>🔥 真實慘痛案例：失控的自主不可逆行為</h4>
+          <p>某電商團隊測試自主客服 Agent，Agent 因誤解顧客的客訴文字，自動調用退款 API 發出數十筆全額退款並寄發道歉信；另有開發者測試代碼重構 Agent，Agent 因幻覺判斷某測試目錄無用，直接調用本機終端機指令 <code>rm -rf</code> 刪除了整個開發分支！</p>
+        </div>
+
+        <p>這些教訓告訴我們：<strong>完全脫離人類監督的「全自主（Fully Autonomous）」在涉及金錢、商譽、個人隱私與資料庫寫入等高風險操作時，是極度不負責任的架構設計。</strong></p>
+      </div>
+
+      <div class="card">
+        <h3>2. 核心原理解密：HITL 與狀態圖（StateGraph）架構</h3>
+        <p>現代頂尖 AI 工程實踐（如 LangGraph 與 LangChain HITL 設計模式）提出了<strong>「人機協同（Human-in-the-Loop, HITL）」</strong>架構。其關鍵在於<strong>將工作流建立為有限狀態機（Finite State Machine）</strong>：</p>
+        
+        <ul style="margin: 0 0 1.2rem 1.4rem; color: var(--text-secondary); line-height: 1.8;">
+          <li><strong>狀態持久化（Checkpointer）：</strong> 每次 Agent 執行到特定節點時，系統自動將當前的所有變數與生成結果存入資料庫（如 SQLite 或 PostgreSQL）。</li>
+          <li><strong>中斷點掛起（Interrupt Before / After）：</strong> 在進入具備「真實副作用（Side-Effects）」的節點（例如 <code>send_email</code>、<code>execute_trade</code>、<code>deploy_code</code>）之前，系統強制拋出中斷（Pause），將狀態鎖定，並向人類主管發送通知（如 Slack 警報或 Web 管理後台審批按鈕）。</li>
+          <li><strong>人類操作員的三種權限：</strong>
+            <br>• <strong>Approve（批准通過）：</strong> 點擊批准，工作流解除暫停，直接恢復執行後續敏感動作。
+            <br>• <strong>Edit / Patch（微調修改）：</strong> 人類直接在後台修改 AI 生成的草案（State），再恢復執行，確保發出的內容 100% 符合期待。
+            <br>• <strong>Reject with Feedback（駁回並附反饋）：</strong> 附帶人類的修改意見，引導 Agent 回退到先前的節點重新推理生成。
+          </li>
+        </ul>
+
+        <!-- Mermaid Diagram 2 -->
+        <div class="diagram-box">
+          <div class="mermaid">
+flowchart LR
+    subgraph Autonomous ["自主推演與資訊整理階段"]
+        Start(["開始任務"]) --> N1["節點 1：情報蒐集 Agent"]
+        N1 --> N2["節點 2：內容草案 Agent"]
+        N2 --> N3["節點 3：格式校準與風險快篩"]
+    end
+
+    subgraph SafetyGate ["🛡️ HITL 安全閘門（中斷點 Interrupt）"]
+        N3 --> Gate{"是否涉及副作用操作？<br/>（發信/扣款/發布/DB寫入）"}
+        Gate -- "否（純讀取/摘要）" --> AutoPass["直接輸出結果"]
+        Gate -- "是（敏感操作）" --> Pause["⏸️ 系統掛起暫停（Pause State）<br/>發送 Slack / 網頁審批通知"]
+    end
+
+    subgraph HumanReview ["人類決策者介入（Human Operator）"]
+        Pause --> Decision{"人類審批決策"}
+        Decision -- "駁回並附反饋意見" --> Reject["帶入修訂意見回退修正"]
+        Reject --> N2
+        Decision -- "人類手動編輯微調" --> Edit["更新狀態資料（Patch State）"]
+        Edit --> Resume
+        Decision -- "完全批准通過" --> Resume["▶️ 恢復執行（Resume Workflow）"]
+    end
+
+    subgraph Execution ["最終執行與落地"]
+        Resume --> ExecAction["執行不可逆操作<br/>（發送 Email / 部署發布 / 資料庫寫入）"]
+        AutoPass --> End(["完成並歸檔日誌"])
+        ExecAction --> End
+    end
+          </div>
+          <div class="diagram-caption">圖 2：Human-in-the-Loop（人機協同安全閘門）與狀態機（StateGraph）運作流程圖</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>3. AI 任務協同架構光譜對比（從簡單到企業級落地）</h3>
+        <p>在設計 AI 系統時，選擇合適的架構至關重要。以下是業界四種主流協作模式的全方位橫向對比：</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>比較維度</th>
+                <th>1. 單一提示詞 (Single Prompt)</th>
+                <th>2. 提示詞鏈 (Prompt Chaining)</th>
+                <th>3. 角色型多 Agent (CrewAI)</th>
+                <th>4. 狀態圖人機協同 (LangGraph + HITL)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>核心思維</strong></td>
+                <td>單次問答要求 AI 完成全部動作</td>
+                <td>步驟 A 的輸出直接作為步驟 B 的輸入</td>
+                <td>角色扮演（Role-Playing）自主辯論與協同</td>
+                <td>節點狀態機（State Graph）+ 條件邊 + 人工審查</td>
+              </tr>
+              <tr>
+                <td><strong>適用場景</strong></td>
+                <td>快速問答、簡短翻譯、初階文本摘要</td>
+                <td>固定線性流程（如資料清理、逐步翻譯）</td>
+                <td>市場調研、多角辯論企劃、自主內容工廠</td>
+                <td>高風險企業落地（金融交易、客戶信件、資料庫維運）</td>
+              </tr>
+              <tr>
+                <td><strong>上下文隔離性</strong></td>
+                <td>❌ 極差，容易出現注意力稀釋</td>
+                <td>⚠️ 普通，每一步仍可能帶入冗餘資訊</td>
+                <td>✅ 極佳，各角色僅擁有該任務專屬 Context</td>
+                <td>🌟 最佳，狀態集中管理且支援歷史回滾（Time-Travel）</td>
+              </tr>
+              <tr>
+                <td><strong>容錯與反思能力</strong></td>
+                <td>❌ 無（若出錯只能全部人工重問）</td>
+                <td>⚠️ 弱（一步出錯導致後續步步皆錯）</td>
+                <td>✅ 強（內建 Critic 批評家自動退回重寫）</td>
+                <td>🌟 最強（支援條件分支重試與人類即時修正）</td>
+              </tr>
+              <tr>
+                <td><strong>Token 與延遲消耗</strong></td>
+                <td>🟢 最低（單次調用，毫秒至數秒）</td>
+                <td>🟡 中等（線性疊加調用）</td>
+                <td>🔴 較高（多 Agent 互評，需要多輪溝通）</td>
+                <td>🟠 高度可控（依條件邊精確路由，避免無謂消耗）</td>
+              </tr>
+              <tr>
+                <td><strong>人機介入 (HITL)</strong></td>
+                <td>❌ 無法中途暫停</td>
+                <td>❌ 難以精準插入人工審查</td>
+                <td>⚠️ 支援基礎問答互動，但狀態保存較弱</td>
+                <td>🌟 原生支援中斷掛起與狀態補丁（Interrupt & Resume）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top: 1.8rem;">4. 多 Agent 與 HITL 落地的四大黃金守則</h3>
+        <ul style="margin: 0 0 1.2rem 1.4rem; color: var(--text-secondary); line-height: 1.8;">
+          <li><strong>守則一：最少權限原則（Least Privilege for Tools）：</strong> 絕對不要給予單一 Agent 超出其職責的工具。例如研究員 Agent 只能有「網頁讀取與搜尋」工具，絕不能配備「檔案刪除」或「資料庫寫入」權限。</li>
+          <li><strong>守則二：結構化輸出消弭溝通失真：</strong> 跨 Agent 傳遞資料時，強烈建議使用 <code>Pydantic</code> 或 JSON Schema 定義強型別交付物，避免自然語言描述造成的語意偏差。</li>
+          <li><strong>守則三：必須設置最大循環上限（Max Iterations）：</strong> 當 Critic Agent 駁回 Writer Agent 的草案時，必須設定上限（如最多重寫 3 次）。若 3 次仍未達標，強制轉交人類審核，防止兩個 Agent 陷入「無限互嗆與 Token 燃燒」的死鎖循環。</li>
+          <li><strong>守則四：不可逆操作前必須強制掛起：</strong> 任何具有真實世界不可逆影響的操作（扣款、發送信件、部署上線），一律納入 HITL 安全閘門，由人類點擊確認。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Micro-Action -->
+    <section class="section">
+      <div class="section-header">
+        <h2>🎯 今日 5 分鐘實戰練習（Micro-Action）</h2>
+      </div>
+
+      <div class="card">
+        <h3>免寫程式碼！單對話模擬【三方虛擬專家智囊團（Agent Committee）】Prompt 模板</h3>
+        <p>你不需要寫任何一行 Python，就能在任何常見的 AI 對話模型（ChatGPT、Claude 3.5 Sonnet、Google Gemini）中體驗多 Agent 協同思考的強大威力！將以下 Prompt 複製並貼入對話框，AI 將自動分飾「前瞻創新官」、「嚴苛風控官」與「務實執行長」，進行三輪深度質詢並最終凝聚出可落地的完美方案：</p>
+
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">複製 Prompt 模板</button>
+          <pre><code id="dailyPrompt">你現在是一個由三位世界級專家組成的「虛擬決策智囊團（Agent Committee）」，請針對我提出的難題進行多角色辯論與共識收斂。
+
+【智囊團成員角色與性格】：
+1. 💡 角色 A（前瞻創新官 Innovator）：熱情、大膽，專注於挖掘破局機會、前沿科技應用與市場藍海，不受傳統常規束縛。
+2. 🛡️ 角色 B（嚴苛風控官 Risk Auditor）：極度理性、懷疑論者，專注於挑出邏輯漏洞、法規隱患、合規風險、資金浪費與失敗機率。
+3. ⚙️ 角色 C（務實執行長 Operator）：注重 ROI、落地時程、資源限制與工程細節，專注於「如何用最少資源在 2 週內看見成果」。
+
+【執行步驟】：
+● 第一輪（各自發言）：針對我的問題，A、B、C 三位專家各自從自身角色出發，提出 200 字以內的犀利見解。
+● 第二輪（互相挑刺與質詢）：
+  - 角色 B 針對 角色 A 的方案提出最致命的 2 個質疑。
+  - 角色 C 評估雙方爭議，給出實務上的取捨考量。
+● 第三輪（主席終審與行動方案）：由智囊團首席代表（Consensus Lead）整合三方觀點，提出一份「兼顧創新突破與風控安全」的具體行動計畫：
+  1. 核心定調（一句話結論）
+  2. 3 步驟實操落地清單（附里程碑與負責角色）
+  3. 必須設置的 1 個關鍵安全煞車點（Human-in-the-Loop 檢核標準）
+
+請準備好，我的難題是：【請在此處輸入你的工作/商業/技術難題，例如：我們是一家傳統教育機構，是否該將所有課後作業批改完全交給 AI Agent？還是採用人機協同模式？】</code></pre>
+        </div>
+
+        <div style="margin-top: 1.2rem; background: var(--bg-secondary); padding: 1rem 1.2rem; border-radius: 10px; border: 1px solid var(--border-color);">
+          <strong style="color: var(--accent-emerald);">💡 練習建議：</strong>
+          <span style="color: var(--text-secondary); font-size: 0.92rem;">將這段 Prompt 存入你的常用筆記或瀏覽器擴充快捷鍵。下次面對重大決策或寫企劃卡關時，花 2 分鐘跑一次這個「三方專家委員會」，你會驚訝地發現 AI 幫你提前避開了多少盲點與未察覺的風險！</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Snippet helper
+    function copySnippet(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
