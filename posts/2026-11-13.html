@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-13｜終結 AI 每次對話都失憶！AI Agent 雙層記憶架構（Agent Memory）實戰 ＆ 結構化輸出（Structured Outputs）零誤差指南（附週五 YouTube 雙精選） - 政峰AI學習站</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.friday {
+      background: rgba(251, 113, 133, 0.14);
+      color: var(--accent-rose);
+      border-color: rgba(251, 113, 133, 0.3);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    /* YouTube Recommendations Grid */
+    .yt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.4rem;
+    }
+
+    .yt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
+    }
+
+    .yt-video-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      display: block;
+      overflow: hidden;
+      text-decoration: none;
+    }
+
+    .yt-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .yt-video-container:hover .yt-thumb {
+      transform: scale(1.04);
+      filter: brightness(0.85);
+    }
+
+    .yt-play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.15) 100%);
+    }
+
+    .yt-play-btn {
+      width: 68px;
+      height: 48px;
+      background: rgba(255, 0, 0, 0.92);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .yt-video-container:hover .yt-play-btn {
+      transform: scale(1.1);
+      background: #ff0000;
+    }
+
+    .yt-play-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: #ffffff;
+      margin-left: 3px;
+    }
+
+    .yt-duration-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .yt-body {
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .yt-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .yt-tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+      background: rgba(129, 140, 248, 0.15);
+      color: var(--accent-secondary);
+    }
+
+    .yt-tag.fresh {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--accent-emerald);
+    }
+
+    .yt-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.45;
+    }
+
+    .yt-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .yt-takeaways {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.15rem;
+      flex: 1;
+    }
+
+    .yt-takeaways ul {
+      padding-left: 1.15rem;
+      margin-top: 0.4rem;
+      color: var(--text-secondary);
+    }
+
+    .yt-takeaways li {
+      margin-bottom: 0.35rem;
+    }
+
+    .yt-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.65rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+
+    .yt-btn:hover {
+      opacity: 0.92;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-grid {
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-body {
+      padding: 1.1rem 1.05rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+      .yt-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-13（週五）</span>
+        <span class="badge level">🎯 入門至進階：工具與實戰應用</span>
+        <span class="badge friday">🎬 附週五 YouTube 雙精選專欄</span>
+      </div>
+      <h1>終結 AI 每次對話都失憶！AI Agent 雙層記憶架構（Agent Memory）實戰 ＆ 結構化輸出（Structured Outputs）零誤差指南</h1>
+      <p>
+        告別每次開新對話都要「重新自我介紹」與「交代排版偏好」的痛苦折磨！今天的學習重點帶你深入現代 AI Agent 核心的兩大工程分水嶺：如何用<strong>「雙層記憶體架構（Working + Long-term Memory）」</strong>讓 AI 越用越懂你；以及如何透過 2026 年保證 100% 格式合規的<strong>「約束解碼結構化輸出（Structured Outputs）」</strong>，徹底根除 JSON 崩潰與格式幻覺！
+      </p>
+    </header>
+
+    <!-- Quick KPI Overview -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">今日核心概念</div>
+        <div class="kpi-value">Agent Memory &amp; Schema</div>
+        <div class="kpi-sub">記憶提取/消解機制 + 語法約束解碼</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">實戰架構與工具</div>
+        <div class="kpi-value">Mem0 + Pydantic / Zod</div>
+        <div class="kpi-sub">打造個人化長期記憶層與零誤差資料管線</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">痛點突破關鍵</div>
+        <div class="kpi-value">100% 格式防禦</div>
+        <div class="kpi-sub">用語法遮罩（Masking）杜絕後端 JSON 解析報錯</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">預估閱讀與實作</div>
+        <div class="kpi-value">12 分鐘閱讀 + 5 分鐘練習</div>
+        <div class="kpi-sub">內含 2 張運作架構圖 + 1 組防崩潰萬用 Prompt</div>
+      </div>
+    </section>
+
+    <!-- Section 1: Deep Dive 1 (Agent Memory Architecture) -->
+    <section class="section">
+      <div class="section-header">
+        <span>🧠</span>
+        <h2>今日實戰主題一：終結對話失憶症！AI Agent 雙層記憶架構（Working Memory + Long-term Memory）</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼開新對話 AI 就忘記你？單一 Context Window 的致命缺陷</h3>
+        <p>
+          在日常使用 ChatGPT、Claude 或 Cursor 時，許多人都有過這種挫折體驗：明明白天花了一小時交代「我是政峰，我在台灣，請一律使用繁體中文，寫 Python 務必附上 Type Hints，而且專案不用 Node.js 改用 Bun」；結果晚上開啟一個新對話視窗，AI 立刻「失憶」，又吐出簡體中文與過時的套件指令。
+        </p>
+        <p>
+          有人嘗試把完整的「自傳背景與所有歷史對話」全部塞進 System Prompt 或 Custom Instructions，但這會迅速帶來三大災難：
+        </p>
+        <ul style="padding-left: 1.25rem; margin: 0.6rem 0 1rem; color: var(--text-secondary);">
+          <li><strong>Token 費用暴增與延遲拖慢：</strong>每一次簡單問答都要重複吞吐數千甚至上萬個無關的歷史 Token。</li>
+          <li><strong>中間迷失（Lost in the Middle）：</strong>上下文越臃腫，大語言模型越容易忽略深藏在中央的關鍵指令。</li>
+          <li><strong>資訊衝突無法動態更新：</strong>當你的技術棧或業務規則變動時，靜態的提示詞無法自動更新或覆蓋舊記錄。</li>
+        </ul>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 人類大腦不會在思考時把一輩子的記憶全部調進意識！頂尖 AI 採用「短期工作記憶（當前 3~5 輪上下文）+ 長期語意記憶庫（提煉個人偏好與關鍵事實）」分層設計，動態檢索 Top-K 注入，才能兼顧 100% 個人化與極致省 Token。
+        </div>
+
+        <!-- Mermaid Diagram 1 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    User["👤 使用者輸入對話或任務\n「我改用 Bun 開發，輸出記得加上型別」"] --> Parse["🧠 記憶提取器 (Memory Extractor)\n分析語意，過濾日常寒暄廢話"]
+    Parse --> Check{"🔍 記憶資料庫比對\n是否存在衝突或既有記錄？"}
+    Check -- "發現過期或衝突資訊" --> Update["🔄 衝突消解與更新 (Update/Forget)\n覆蓋舊記錄：Node.js 轉為 Bun"]
+    Check -- "全新偏好或事實" --> Insert["💾 新增實體記憶 (Add Entity)\n寫入偏好向量庫與圖譜"]
+    Check -- "純即時問答 (無持久價值)" --> Working["⚡ 僅保留於短期工作記憶 (Working Memory)"]
+    Update --> MemDB[("📚 長期語意記憶庫 (Mem0 DB)\n存儲專屬偏好、業務名詞與禁忌")]
+    Insert --> MemDB
+    MemDB -. "依當前任務相關度檢索 (Top-K)" .-> Inject["🎯 動態記憶注入 (Dynamic Context Injection)\n以 XML 標籤組裝入 System Prompt"]
+    Working --> Inject
+    Inject --> LLM["🤖 大語言模型 (LLM)\n產生完美符合使用者歷史習慣的精準回答"]
+          </pre>
+          <div class="diagram-caption">圖 1：AI Agent 雙層記憶架構：語意提取、衝突消解與動態上下文注入閉環</div>
+        </div>
+
+        <h3>拆解 2026 最受矚目的開源記憶層：Mem0 核心三步驟</h3>
+        <p>
+          相比傳統 RAG（檢索增強生成）只是死板地拿文章段落算向量相似度，新一代專用記憶體系統（如 <strong>Mem0</strong>）為大模型量身打造了真正的認知記憶閉環：
+        </p>
+
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>語意提取（Extract Entities &amp; Preferences）：</strong>
+              AI 後台會以輕量模型（如 Claude 3.5 Haiku 或 GPT-4o-mini）監聽對話，自動識別並提煉具有「長期生命週期」的語意實體（例如「偏好技術棧：FastAPI + Bun」、「語系偏好：台灣繁體中文」），主動捨棄「好的、謝謝、今天天氣如何」等無效雜訊。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>記憶衝突消解與動態覆寫（Conflict Resolution &amp; Forget）：</strong>
+              這是傳統 RAG 做不到的關鍵能力！當使用者過去曾說「我用 Mac M1」，今天改說「我剛升級到 M4 Max」，Mem0 會自動比對向量語意庫，將舊的 CPU 資訊標記為失效並更新，避免出現新舊資訊打架的幻覺。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>動態輕量注入（Just-in-Time Context Injection）：</strong>
+              在發起新任務時，系統僅以使用者當前問題為 Query，檢索相關性最高的 3~5 條記憶（通常不超過 150 Token），以 <code>&lt;user_memory&gt;</code> 標籤輕量注入 System Prompt。既維持了超高準確度，又節省了 90% 以上的 Context 空間！
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 2: Deep Dive 2 (Structured Outputs) -->
+    <section class="section">
+      <div class="section-header">
+        <span>🛡️</span>
+        <h2>今日實戰主題二：告別解析報錯！AI 結構化輸出（Structured Outputs）零誤差實戰指南</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼寫了「請只輸出純 JSON」依然會手滑崩潰？</h3>
+        <p>
+          任何嘗試把大語言模型接入實際生產系統（如自動爬取資料、讀取報價單、串接資料庫）的工程師或自動化愛好者，一定都遇過這個噩夢：
+          即使在 Prompt 結尾嚴格寫了十次<em>「請只輸出純 JSON 格式，絕對不要包含任何 Markdown 程式碼區塊、前言或後記」</em>，LLM 在連續執行 50 次後，依然會在某一筆資料中突然自作主張加上：
+          <br><code>好的！這是為您整理的 JSON 結果：{ "name": ... }</code>，或者結尾漏掉了一個雙引號。
+        </p>
+        <p>
+          只要有 1 次手滑，後端程式的 <code>JSON.parse()</code> 或 <code>json.loads()</code> 就會立即拋出語法異常，整個自動化流水線瞬間中斷！
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 大語言模型本質是「機率型自回歸生成器」，單靠 Prompt 叮嚀是機率遊戲；2026 年的工業標準是<strong>「約束解碼（Constrained Decoding）」</strong>——在 Token 輸出的瞬間直接遮罩所有違法字元，達成數學意義上的 100% 格式合規！
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>輸出控制模式</th>
+                <th>底層原理</th>
+                <th>格式合法率</th>
+                <th>主要缺點與風險</th>
+                <th>建議適用場景</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. 純 Prompt 叮嚀</strong><br>（自然語言懇求）</td>
+                <td>依靠模型對「只輸出 JSON」指令的注意力加權</td>
+                <td>約 85% ~ 92%</td>
+                <td>極易附帶客套前言、多餘 Markdown 標籤或少逗號引號</td>
+                <td>僅適合人工手動複製檢視，嚴禁直接接自動化 API</td>
+              </tr>
+              <tr>
+                <td><strong>2. Few-Shot 範例引導</strong><br>（提供 1~2 組正確 JSON）</td>
+                <td>透過少樣本範例激活模型的模式模仿本能</td>
+                <td>約 95% ~ 98%</td>
+                <td>遇到邊界極端值（如空字串、巢狀特殊字元）仍會破功</td>
+                <td>無原生 API 支援時的折衷備援手段</td>
+              </tr>
+              <tr>
+                <td><strong>3. 原生約束解碼</strong><br>（Structured Outputs）</td>
+                <td>預先編譯 JSON Schema 狀態機，在 Logits 階段強制遮罩非法 Token</td>
+                <td><strong>100%（數學保證）</strong></td>
+                <td>必須嚴格預先定義資料結構型別（如 Pydantic / Zod）</td>
+                <td><strong>企業級生產系統、自動化工作流、資料庫寫入唯一標準</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mermaid Diagram 2 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    subgraph Traditional["❌ 傳統 Prompt 自由生成 (機率採樣)"]
+        direction TB
+        P1["Prompt：要求「請只輸出合法 JSON」"] --> L1["LLM 自回歸預測下一個 Token"]
+        L1 --> R1{"機率抽樣過程"}
+        R1 -- "大多數情況" --> S1["吐出符合格式的符號"]
+        R1 -- "偶發機率抖動" --> E1["手滑吐出「好的：」或漏閉合括號 ❌\n導致系統 JSON.parse 崩潰"]
+    end
+
+    subgraph Constrained["✅ 現代約束解碼 (Constrained Decoding)"]
+        direction TB
+        P2["定義 Pydantic 模型或 JSON Schema"] --> FSM["預先編譯為語法有限狀態機 (FSM)"]
+        FSM --> L2["LLM 計算所有 Token 的候選機率 (Logits)"]
+        L2 --> Mask["🛡️ 語法動態遮罩 (Masking)\n將所有不符合當前語法的 Token 機率強制歸零"]
+        Mask --> Out["100% 保證輸出合法字元 ✅\n零格式幻覺，可直接銜接 API 與資料庫"]
+    end
+          </pre>
+          <div class="diagram-caption">圖 2：傳統自由生成 vs. 現代語法約束解碼（Constrained Decoding）底層機制對比</div>
+        </div>
+
+        <h3>實戰落地：如何用現代工具鎖定結構化輸出</h3>
+        <p>
+          在主流大模型（OpenAI GPT-4o / GPT-4o-mini、Anthropic Claude、Google Gemini 1.5/2.0）中，已經全面原生支援結構化輸出模式：
+        </p>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>Python 生態（Pydantic + Instructor / OpenAI）：</strong>
+              使用 <code>class UserReport(BaseModel)</code> 定義欄位型別（包含嚴格型別如 <code>int</code>、<code>List[str]</code>、<code>Literal["HIGH", "LOW"]</code>），在 API 呼叫時傳入 <code>response_format=UserReport</code>。任何欄位漏填或型別錯誤，底層在產生 Token 時就會被截斷導正。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>TypeScript / JavaScript 生態（Zod）：</strong>
+              使用 <code>z.object({ title: z.string(), priority: z.enum(['P0', 'P1', 'P2']) })</code> 定義架構，直接作為 Vercel AI SDK 或 LangChain 的輸出目標，保證前後端全鏈條型別安全。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>無程式碼 / 網頁對話介面下的替代方案：</strong>
+              若在 ChatGPT 網頁版或非 API 環境下，使用「偽 Schema + 負向標記自檢法（如下方 5 分鐘練習模板）」，可將手滑出錯率壓至 0.5% 以下！
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 3: Micro-Action & Prompt -->
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）：零出錯「偽 Schema 嚴格約束」資訊萃取 Prompt 模板</h2>
+      </div>
+
+      <div class="card">
+        <h3>免寫程式！在任何 AI 對話介面逼出 100% 乾淨 JSON</h3>
+        <p>
+          如果你沒有寫程式串接 API，但在日常工作中經常需要把「雜亂的客戶詢價信件、會議流水帳或長篇新聞」整理成能直接匯入 Excel 或 Notion 資料庫的格式，請直接複製下方這套<strong>「三重防禦機制（邊界隔離 + TypeScript 偽型別定義 + 嚴禁自作主張令）」</strong>提示詞模板：
+        </p>
+
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 複製 Prompt</button>
+          <pre id="dailyPrompt">【角色與任務目標】
+你是一個精準的後端資料解析引擎（Zero-Hallucination JSON Extractor）。請閱讀下方的「非結構化原始文本」，嚴格依照指定的 JSON Schema 萃取資訊，並輸出 100% 合法的純 JSON 字串。
+
+【輸入原始文本】
+"""
+[請在此貼上你的雜亂文本，例如：客戶需求來信、會議紀錄、發票明細、新聞報導]
+"""
+
+【輸出 JSON Schema 定義 (TypeScript Interface)】
+interface ExtractedPayload {
+  summary: string;              // 一句話繁體中文核心摘要 (不超過 50 字)
+  primary_topic: string;        // 主要分類主題
+  urgency_level: "HIGH" | "MEDIUM" | "LOW"; // 緊急程度枚舉值，嚴禁出現其他文字
+  action_items: Array<{         // 具體行動清單
+    owner: string;              // 負責人 (若文中未提及填 "待確認")
+    task: string;               // 具體待辦內容
+    deadline: string;           // 預估截止日期 (YYYY-MM-DD 格式，若無填 "TBD")
+  }>;
+  key_risks: string[];          // 提及的潛在風險或注意要點清單
+}
+
+【絕對執行約束（Violations are strictly prohibited）】
+1. 【嚴禁任何前言與後語】：第一個輸出的字元必須是 "{"，最後一個字元必須是 "}"。絕對不要輸出「好的，為您整理...」等任何禮貌性廢話。
+2. 【嚴禁 Markdown 程式碼區塊】：不要使用 ```json 或 ``` 包裹，直接輸出純文字字串。
+3. 【嚴禁虛構欄位】：所有字串中的雙引號必須合法跳脫，禁止出現尾隨逗號（Trailing Comma）。
+4. 若輸入文本中缺少某項資訊，請給予空陣列 [] 或 null，嚴禁自行腦補偽造事實。
+
+請立即開始解析並輸出：</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Friday Special YouTube Recommendations -->
+    <section class="section">
+      <div class="section-header">
+        <span>🎬</span>
+        <h2>【週五限定專欄】本週中文 AI YouTube 雙精選（近半年內發布・10~25 分鐘優質乾貨）</h2>
+      </div>
+      <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">
+        依據本站每週五嚴選標準：篩選<strong>過去 6 個月內發布</strong>、台灣/繁中知名頻道、超過萬次高觀看且片長介於 10～25 分鐘的優質內容，一則手把手帶你搞懂工具實戰，一則帶你掌握底層產業趨勢：
+      </p>
+
+      <div class="yt-grid">
+        <!-- Video 1: Type 1 (Tool & Workflow Practical Tutorial) -->
+        <article class="yt-card">
+          <a href="https://www.youtube.com/watch?v=omTiC4P1EAQ" target="_blank" rel="noopener" class="yt-video-container" title="點擊前往 YouTube 觀看影片">
+            <img class="yt-thumb" src="https://i.ytimg.com/vi/omTiC4P1EAQ/hqdefault.jpg" alt="Claude Cowork不用寫程式！20分鐘學完 80% Claude 完整應用！各種模型一次聽懂，免費版不再浪費Token" />
+            <div class="yt-play-overlay">
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <span class="yt-duration-badge">24:27</span>
+            </div>
+          </a>
+          <div class="yt-body">
+            <div class="yt-tags">
+              <span class="yt-tag">類型 1｜工具與應用實操教學</span>
+              <span class="yt-tag fresh">🔥 18.4 萬次觀看・近 3 個月內</span>
+            </div>
+            <div class="yt-title">Claude Cowork 不用寫程式！20 分鐘掌握 80% Claude 頂級實戰應用（模型選型 × Token 省錢密技）</div>
+            <div class="yt-meta">📺 頻道：大有牧森 Austin Chou ｜ ⏱️ 片長：24 分 27 秒 ｜ 📅 2026-08 發布</div>
+            <div class="yt-takeaways">
+              <strong>📌 為什麼推薦這支影片：</strong>
+              <ul>
+                <li><strong>非工程師也能上手的實戰天花板：</strong> 大有牧森 Austin 老師以極清晰的邏輯，手把手示範如何把 Claude 當作全能虛擬同事，徹底告別「只會用來寫信」的初階用法。</li>
+                <li><strong>精華實戰章節重點：</strong>
+                  <br>• <strong>模型選型指南：</strong> 何時用 Sonnet 進行複雜邏輯思考？何時用 Haiku 進行高速便宜處理？避免浪費每日額度與 Token。
+                  <br>• <strong>Project 知識庫與 Artifacts 協同：</strong> 如何透過內建工作區上傳專屬資料，並用即時視覺化預覽打造可互動的網頁與試算表原型。
+                  <br>• <strong>自動化與工作流串接心法：</strong> 不用寫一行代碼，也能讓 Claude 自動產出結構化報表與業務洞察。
+                </li>
+              </ul>
+            </div>
+            <a href="https://www.youtube.com/watch?v=omTiC4P1EAQ" target="_blank" rel="noopener" class="yt-btn">
+              ▶️ 前往 YouTube 觀看完整影片
+            </a>
+          </div>
+        </article>
+
+        <!-- Video 2: Type 3 (AI Tech News & Trend Deep Commentary) -->
+        <article class="yt-card">
+          <a href="https://www.youtube.com/watch?v=vtIo5cgsaio" target="_blank" rel="noopener" class="yt-video-container" title="點擊前往 YouTube 觀看影片">
+            <img class="yt-thumb" src="https://i.ytimg.com/vi/vtIo5cgsaio/hqdefault.jpg" alt="輝達和 AMD 都想要的「世界模型」是什麼？【科學關鍵字EP5】" />
+            <div class="yt-play-overlay">
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <span class="yt-duration-badge">12:09</span>
+            </div>
+          </a>
+          <div class="yt-body">
+            <div class="yt-tags">
+              <span class="yt-tag">類型 3｜AI 科技新聞與趨勢深度評論</span>
+              <span class="yt-tag fresh">🔥 7.7 萬次觀看・4 週前發布</span>
+            </div>
+            <div class="yt-title">輝達與 AMD 晶片巨頭都在搶的「世界模型（World Model）」究竟是什麼？從文字推理到實體 AI 的關鍵躍進</div>
+            <div class="yt-meta">📺 頻道：PanSci 泛科學 ｜ ⏱️ 片長：12 分 09 秒 ｜ 📅 2026-10 發布</div>
+            <div class="yt-takeaways">
+              <strong>📌 為什麼推薦這支影片：</strong>
+              <ul>
+                <li><strong>看懂 2026~2027 年下一波 AI 算力主戰場：</strong> 泛科學以生動明瞭的圖解動畫，剖析為什麼當文字大模型（LLM）遇到天花板時，黃仁勳、Yann LeCun 與蘇姿丰都不約而同押注「世界模型」。</li>
+                <li><strong>核心技術概念剖析：</strong>
+                  <br>• <strong>打破語言模型虛擬局限：</strong> 為什麼單靠文字統計學無法真正理解「重力、慣性與因果律」？世界模型如何透過物理模擬具備常識。
+                  <br>• <strong>從 Sora 到具身智慧（Embodied AI）：</strong> 自動駕駛、人形機器人以及虛擬物理引擎（如 NVIDIA Omniverse）為何是世界模型的必經之路。
+                  <br>• <strong>硬體架構大變革：</strong> 晶片巨頭如何為高維度空間模擬打造全新架構晶片，為下一代 AI 基礎設施定錨。
+                </li>
+              </ul>
+            </div>
+            <a href="https://www.youtube.com/watch?v=vtIo5cgsaio" target="_blank" rel="noopener" class="yt-btn">
+              ▶️ 前往 YouTube 觀看完整影片
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // View mode responsive detection
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    // Theme toggle with localStorage persistence
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
