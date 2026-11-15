@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-15｜從 Prompt 到 Context Engineering！長上下文防迷失（Lost in the Middle）精煉術 ＆ Prompt Caching（提示詞快取）成本暴降 90% 實戰指南 - 政峰AI學習站</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .badge.hot {
+      background: rgba(251, 191, 36, 0.14);
+      color: var(--accent-amber);
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards (KPIs) */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .solution-box {
+      background: rgba(52, 211, 153, 0.08);
+      border-left: 4px solid var(--accent-emerald);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .solution-box strong {
+      color: var(--accent-emerald);
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.98rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-15（週日）</span>
+        <span class="badge hot">⚡ 上下文工程 ＆ 效能優化</span>
+        <span class="badge">💰 提示詞快取省錢心法</span>
+        <span class="badge level">⭐ 難度：入門至進階</span>
+      </div>
+      <h1>從 Prompt 到 Context Engineering！長上下文防迷失（Lost in the Middle）精煉術 ＆ Prompt Caching（提示詞快取）成本暴降 90% 實戰指南</h1>
+      <p>
+        告別只會暴力堆砌提示詞的舊思維！當模型上下文視窗（Context Window）突破百萬 Token，「迷失在中間（Lost in the Middle）」與注意力稀釋成為準確度的最大殺手。深入拆解「上下文工程（Context Engineering）」的夾心餅乾架構（Sandwich Technique）與 XML 語意骨架；並全面解密底層 KV Cache 伺服器快取機制（Prompt Caching），手把手帶你掌握「前綴命中（Prefix Matching）」編排法則，實現首字延遲減少 80%、API 成本狂降 90% 的工程級飛躍。
+      </p>
+    </header>
+
+    <!-- Quick Summary Cards (KPIs) -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">API 成本降幅</div>
+        <div class="kpi-value">90% ↓</div>
+        <div class="kpi-sub">前綴快取命中後，輸入 Token 費用直接打一折</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">首字延遲 (TTFT)</div>
+        <div class="kpi-value">80% ↓</div>
+        <div class="kpi-sub">直接復用伺服器 KV Cache，跳過數萬字矩陣重複計算</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">長文本約束遵從率</div>
+        <div class="kpi-value">98.5%</div>
+        <div class="kpi-sub">夾心餅乾架構強化尾端權重，徹底終結中段注意力盲區</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">工程思維升級</div>
+        <div class="kpi-value">全域注意力管理</div>
+        <div class="kpi-sub">從單句措辭微調，跨入有限 Attention 預算的系統配置</div>
+      </div>
+    </section>
+
+    <!-- Section: Core Concept Reading -->
+    <section class="section">
+      <div class="section-header">
+        <h2>💡 觀念導讀：為什麼「提示詞工程」正在被「上下文工程」取代？</h2>
+      </div>
+      <div class="card">
+        <p>在大型語言模型剛普及時，大家熱衷於討論「怎麼寫神級 Prompt」、「如何用祈使句讓 AI 變聰明」。然而隨著 2025~2026 年模型上下文視窗（Context Window）從早期的 4K/8K 狂飆至 128K、1M 甚至 2M Tokens，一個殘酷的工程現實浮上水面：</p>
+        
+        <div class="pain-point">
+          <strong>⚠️ 盲目迷信百萬 Context 的致命代價：</strong>
+          許多開發者與企業以為「既然模型支援 100 萬字，那我就把幾十本技術手冊、全部 API Spec、整個代碼庫一股腦塞進 Prompt 就行了」。結果換來的卻是：<strong>首字延遲長達 10~20 秒</strong>、<strong>每個月 API 帳單火箭式飆升數千美元</strong>，最致命的是——<strong>模型對夾在中間第 50 頁的關鍵規則視而不見，瘋狂產生格式幻覺與答非所問！</strong>
+        </div>
+
+        <p>前 OpenAI 創始成員、知名 AI 科學家 Andrej Karpathy 曾提出深刻見解：<strong>「LLM 本質上是一個全新的 CPU，而上下文視窗（Context Window）就是它的 RAM（隨機存取記憶體）。」</strong></p>
+        <p>當你只懂 Prompt Engineering 時，你只是在教 CPU「執行哪行指令」；而當你學會 <strong>Context Engineering（上下文工程）</strong> 時，你是在做「記憶體架構管理（Memory Architecture）」——精確決定什麼時候該載入什麼資料、如何利用硬體級快取（Prompt Caching）降低計算消耗、以及如何排布資料以最大化模型的注意力密度（Attention Allocation）！</p>
+      </div>
+    </section>
+
+    <!-- Section 1: Deep Dive - Prompt Caching -->
+    <section class="section">
+      <div class="section-header">
+        <h2>🚀 焦點一：解密 Prompt Caching（提示詞快取）機制與成本延遲暴降實戰</h2>
+      </div>
+
+      <div class="card">
+        <h3>1. 痛點剖析：多輪對話與大型背景資料的「Token 燃燒黑洞」</h3>
+        <p>假設你正在打造一個「企業合約審查 AI Agent」或「代碼庫重構助手」，你的 Prompt 結構通常長這樣：</p>
+        <ul style="padding-left: 1.4rem; color: var(--text-secondary); margin: 0.6rem 0 1rem;">
+          <li>系統基本人設與輸出法規標準：約 <strong>5,000 Tokens</strong></li>
+          <li>整部公司規範手冊或大型 API 文檔：約 <strong>45,000 Tokens</strong></li>
+          <li>用戶當前的具體提問（例如：這份合約第 3 條有違規嗎？）：約 <strong>200 Tokens</strong></li>
+        </ul>
+        <p>在傳統呼叫模式下，即使你跟 AI 連續對話 10 次，每一次提問，後端都必須將前面那 50,000 Tokens 完完整整地重新傳送給 API 伺服器，伺服器也必須將這 50,000 個詞全部重新跑一遍巨額的矩陣相乘！十輪下來，你為完全一模一樣的靜態資料重複支付了 50 萬 Tokens 的費用，且每次都要苦等數秒。</p>
+
+        <h3 style="margin-top: 1.5rem;">2. 底層原理解密：什麼是 KV Cache（鍵值快取）？</h3>
+        <p>Transformer 模型在處理文字時，會把每個 Token 投影轉化為 Query（查詢）、Key（鍵）和 Value（值）三組高維向量。其中 Key 與 Value 向量代表了該文字在上下文中的語意特徵與注意力錨點：</p>
+        <div class="solution-box">
+          <strong>🎯 KV Cache 核心原理：</strong>
+          只要一個 Prompt 的<strong>前半段（前綴 Prefix）位元組字元完全沒有改變</strong>，大模型對這段文字算出來的 Key 與 Value 向量就<strong>絕對固定</strong>！因此，雲端伺服器可以直接將計算完成的 KV 矩陣儲存在高速顯存或本地快取集群中。下一次相同前綴的請求進來時，模型「直接讀取記憶體快取」，完全跳過這數萬字的 Attention 計算，直接從最後一個動態字元開始推理！
+        </div>
+
+        <h3 style="margin-top: 1.5rem;">3. 2026 主流大模型 Prompt Caching 規則全方位盤點</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>模型平台</th>
+                <th>快取觸發方式</th>
+                <th>最低 Token 門檻</th>
+                <th>快取存活時間 (TTL)</th>
+                <th>費用降幅優勢</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Anthropic Claude 3.5 / 3.7</strong></td>
+                <td>顯式聲明（<code>cache_control: {"type": "ephemeral"}</code>）</td>
+                <td>1,024 tokens（Haiku 為 2,048）</td>
+                <td>5 分鐘（每次命中自動再續 5 分鐘）</td>
+                <td>命中後讀取費用<strong>現打 1 折（降 90%）</strong>，寫入僅多 25%</td>
+              </tr>
+              <tr>
+                <td><strong>OpenAI GPT-4o / o1 / o3</strong></td>
+                <td>隱式自動匹配（Automatic Caching）</td>
+                <td>1,024 tokens</td>
+                <td>動態演算法評估（約 5~10 分鐘未訪問釋放）</td>
+                <td>快取命中後輸入費用<strong>自動折抵 50%</strong></td>
+              </tr>
+              <tr>
+                <td><strong>DeepSeek V3 / R1</strong></td>
+                <td>隱式架構原生快取（DRAM + NVMe SSD）</td>
+                <td>64 tokens 起即有快取優勢</td>
+                <td>多級持久化快取（非活躍時降級至磁碟）</td>
+                <td>命中計費僅未命中的 <strong>10%（每百萬僅約 $0.014）</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top: 1.5rem;">4. Step-by-step 落地守則：動靜徹底解耦的「前綴命中編排法」</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <span class="step-num">1</span>
+            <div>
+              <strong>將不變的大資產「絕對置頂沉底」（Static Prefix First）：</strong>
+              把靜態的系統角色設定、大型領域標準手冊、API 格式定義、Few-Shot 示範，嚴格放置在 Prompt 的最開頭，確保這一段長度超過 1,024 Tokens，才能觸發底層快取機制。
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">2</span>
+            <div>
+              <strong>守護位元組級（Byte-level）的一致性，嚴禁污染前綴：</strong>
+              快取的比對是「字元完全吻合（Exact Prefix Match）」。千萬不要在靜態前綴中插入動態變數（例如：<code>Current Time: 2026-11-15 20:00:15</code>、隨機 Session ID 或使用者名稱）！哪怕只在開頭改了一個空格或標點符號，整段 5 萬字的快取就會瞬間「脫靶（Cache Miss）」，全部重新算過。
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">3</span>
+            <div>
+              <strong>動態變量與用戶問題「一律押後」（Dynamic Tail）：</strong>
+              用戶最新輸入的問句、每次搜尋即時抓取的微型動態資料，全部排在 Prompt 最末端。這樣前面 98% 的 Token 都能 100% 穩定命中快取！
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Mermaid Diagram 1: Prompt Caching Flowchart -->
+      <div class="diagram-box">
+        <div class="mermaid">
+flowchart TD
+    Req["使用者發送 Prompt 請求"] --> Check{"前綴長度 >= 1024 tokens<br/>且字元完全匹配？"}
+    
+    Check -- "是 (Cache Hit 命中)" --> HitFlow["直接從高速記憶體讀取 KV Cache<br/>跳過重複 Attention 矩陣計算"]
+    HitFlow --> FastOutput["⚡ 首字延遲 (TTFT) 縮減 80%<br/>💰 輸入 Token 費用現打 1 折"]
+    
+    Check -- "否 (Cache Miss 未命中)" --> MissFlow["GPU 重新跑全量 Attention 計算<br/>生成新的 Key-Value 矩陣"]
+    MissFlow --> WriteCache["將計算好的 KV 存入快取集群<br/>設置 5 分鐘 TTL 存活期"]
+    WriteCache --> NormalOutput["⏳ 正常延遲與全額計費"]
+
+    classDef hit fill:#10b98122,stroke:#10b981,stroke-width:2px;
+    classDef miss fill:#f43f5e22,stroke:#f43f5e,stroke-width:2px;
+    class FastOutput hit;
+    class NormalOutput miss;
+        </div>
+        <p class="diagram-caption">圖 1：Prompt Caching（提示詞快取）伺服器端 KV Cache 命中判斷與效能/成本分流架構圖</p>
+      </div>
+    </section>
+
+    <!-- Section 2: Deep Dive - Context Engineering & Lost-in-the-Middle -->
+    <section class="section">
+      <div class="section-header">
+        <h2>🛡️ 焦點二：破解「長文本注意力盲區」！Context Engineering 夾心餅乾架構</h2>
+      </div>
+
+      <div class="card">
+        <h3>1. 痛點剖析：迷失在中間（Lost in the Middle）的科學真相</h3>
+        <p>很多工程師在測試長文本模型時，常常遇到令人費解的現象：<strong>明明把規範寫在 Prompt 裡了，為什麼模型還是違規輸出？</strong></p>
+        <p>史丹佛大學 Nelson F. Liu 等研究者發表的重磅論文《Lost in the Middle: How Language Models Use Long Contexts》給出了科學答案：</p>
+        <div class="pain-point">
+          <strong>📉 U 型注意力曲線（U-Shaped Attention Curve）：</strong>
+          Transformer 模型的自注意力機制（Self-Attention）本質上受限於計算權重分佈。模型在評估長文本時，存在極其顯著的「首因效應（Primacy Effect）」與「近因效應（Recency Effect）」——<strong>模型對前 15%（最開頭）與後 15%（最結尾）的資訊召回率高達 90%~99%，但對於身處 35%~70% 中段的資訊，召回率可能暴跌至 50%~60%！</strong> 如果你把核心約束或安全規則隨意塞在中間，它會直接被龐大的背景資料淹沒。
+        </div>
+
+        <h3 style="margin-top: 1.5rem;">2. 破局解法：Context Engineering 三大實戰護城河</h3>
+        
+        <h4 style="color: var(--accent-secondary); margin: 0.8rem 0 0.4rem;">技術 A：夾心餅乾架構（The Sandwich Technique）</h4>
+        <p>既然模型對頭尾兩端的注意力最強，我們就將 Prompt 重新設計為「夾心餅乾」的三層結構：</p>
+        <ul style="padding-left: 1.4rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+          <li><strong>上層麵包（Top Crust）：</strong>高階角色定義、全域目標（如：你是一位資深架構師，專門審查程式碼安全性）。</li>
+          <li><strong>中間內餡（The Filling）：</strong>海量的長文本資料、參考文件、代碼庫（以 XML 標籤清晰封裝隔離）。</li>
+          <li><strong>底層麵包（Bottom Crust）：</strong><strong>再次重申關鍵約束、負向清單（Negative Constraints）與最終驗收標準</strong>（如：請務必遵循上述規則，絕不可使用已棄用的 API，嚴格輸出 JSON）。因為這一段緊鄰模型生成第一個輸出的位置，注意力權重達到最高峰！</li>
+        </ul>
+
+        <h4 style="color: var(--accent-secondary); margin: 1.2rem 0 0.4rem;">技術 B：語意骨架索引（Skeleton Indexing / Structural XML）</h4>
+        <p>不要把幾萬字的原始 Markdown 或純文字直接一股腦丟給 AI。現代前沿模型（特別是 Claude 3.5/3.7 與 GPT-4o）對 XML 標籤有強大的結構解析本能：</p>
+        <div class="solution-box">
+          <strong>🏷️ 語意標籤化（Semantic Tagging）：</strong>
+          使用 <code>&lt;system_instructions&gt;</code>、<code>&lt;documents&gt;</code>、<code>&lt;doc id="1" title="API_Spec"&gt;</code>、<code>&lt;critical_constraints&gt;</code>。並且在 <code>&lt;documents&gt;</code> 的最前方加入一份 <strong>&lt;table_of_contents&gt;（目錄索引骨架）</strong>，列出每個文檔的篇名與核心主旨。這能讓模型在處理長文時，先建立全局認知指針，大幅降低中段迷航風險。
+        </div>
+
+        <h4 style="color: var(--accent-secondary); margin: 1.2rem 0 0.4rem;">技術 C：動態上下文修剪（Dynamic Context Pruning）</h4>
+        <p>在多輪 Agent 任務中，上下文會迅速膨脹。高階 Context Engineering 不會傻傻地一直 <code>append</code> 歷史記錄，而是會在每輪執行後進行「動態狀態剪枝」：將過往已解決的工具調用原始 JSON 壓縮為一行「執行結果摘要」，僅保留當前任務未完成的依賴，讓 Context 始終保持在最高信噪比狀態。</p>
+      </div>
+
+      <!-- Mermaid Diagram 2: Context Engineering Sandwich Architecture -->
+      <div class="diagram-box">
+        <div class="mermaid">
+flowchart LR
+    subgraph Top["🍞 上層麵包：全域認知 (Top Crust)"]
+        T1["系統角色定位 (System Role)<br/>任務總目標 (Global Objective)"]
+    end
+
+    subgraph Middle["🥩 中間內餡：龐大背景 (The Filling)"]
+        M1["&lt;table_of_contents&gt; 目錄導航<br/>&lt;doc id='1'&gt; 參考長文件 / 代碼庫<br/>&lt;doc id='2'&gt; 歷史背景資料"]
+    end
+
+    subgraph Bottom["🍞 底層麵包：強約束注入 (Bottom Crust)"]
+        B1["⚠️ 關鍵限制重申 (Critical Constraints)<br/>🚫 負向清單 (Negative Rules)<br/>📋 輸出格式與驗收契約 (Output Contract)"]
+    end
+
+    Top --> Middle --> Bottom --> LLM["🤖 LLM 推理生成起點<br/>(注意力度最高點 99% 精準遵從)"]
+
+    classDef crust fill:#0284c722,stroke:#0284c7,stroke-width:2px;
+    classDef meat fill:#818cf822,stroke:#818cf8,stroke-width:2px;
+    classDef out fill:#10b98122,stroke:#10b981,stroke-width:2px;
+    class Top,Bottom crust;
+    class Middle meat;
+    class LLM out;
+        </div>
+        <p class="diagram-caption">圖 2：Context Engineering 夾心餅乾架構（Sandwich Technique）與注意力聚焦流向圖</p>
+      </div>
+    </section>
+
+    <!-- Section 3: Comprehensive Comparison Table -->
+    <section class="section">
+      <div class="section-header">
+        <h2>📊 實戰對照表：四種長文本處理範式全維度評估</h2>
+      </div>
+
+      <div class="card">
+        <p>面對多份大型文件、複雜代碼庫或長篇會議紀錄，你應該如何選擇技術手段？以下整理四大主流範式的實戰對比：</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>架構範式</th>
+                <th>核心思路</th>
+                <th>首字延遲 (TTFT)</th>
+                <th>Token 費用</th>
+                <th>中段細節精準度</th>
+                <th>最佳應用場景</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>傳統暴力塞 Prompt</strong></td>
+                <td>未經結構化，所有資料全量塞入單一請求</td>
+                <td>極慢 (8~20 秒)</td>
+                <td>極高（每次重複計費）</td>
+                <td>低（嚴重受 Lost-in-Middle 影響）</td>
+                <td>單次極短文件（&lt; 5,000 tokens）臨時問答</td>
+              </tr>
+              <tr>
+                <td><strong>Prompt Caching (快取模式)</strong></td>
+                <td>動靜解耦，將靜態大文檔錨定於前綴復用 KV</td>
+                <td>極快 (0.8~2 秒)</td>
+                <td>極低（輸入直接降 80~90%）</td>
+                <td>中~高（若搭配良好排版）</td>
+                <td>固定程式碼庫審查、法規諮詢、固定知識庫對話</td>
+              </tr>
+              <tr>
+                <td><strong>傳統向量 RAG 檢索</strong></td>
+                <td>切塊 (Chunking) + 向量相似度檢索 Top-K</td>
+                <td>快 (1~3 秒)</td>
+                <td>低（僅傳送 Top-K 碎片）</td>
+                <td>中（容易因語意割裂遺漏跨文檔因果）</td>
+                <td>百萬級海量文檔搜尋、問答搜尋引擎</td>
+              </tr>
+              <tr>
+                <td><strong>Context Engineering 精煉術<br/>(夾心餅乾 + 骨架 XML)</strong></td>
+                <td>動態剪枝 + 目錄索引 + 尾端強化約束</td>
+                <td>快 (1~2 秒，搭配快取)</td>
+                <td>極佳控制（高信噪比）</td>
+                <td>極高（98.5%+ 嚴格遵從）</td>
+                <td>複雜多輪 Agent、生產級專業合約審閱、架構重構</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Daily Micro-Action Practice -->
+    <section class="section">
+      <div class="section-header">
+        <h2>🎯 今日 5 分鐘實戰練習（Micro-Action）</h2>
+      </div>
+
+      <div class="card">
+        <h3>立即可用！【夾心餅乾架構 ＆ XML 骨架防遺忘】通用實戰 Prompt 模板</h3>
+        <p>無論你使用的是 ChatGPT、Claude 3.5/3.7、Google Gemini 還是本機 Ollama，當你需要將超過 3 萬字的多份文檔、長篇會議紀錄或大量程式碼餵給 AI 時，直接套用下方這套<strong>夾心餅乾結構化模板</strong>。它結合了「頂部角色錨定」、「XML 資料邊界」、「目錄導引」與「尾端近因約束重申」，保證讓 AI 的注意力始終聚焦在關鍵驗收標準上：</p>
+
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 一鍵複製 Prompt 模板</button>
+          <pre><code id="dailyPrompt">&lt;system_role&gt;
+你是一位世界級的資深知識分析師與系統架構顧問。你的職責是依據下方提供的全量文檔內容，進行全面、嚴謹、無遺漏的交叉洞察與執行方案產出。
+&lt;/system_role&gt;
+
+&lt;documents&gt;
+  &lt;!-- 提示：若文檔較多，請在最前方加上這段目錄索引骨架 --&gt;
+  &lt;table_of_contents&gt;
+    - Document 1: [填入文檔 1 名稱，例如：2026 年度系統架構升級白皮書]
+    - Document 2: [填入文檔 2 名稱，例如：Q3 線上災情檢討會議紀錄與根因分析]
+  &lt;/table_of_contents&gt;
+
+  &lt;document id="1" title="[文檔 1 名稱]"&gt;
+    [請在此貼上第一份長文本、合約條款或代碼內容...]
+  &lt;/document&gt;
+
+  &lt;document id="2" title="[文檔 2 名稱]"&gt;
+    [請在此貼上第二份長文本、會議紀錄或 API 文件...]
+  &lt;/document&gt;
+&lt;/documents&gt;
+
+&lt;!-- ========================================================
+     【關鍵：底層麵包（Bottom Crust）近因約束重申區塊】
+     將最嚴格的業務邊界與輸出規格置於最底端，緊鄰生成起點！
+     ======================================================== --&gt;
+&lt;critical_constraints&gt;
+在生成回答前，請嚴格核對並遵循以下四大原則：
+1. 【嚴格文檔約束（Groundedness）】：所有事實論述必須 100% 源自上述 &lt;documents&gt;，嚴禁憑空腦補或引入未證實的外部假設。若文檔未提及某項資訊，請直接回答「文檔未載明」，切勿強行揣測。
+2. 【引文出處標記】：每個關鍵結論或數據後方，必須以方括號明確標註出處來源（例如：[Doc 1: 架構第三節] 或 [Doc 2: 會議決策事項]）。
+3. 【負向清單（Negative Rules）】：
+   - 嚴禁輸出空泛套話或通用 AI 模板問候語。
+   - 嚴禁遺漏文檔中段（Document 1 中間與 Document 2 開頭）提及的任何異常數值。
+4. 【輸出規格契約】：
+   - 第一部分：一句話白話直擊核心問題。
+   - 第二部分：以 Markdown 表格橫向對比「現況痛點 vs 文檔指引之最佳解法」。
+   - 第三部分：繪製一段 Mermaid flowchart TD 呈現端到端落地工作流。
+&lt;/critical_constraints&gt;
+
+&lt;user_task&gt;
+【請在此處輸入你的具體任務，例如：請比對這兩份文檔，為我梳理出這次架構升級中，最可能引發線上系統崩潰的 3 個潛在隱患，並給出具體的預防措施。】
+&lt;/user_task&gt;</code></pre>
+        </div>
+
+        <div style="margin-top: 1.2rem; background: var(--bg-secondary); padding: 1rem 1.2rem; border-radius: 10px; border: 1px solid var(--border-color);">
+          <strong style="color: var(--accent-emerald);">💡 今日反思心法：</strong>
+          <span style="color: var(--text-secondary); font-size: 0.92rem;">
+            別再把 AI 當作隨便聊天的黑盒子。把它當作一台具備有限高速記憶體的精準運算機，善用「前綴快取節省重複開銷」，並用「夾心餅乾架構捍衛關鍵約束」。當你掌握了 Context Engineering，即使面對 100 萬字的巨型資料庫，AI 也能精準得像一把手術刀！
+          </span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

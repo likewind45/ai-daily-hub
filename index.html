@@ -847,18 +847,18 @@
 
         <div class="sidebar-footer">
           <span>🕗 每日 20:00 自動更新</span>
-          <span id="postCount">共 15 篇</span>
+          <span id="postCount">共 16 篇</span>
         </div>
       </aside>
 
       <!-- Right / Full Main Content Frame -->
       <section class="viewer">
         <div class="viewer-toolbar">
-          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-14（週六）｜AI 知識庫的二段進化！Agentic RAG（自我糾錯檢索）實戰 ＆ GraphRAG（知識圖譜）跨文檔全域洞察指南</span>
+          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-15（週日）｜從 Prompt 到 Context Engineering！長上下文防迷失（Lost in the Middle）精煉術 ＆ Prompt Caching（提示詞快取）成本暴降 90% 實戰指南</span>
         </div>
 
         <div class="iframe-scroll-wrapper" id="iframeWrapper">
-          <iframe id="contentFrame" src="posts/2026-11-14.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
+          <iframe id="contentFrame" src="posts/2026-11-15.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
         </div>
 
         <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
@@ -892,6 +892,14 @@
 
     // Daily posts manifest — updated automatically by the daily 20:00 automation
     const POSTS = [
+      {
+        date: "2026-11-15（週日）",
+        title: "從 Prompt 到 Context Engineering！長上下文防迷失（Lost in the Middle）精煉術 ＆ Prompt Caching（提示詞快取）成本暴降 90% 實戰指南",
+        summary: "告別只會暴力堆砌提示詞的舊思維！當模型上下文視窗（Context Window）突破百萬 Token，「迷失在中間（Lost in the Middle）」與注意力稀釋成為準確度的最大殺手。深入拆解「上下文工程（Context Engineering）」的夾心餅乾架構（Sandwich Technique）與 XML 語意骨架；並全面解密底層 KV Cache 伺服器快取機制（Prompt Caching），手把手帶你掌握「前綴命中（Prefix Matching）」編排法則，實現首字延遲減少 80%、API 成本狂降 90% 的工程級飛躍。",
+        path: "posts/2026-11-15.html",
+        hasYoutube: false,
+        tags: ["Context Engineering", "Prompt Caching", "KV Cache", "Lost in the Middle", "長上下文", "上下文工程", "Token優化"]
+      },
       {
         date: "2026-11-14（週六）",
         title: "AI 知識庫的二段進化！Agentic RAG（自我糾錯檢索）實戰 ＆ GraphRAG（知識圖譜）跨文檔全域洞察指南",
