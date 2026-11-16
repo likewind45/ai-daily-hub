@@ -847,18 +847,18 @@
 
         <div class="sidebar-footer">
           <span>🕗 每日 20:00 自動更新</span>
-          <span id="postCount">共 16 篇</span>
+          <span id="postCount">共 17 篇</span>
         </div>
       </aside>
 
       <!-- Right / Full Main Content Frame -->
       <section class="viewer">
         <div class="viewer-toolbar">
-          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-15（週日）｜從 Prompt 到 Context Engineering！長上下文防迷失（Lost in the Middle）精煉術 ＆ Prompt Caching（提示詞快取）成本暴降 90% 實戰指南</span>
+          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-16（週一）｜告別「憑感覺」調 Prompt！LLM-as-a-Judge（AI 裁判自動化評估）實戰 ＆ AI Guardrails（安全護欄防越獄）雙層守門指南</span>
         </div>
 
         <div class="iframe-scroll-wrapper" id="iframeWrapper">
-          <iframe id="contentFrame" src="posts/2026-11-15.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
+          <iframe id="contentFrame" src="posts/2026-11-16.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
         </div>
 
         <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
@@ -892,6 +892,14 @@
 
     // Daily posts manifest — updated automatically by the daily 20:00 automation
     const POSTS = [
+      {
+        date: "2026-11-16（週一）",
+        title: "告別「憑感覺」調 Prompt！LLM-as-a-Judge（AI 裁判自動化評估）實戰 ＆ AI Guardrails（安全護欄防越獄）雙層守門指南",
+        summary: "擺脫改了一句 Prompt 卻不知道其他 99 個場景有沒有崩壞的「盲盒調優」焦慮！全面解密企業級評估利器 LLM-as-a-Judge（以大模型為裁判）架構與去偏見（Debiasing）心法，教你打造 5 維度客觀量規（Rubrics）與黃金測試集；並深入剖析 AI Guardrails（安全護欄）的輸入過濾與輸出檢核雙層防禦體系，徹底封堵「間接提示詞注入（Prompt Injection）」與系統機密外洩！",
+        path: "posts/2026-11-16.html",
+        hasYoutube: false,
+        tags: ["LLM-as-a-Judge", "AI Evals", "AI Guardrails", "提示詞注入", "量化評估", "安全護欄", "Prompt Injection"]
+      },
       {
         date: "2026-11-15（週日）",
         title: "從 Prompt 到 Context Engineering！長上下文防迷失（Lost in the Middle）精煉術 ＆ Prompt Caching（提示詞快取）成本暴降 90% 實戰指南",
