@@ -777,7 +777,7 @@
 
     <div class="topbar-right">
       <button class="action-btn qr-btn-desktop" onclick="toggleQrModal(true)" title="手機掃碼連線">📲 手機外網連線</button>
-      <a id="openNewTabLink" href="posts/2026-11-12.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
+      <a id="openNewTabLink" href="posts/2026-11-17.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
       <button class="action-btn" id="hubThemeBtn" onclick="toggleHubTheme()">☀️ 淺色</button>
     </div>
   </header>
@@ -847,18 +847,18 @@
 
         <div class="sidebar-footer">
           <span>🕗 每日 20:00 自動更新</span>
-          <span id="postCount">共 17 篇</span>
+          <span id="postCount">共 18 篇</span>
         </div>
       </aside>
 
       <!-- Right / Full Main Content Frame -->
       <section class="viewer">
         <div class="viewer-toolbar">
-          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-16（週一）｜告別「憑感覺」調 Prompt！LLM-as-a-Judge（AI 裁判自動化評估）實戰 ＆ AI Guardrails（安全護欄防越獄）雙層守門指南</span>
+          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-17（週二）｜別再每次重教 AI 規矩！專案憲法工程（AGENTS.md / .cursorrules）實戰 ＆ 模型路由「快慢思考」降本提速指南</span>
         </div>
 
         <div class="iframe-scroll-wrapper" id="iframeWrapper">
-          <iframe id="contentFrame" src="posts/2026-11-16.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
+          <iframe id="contentFrame" src="posts/2026-11-17.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
         </div>
 
         <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
@@ -892,6 +892,14 @@
 
     // Daily posts manifest — updated automatically by the daily 20:00 automation
     const POSTS = [
+      {
+        date: "2026-11-17（週二）",
+        title: "別再每次重教 AI 規矩！專案憲法工程（AGENTS.md / .cursorrules）實戰 ＆ 模型路由「快慢思考」降本提速指南",
+        summary: "終結每次開新對話 AI 就失憶忘記團隊規範與技術棧的惡夢！深入解析「全域習慣 ➡️ 專案憲法（AGENTS.md / CLAUDE.md）➡️ Glob 條件觸發規則（.cursor/rules）」三層漸進式載入架構；並結合大腦 System 1 與 System 2 原理，拆解「意圖分流 + 級聯升級（Cascade Routing）」智慧模型路由與 Thinking Budget 調校心法，讓 80% 日常任務秒速交付、API 成本直降 70%。",
+        path: "posts/2026-11-17.html",
+        hasYoutube: false,
+        tags: ["AGENTS.md", "CLAUDE.md", "Cursor Rules", "專案憲法", "Model Routing", "快慢思考", "Thinking Budget"]
+      },
       {
         date: "2026-11-16（週一）",
         title: "告別「憑感覺」調 Prompt！LLM-as-a-Judge（AI 裁判自動化評估）實戰 ＆ AI Guardrails（安全護欄防越獄）雙層守門指南",
