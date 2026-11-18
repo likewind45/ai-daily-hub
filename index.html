@@ -777,7 +777,7 @@
 
     <div class="topbar-right">
       <button class="action-btn qr-btn-desktop" onclick="toggleQrModal(true)" title="手機掃碼連線">📲 手機外網連線</button>
-      <a id="openNewTabLink" href="posts/2026-11-17.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
+      <a id="openNewTabLink" href="posts/2026-11-18.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
       <button class="action-btn" id="hubThemeBtn" onclick="toggleHubTheme()">☀️ 淺色</button>
     </div>
   </header>
@@ -847,18 +847,18 @@
 
         <div class="sidebar-footer">
           <span>🕗 每日 20:00 自動更新</span>
-          <span id="postCount">共 18 篇</span>
+          <span id="postCount">共 19 篇</span>
         </div>
       </aside>
 
       <!-- Right / Full Main Content Frame -->
       <section class="viewer">
         <div class="viewer-toolbar">
-          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-17（週二）｜別再每次重教 AI 規矩！專案憲法工程（AGENTS.md / .cursorrules）實戰 ＆ 模型路由「快慢思考」降本提速指南</span>
+          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-18（週三）｜終結複製貼上表格崩壞！AI 文件智慧解析（Docling / MarkItDown）實戰 ＆ 測試驅動 AI 開發（AI-Native TDD + 沙盒隔離）防走鐘指南</span>
         </div>
 
         <div class="iframe-scroll-wrapper" id="iframeWrapper">
-          <iframe id="contentFrame" src="posts/2026-11-17.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
+          <iframe id="contentFrame" src="posts/2026-11-18.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
         </div>
 
         <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
@@ -892,6 +892,14 @@
 
     // Daily posts manifest — updated automatically by the daily 20:00 automation
     const POSTS = [
+      {
+        date: "2026-11-18（週三）",
+        title: "終結複製貼上表格崩壞！AI 文件智慧解析（Docling / MarkItDown）實戰 ＆ 測試驅動 AI 開發（AI-Native TDD + 沙盒隔離）防走鐘指南",
+        summary: "從「乾淨輸入」與「自動驗收」兩端夾擊 AI 工作流兩大隱形地雷！深入拆解版面感知文件解析管線，如何用 MarkItDown 與 Docling 精準還原雙欄 PDF、跨頁合併表格與 Office 雜檔成黃金 Markdown 並加上算術對帳檢查；同時導入 AI-Native TDD（先寫紅燈驗收測試再動手實作）與 Git Worktree 平行沙盒隔離術，徹底杜絕 AI 改東壞西的迴歸惡夢。",
+        path: "posts/2026-11-18.html",
+        hasYoutube: false,
+        tags: ["Docling", "MarkItDown", "AI文件解析", "Markdown", "AI-Native TDD", "Git Worktree", "防退化驗證"]
+      },
       {
         date: "2026-11-17（週二）",
         title: "別再每次重教 AI 規矩！專案憲法工程（AGENTS.md / .cursorrules）實戰 ＆ 模型路由「快慢思考」降本提速指南",

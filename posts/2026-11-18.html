@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-18｜政峰AI學習站 Daily AI Learning Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .badge.topic {
+      background: rgba(129, 140, 248, 0.14);
+      color: var(--accent-secondary);
+      border-color: rgba(129, 140, 248, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card p + p {
+      margin-top: 0.75rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .pro-tip {
+      background: rgba(52, 211, 153, 0.1);
+      border-left: 4px solid var(--accent-emerald);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 1.1rem 0;
+      font-size: 0.94rem;
+    }
+
+    .pro-tip strong {
+      color: var(--accent-emerald);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86em;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-primary);
+      padding: 0.15rem 0.42rem;
+      border-radius: 5px;
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: top;
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-18（週三）</span>
+        <span class="badge level">🎯 入門至進階：文件工程 ＆ AI 驗證工作流</span>
+        <span class="badge topic">🧩 Docling / MarkItDown × AI-Native TDD</span>
+      </div>
+      <h1>終結複製貼上表格崩壞！AI 文件智慧解析（Docling / MarkItDown）實戰 ＆ 測試驅動 AI 開發（AI-Native TDD + 沙盒隔離）防走鐘指南</h1>
+      <p>
+        用 AI 處理工作時最常遇到兩大隱形地雷：第一是「把財報 PDF、合約或簡報直接貼給 AI，結果雙欄錯亂、跨頁表格數字對不上」；第二是「請 AI 修改自動化腳本或網頁功能，它修好 B 卻悄悄把原本正常運作的 A 改壞」。今天我們從<strong>「乾淨輸入（版面感知解析）」</strong>與<strong>「自動驗收（測試先行 + 沙盒隔離）」</strong>一前一後夾擊，徹底拉高 AI 工作的可靠度！
+      </p>
+    </header>
+
+    <!-- Quick KPI Overview -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">今日核心觀念</div>
+        <div class="kpi-value">Parse First, Test First</div>
+        <div class="kpi-sub">先還原文件結構再分析；先寫驗收標準再實作</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">主題一核心工具</div>
+        <div class="kpi-value">Docling · MarkItDown</div>
+        <div class="kpi-sub">Office 檔、跨頁表格與掃描 PDF 秒轉乾淨 Markdown</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">主題二防護架構</div>
+        <div class="kpi-value">AI TDD × Git Worktree</div>
+        <div class="kpi-sub">用自動化測試取代肉眼檢查，開分身目錄平行實驗</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">預估閱讀與實作</div>
+        <div class="kpi-value">10 分鐘閱讀 + 5 分鐘練習</div>
+        <div class="kpi-sub">內含 2 張架構圖 + 2 張比較表 + 1 組萬用 Prompt</div>
+      </div>
+    </section>
+
+    <!-- Section 1: Deep Dive 1 -->
+    <section class="section">
+      <div class="section-header">
+        <span>📄</span>
+        <h2>今日實戰主題一：告別「貼 PDF 給 AI 就漏頁錯欄」！AI 文件智慧解析實戰</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼「直接複製貼上 PDF」會讓最聰明的 AI 也變笨？</h3>
+        <p>
+          PDF 在設計上不是「文章」，而是一張「電子印刷版面」——它只記錄每個字該畫在座標 <code>(x, y)</code> 的哪裡，並不知道「左欄念完才換右欄」，更不知道哪些線條組成了一個合併儲存格的表格。當你用傳統方式複製文字貼給 AI，雙欄論文會左右行交錯成亂碼、跨頁財報的欄位會整個左移一格，導致 AI 算出完全錯誤的金額。
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 垃圾進、垃圾出（Garbage In, Garbage Out）。別直接把混亂純文字塞給 AI，先透過<strong>「版面感知文件解析（Layout-Aware Parsing）」</strong>將檔案還原成結構清晰的 <code>Markdown + 表格語法</code>，AI 的分析準確率就能立刻從 60 分跳到 95 分。
+        </div>
+
+        <!-- Mermaid Diagram 1 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart LR
+    A["📁 原始混亂檔案\n雙欄 PDF / 跨頁財報 / PPT / 掃描發票"] --> B["🔍 版面區塊偵測 Layout Detection\n自動辨識標題層級、閱讀順序、頁首頁尾"]
+    B --> C{"🧭 內容類型分流"}
+    C -- "文字與多欄段落" --> D["📝 語意 Markdown 還原\n保留 H1/H2/H3 結構與頁碼錨點"]
+    C -- "複雜與跨頁表格" --> E["📊 表格結構重建 TableFormer\n對齊合併儲存格與精確行列座標"]
+    C -- "圖表與掃描影像" --> F["👁️ VLM / OCR 視覺補全\n擷取印章、手寫備註與數據趨勢"]
+    D --> G["✅ 乾淨黃金原料\n結構化 Markdown / JSON 輸出，直供 LLM 與 RAG"]
+    E --> G
+    F --> G
+          </pre>
+          <div class="diagram-caption">圖 1：現代 AI 文件智慧解析管線（Document-to-Markdown Pipeline）運作原理</div>
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">三大文件處理路線選型比較表</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>比較維度</th>
+                <th>傳統純文字抽取（Ctrl+C / PyPDF2）</th>
+                <th>直接上傳多模態大模型（Gemini / Claude 直讀）</th>
+                <th>專職文件解析引擎（MarkItDown / Docling / LlamaParse）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>雙欄與複雜版面</strong></td>
+                <td>❌ 極易左右行交錯、頁眉頁尾混入正文</td>
+                <td>✅ 表現優異，視覺模型看得懂閱讀順序</td>
+                <td>✅ 內建版面偵測模型，自動重排正確閱讀順序</td>
+              </tr>
+              <tr>
+                <td><strong>跨頁合併表格還原</strong></td>
+                <td>❌ 欄位對齊崩潰，數字常張冠李戴</td>
+                <td>⚠️ 頁數過多（如 80 頁財報）時偶爾會漏行或腦補</td>
+                <td>✅ 專為表格結構訓練（如 Docling 的 TableFormer），精準還原行列</td>
+              </tr>
+              <tr>
+                <td><strong>多格式支援度</strong></td>
+                <td>僅限純文字型 PDF</td>
+                <td>PDF、圖片為主；複雜 Excel / Word 巨集有時不支援</td>
+                <td>✅ <strong>MarkItDown</strong> 可通吃 Word / PPT / Excel / HTML / 音訊轉純淨 Markdown</td>
+              </tr>
+              <tr>
+                <td><strong>成本、隱私與批量</strong></td>
+                <td>免費、本機跑，但品質不可用</td>
+                <td>大量檔案直接餵圖 Token 費極高，且須上傳雲端</td>
+                <td>✅ Docling / MarkItDown 可 100% 本機免費批量處理，再只把精煉 Markdown 送給 AI</td>
+              </tr>
+              <tr>
+                <td><strong>最適合實戰場景</strong></td>
+                <td>僅適合極簡單的純文字合約</td>
+                <td>臨時救急：1～10 頁掃描發票、手寫單據、圖表截圖</td>
+                <td>企業大量報表對帳、長篇標案比對、RAG 知識庫前處理</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pro-tip">
+          <strong>💡 工具選型懶人包：</strong><br>
+          • <strong>日常 Office 雜檔彙整 ➡️ <code>MarkItDown</code>（微軟開源）：</strong> 一行指令就能把 <code>.docx / .pptx / .xlsx / .pdf</code> 統一轉成乾淨的 Markdown，餵給 AI 寫週報或整理簡報超快。<br>
+          • <strong>硬核 PDF 與複雜表格 ➡️ <code>Docling</code>（IBM 開源）或 <code>Mistral OCR</code>：</strong> 遇到幾十頁的銀行對帳單、雙欄學術論文或跨頁合併儲存格，交給 Docling 還原表格並輸出 JSON，準確度遠勝一般轉檔工具。
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">Step-by-step 四步驟打造「零漏頁錯欄」文件自動化流程</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>依檔案複雜度進行分流（Triage）：</strong>
+              若是乾淨的 Word / PPT / Excel，交給 <code>MarkItDown</code> 秒轉；若是掃描檔、發票照片或雙欄表格 PDF，則啟用 <code>Docling</code>（或交由具備原生 PDF 視覺理解的 Gemini / Claude 分批每 5～10 頁解析）。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>強制保留「頁碼錨點（Page Anchors）」：</strong>
+              轉成 Markdown 時，在每頁開頭插入 <code>&lt;!-- Page 12 --&gt;</code> 標記。這樣後續請 AI 摘要合約條款或抓財務數字時，可以要求它「每個結論必須標註來自第幾頁」，方便 3 秒人工覆核。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>用「結構化欄位」接住表格數據：</strong>
+              拿到還原後的 Markdown 表格後，不要只問「幫我看這份報表」，而是給定精確欄位（例如：<code>日期 | 憑證號 | 品項 | 未稅金額 | 稅額</code>），讓 AI 轉出標準 CSV 或 JSON，直接匯入 Excel。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div>
+              <strong>加上「算術總和雙重對帳（Sanity Check）」：</strong>
+              處理金額或報表時，永遠要求 AI 執行「小計加總驗證」——把抽出來的每一筆明細加起來，核對是否等於文件底部的總計（Total）。只要對不上，立刻標紅警告該頁需要人工確認！
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 2: Deep Dive 2 -->
+    <section class="section">
+      <div class="section-header">
+        <span>🧪</span>
+        <h2>今日實戰主題二：終結 AI「改東壞西」！AI-Native TDD ＆ Git Worktree 沙盒隔離術</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼請 AI 改個小功能，常變成「修好這塊、炸掉那塊」？</h3>
+        <p>
+          用 AI 寫自動化腳本、網頁工具或應用程式時，新手與老手最大的分水嶺在於<strong>「誰來當驗收裁判」</strong>。如果沒有自動化測試，每次 AI 改完檔案，它只看自己剛寫的那幾行覺得「邏輯很通」，就自信滿滿地回報「完成了！」——但其實它可能不小心刪掉原本的相容處理，導致舊功能悄悄壞掉（稱為迴歸錯誤 Regression）。
+        </p>
+        <p>
+          在 2026 年的 AI 輔助開發實務中，最穩健的做法是把經典軟體工程的<strong>「測試驅動開發（TDD）」</strong>與<strong>「平行沙盒（Git Worktree）」</strong>結合：<strong>先由你和 AI 一起定好「驗收考卷」，再讓 AI 進隔離房間寫程式、自己對答案、修到全對才准交卷！</strong>
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 不要自己當 AI 的「人工點擊測試員」！讓 AI 先寫出可自動執行的<strong>「驗收測試腳本（Test Suite）」</strong>並確認原本會失敗（紅燈），再讓它動手修改主程式直到測試全過（綠燈），從此告別越改越爛的鬼打牆。
+        </div>
+
+        <!-- Mermaid Diagram 2 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    A["📋 步驟一：人類定義需求與邊界案例\n（例如：輸入負數應報錯、折扣上限為 50%）"] --> B["🔴 步驟二：AI 先寫「紅燈」驗收測試\n建立自動化測試檔並執行一次，確認目前為失敗狀態"]
+    B --> C["🌿 步驟三：開立隔離沙盒 Git Worktree\n複製出獨立工作資料夾（可同時跑方案 A 與方案 B）"]
+    C --> D["⚙️ 步驟四：AI 實作功能並自我跑測試\n只准修改主程式，禁止偷改驗收測試條件"]
+    D --> E{"🧪 自動化測試全部綠燈？"}
+    E -- "❌ 失敗：讀取 Error Log" --> D
+    E -- "✅ 全部通過（零退化）" --> F["🛡️ 步驟五：人類檢視 Diff 並合併成果\n確認無誤後刪除臨時 Worktree 沙盒"]
+          </pre>
+          <div class="diagram-caption">圖 2：結合「測試先行（Red-Green）」與「Worktree 隔離沙盒」的零退化 AI 開發閉環</div>
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">傳統盲寫開發 vs AI-Native TDD + 沙盒隔離對比表</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>評估項目</th>
+                <th>傳統「邊聊邊改」模式（Vibe Coding 盲寫）</th>
+                <th>AI-Native TDD + 沙盒隔離模式</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>指令順序</strong></td>
+                <td>直接叫 AI「幫我寫出功能 X」，寫完自己手動打開畫面點點看</td>
+                <td><strong>先寫「會失敗的驗收測試」</strong> ➡️ 確認失敗 ➡️ 再讓 AI 寫功能跑到通過</td>
+              </tr>
+              <tr>
+                <td><strong>改東壞西（Regression）風險</strong></td>
+                <td>⚠️ 極高，改第 5 個需求時，第 1 個需求常莫名失效卻沒發現</td>
+                <td>✅ 極低，每次修改都會重跑第 1～5 個全部測試，一破立刻抓包</td>
+              </tr>
+              <tr>
+                <td><strong>防作弊與防幻覺</strong></td>
+                <td>AI 容易空口說白話：「我已檢查過沒問題」</td>
+                <td>✅ 以終端機真實 <code>Exit Code 0</code> 與測試通過截圖為唯一證據</td>
+              </tr>
+              <tr>
+                <td><strong>多方案實驗安全度</strong></td>
+                <td>直接在同個資料夾亂改，想反悔時復原超痛苦</td>
+                <td>✅ 用 <code>git worktree</code> 開獨立資料夾試跑，不喜歡整個刪掉零殘留</td>
+              </tr>
+              <tr>
+                <td><strong>非工程師也能用嗎？</strong></td>
+                <td>門檻低但後期維護像拆炸彈</td>
+                <td>✅ 可以！只要你用白話文寫出「輸入 A 應該得到 B」，測試程式全交給 AI 寫</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pro-tip">
+          <strong>⚠️ 防止 AI「作弊改考卷」的黃金鐵律：</strong><br>
+          實作階段一定要在提示詞中明確下令：<strong>「測試檔案已經鎖定為驗收標準，禁止為了讓測試通過而修改測試斷言（Assertions）或跳過測試（skip）！」</strong>否則聰明過頭的 AI 有時會偷偷把考題改簡單來拿 100 分。
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">Step-by-step 四步驟實踐零退化 AI 開發與平行實驗</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>用白話文寫 3～5 條「Given-When-Then」驗收條件：</strong>
+              動手前先列清楚邊界狀況，例如：「<em>當（When）</em>使用者上傳空白 CSV，<em>應該（Then）</em>顯示友善提示而非整頁當機」。把這些條件交給 AI，請它先轉成 <code>pytest</code>、<code>vitest</code> 或瀏覽器端對端測試腳本。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>堅持先看到「紅燈（Red）」再動工：</strong>
+              請 AI 先執行一次測試並貼出「失敗原因（紅燈）」。這一步能確認測試真的有跑到正確的邏輯，而不是永遠空轉通過的假測試。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>遇大改版就開 <code>git worktree</code> 平行沙盒：</strong>
+              想讓 Claude Code 或 Cursor 同時嘗試兩種介面風格或演算法？執行 <code>git worktree add ../feat-a -b feat-a</code> 與 <code>../feat-b</code>，兩個資料夾共享同一個 Git 倉庫卻檔案完全獨立，可以同時讓兩個 AI 平行開工互不打架！
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div>
+              <strong>全綠燈後審視差異（Diff）並收尾：</strong>
+              只保留測試全數通過且程式碼最簡潔的那一個版本合併回 <code>main</code> 分支，最後用 <code>git worktree remove ../feat-a</code> 輕鬆清理實驗現場。
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 3: Micro-Action & Prompt -->
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）：結構化對帳 ＆ 驗收測試先行模板</h2>
+      </div>
+
+      <div class="card">
+        <h3>二選一立刻上手：把「混亂文件」變黃金表格，或替「新功能」先立驗收考卷</h3>
+        <p>
+          今天挑一個你手邊最棘手的真實任務試跑看看！複製下方這組<strong>「解析校驗 ＋ TDD 驗收先行」萬用模板</strong>（可依需求留用區塊 A 或區塊 B），貼進你的 AI 助手中執行：
+        </p>
+
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 複製 Prompt</button>
+          <pre id="dailyPrompt">【任務模式選擇】（請依實際需求保留「模式 A」或「模式 B」）
+
+=== 模式 A：混亂文件／報表防漏解析與對帳 ===
+請扮演「資深資料工程與稽核專員」，解析我貼上／上傳的文件內容，並嚴格遵守以下防錯規範：
+1. 【還原結構】先將核心內容整理為結構化的繁體中文 Markdown 與標準表格，若文件有跨頁表格請自動合併為同一張完整表格，不可漏行。
+2. 【來源錨點】每一筆關鍵數據或條款，必須在後方標註來源頁碼或章節（例如 `[p.4]`）；若某欄位在原文模糊不清或疑似掃描誤植，請標記 `[⚠️ 需人工覆核]`，嚴禁自行腦補數字。
+3. 【算術驗證】針對所有金額或數量欄位，請執行「明細加總 vs 原文總計」的雙重核對，並在文末報告是否 100% 吻合（列出差額）。
+
+=== 模式 B：AI-Native TDD 先寫驗收測試、再寫程式 ===
+請扮演「資深測試驅動開發（TDD）工程師」，我們要實作的功能需求如下：
+- 功能目標：[填入你想寫的腳本、網頁功能或自動化流程]
+- 預期邊界與異常：[例如：不可輸入負數、API 超時需重試 2 次、空檔案要給友善錯誤訊息]
+
+請嚴格分「兩階段」執行（目前只先做第一階段，做完先停下等我確認）：
+1. 【第一階段：只寫驗收測試】根據上述需求，列出至少 5 個 Given-When-Then 測試案例（涵蓋正常流程、邊界值、異常情境），並寫成可執行的自動化測試檔。執行一次測試，確認目前呈現「預期中的失敗（紅燈）」。
+2. 【紅線規則】進入第二階段寫功能程式碼後，絕對禁止修改或放寬第一階段鎖定的測試斷言條件，必須誠實修改主程式直到所有測試呈全綠燈通過。</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
