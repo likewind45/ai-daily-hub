@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-19｜政峰AI學習站 Daily AI Learning Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .badge.topic {
+      background: rgba(129, 140, 248, 0.14);
+      color: var(--accent-secondary);
+      border-color: rgba(129, 140, 248, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card p + p {
+      margin-top: 0.75rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .pro-tip {
+      background: rgba(52, 211, 153, 0.1);
+      border-left: 4px solid var(--accent-emerald);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 1.1rem 0;
+      font-size: 0.94rem;
+    }
+
+    .pro-tip strong {
+      color: var(--accent-emerald);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86em;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-primary);
+      padding: 0.15rem 0.42rem;
+      border-radius: 5px;
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: top;
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-19（週四）</span>
+        <span class="badge level">🎯 入門至進階：零幻覺數據分析 ＆ 長任務執行架構</span>
+        <span class="badge topic">🧮 Code Interpreter / Text-to-SQL × Plan-and-Execute</span>
+      </div>
+      <h1>別再叫 AI「用嘴巴算數」！沙盒程式碼分析（Code Interpreter / Text-to-SQL）實戰 ＆ 長任務「先規劃＋進度交接檔」防失智指南</h1>
+      <p>
+        日常用 AI 處理試算表、統計報表或執行跨多步驟的長任務時，你一定遇過兩個經典崩潰時刻：一是「叫 AI 算幾百筆訂單加總或排名，結果它偷偷估算錯漏百出」；二是「同一個對話聊到第 15 輪，AI 開始忘記前面定好的規格、重複犯錯甚至半途斷線重來」。今天我們用<strong>「程式沙盒取代口算（PAL / Text-to-SQL）」</strong>與<strong>「規劃執行分離 ＋ 外部檢查點交接（Plan-and-Execute + PROGRESS.md）」</strong>兩大實戰架構，讓你的 AI 產出 100% 算得準、跑得完！
+      </p>
+    </header>
+
+    <!-- Quick KPI Overview -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">今日核心觀念</div>
+        <div class="kpi-value">Compute, Don't Guess</div>
+        <div class="kpi-sub">讓 AI 寫程式進沙盒跑出真數據，絕不靠字詞機率瞎猜</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">主題一核心工具</div>
+        <div class="kpi-value">Python 沙盒 · DuckDB SQL</div>
+        <div class="kpi-sub">ChatGPT / Claude 分析工具與唯讀自然語言查表</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">主題二抗遺忘架構</div>
+        <div class="kpi-value">Plan-and-Execute</div>
+        <div class="kpi-sub">外部 <code>PROGRESS.md</code> 接力，徹底終結長對話失智</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">預估閱讀與實作</div>
+        <div class="kpi-value">10 分鐘閱讀 + 5 分鐘練習</div>
+        <div class="kpi-sub">內含 2 張架構圖 + 2 張對比表 + 1 組萬用 Prompt</div>
+      </div>
+    </section>
+
+    <!-- Section 1: Deep Dive 1 -->
+    <section class="section">
+      <div class="section-header">
+        <span>🧮</span>
+        <h2>今日實戰主題一：別再叫 AI「用心算」！沙盒程式碼分析 ＆ Text-to-SQL 零幻覺數據實戰</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼問 AI「這張表總金額多少？」經常算錯，甚至每次問答案都不一樣？</h3>
+        <p>
+          很多使用者習慣把幾百行的 CSV 貼進聊天框，直接問 AI：「幫我算出各部門的平均客單價與前三名」。但大型語言模型（LLM）的本質是<strong>「下一個文字的機率預測器」</strong>，而不是計算機。當它直接「用眼睛看數字並用嘴巴吐出結果」時，只要數字超過幾十筆，注意力就會稀釋，進而出現漏行、四捨五入憑感覺、甚至直接編造一個「看起來很合理」的總金額。
+        </p>
+        <p>
+          在 AI 工程領域，破解這道死結的標準解法叫做<strong>程式輔助語言模型（PAL, Program-Aided Language Models）</strong>，也就是我們熟悉的<strong>Code Interpreter（Python 分析沙盒）</strong>與 <strong>Text-to-SQL（自然語言轉查詢語法）</strong>。核心哲學只有一句：<strong>AI 不負責算數，AI 只負責「寫出正確的計算指令」，交給 Python 或資料庫引擎算出 100% 精確答案後，再由 AI 負責寫成人話解讀！</strong>
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 把計算交給程式引擎，把解讀交給語言模型！永遠要求 AI「先在沙盒用 Python（Pandas / DuckDB）或唯讀 SQL 跑出實際統計表，附上執行程式碼與真實結果，禁止心算推測」。
+        </div>
+
+        <!-- Mermaid Diagram 1 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart LR
+    A["📂 原始數據來源\nCSV / Excel / SQLite / 業務資料庫"] --> B["🧠 第一步：結構檢視 Schema Discovery\nAI 先讀取欄位名稱、型別與前 5 筆樣本"]
+    B --> C{"🔀 選擇計算引擎"}
+    C -- "多表關聯與百萬列篩選" --> D["🗄️ Text-to-SQL 唯讀沙盒\n生成 SELECT 查詢（嚴禁寫入/刪除）"]
+    C -- "統計運算、清洗與繪圖" --> E["🐍 Python Code Interpreter\n用 Pandas / NumPy 執行精準運算"]
+    D --> F["⚙️ 隔離沙盒實際執行\n取得 100% 確定的數值結果與錯誤日誌"]
+    E --> F
+    F --> G{"✅ 執行成功且數字合理？"}
+    G -- "❌ 報錯或筆數異常" --> B
+    G -- "✅ 驗證無誤" --> H["📊 第二步：AI 白話洞察報告\n引用真實算出的數字產出結論與建議"]
+          </pre>
+          <div class="diagram-caption">圖 1：零算數幻覺的「AI 寫碼 + 沙盒執行 + 語言解讀」雙層數據分析架構</div>
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">三種 AI 數據分析模式準確度與適用場景比較表</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>比較維度</th>
+                <th>純文字直問 AI（LLM 口算模式）</th>
+                <th>Python 分析沙盒（Code Interpreter）</th>
+                <th>AI Text-to-SQL（自然語言查表）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>代表工具</strong></td>
+                <td>直接把表格文字貼入一般對話框</td>
+                <td>ChatGPT Data Analysis、Claude Analysis Tool、Gemini + Colab、Julius AI</td>
+                <td>DuckDB + AI、Vanna.ai、Metabase AI、Cursor 串接唯讀 MCP</td>
+              </tr>
+              <tr>
+                <td><strong>算數與統計準確度</strong></td>
+                <td>❌ 超過 30 列就容易漏算、錯位或編造加總</td>
+                <td>✅ <strong>100% 精確</strong>（由底層 Python / Pandas 算完才回傳）</td>
+                <td>✅ <strong>100% 精確</strong>（由資料庫引擎執行 <code>SUM/GROUP BY</code>）</td>
+              </tr>
+              <tr>
+                <td><strong>適合處理資料量</strong></td>
+                <td>僅限 20 列以內的極小清單</td>
+                <td>中小型檔案（幾千～幾十萬列 CSV / Excel）</td>
+                <td>中大型結構化資料庫（百萬列以上多表關聯 JOIN）</td>
+              </tr>
+              <tr>
+                <td><strong>常見翻車陷阱</strong></td>
+                <td>算錯卻講得頭頭是道，極難察覺</td>
+                <td>欄位名稱含空白或日期格式不統一導致跑出空值</td>
+                <td>⚠️ AI 誤解業務定義（例如「有效訂單」到底包不包含退貨？）</td>
+              </tr>
+              <tr>
+                <td><strong>必備安全護欄</strong></td>
+                <td>不建議用於任何正式財務或營運數據</td>
+                <td>檢查它寫的 Python 條件是否符合你的邏輯</td>
+                <td><strong>務必開「唯讀權限（Read-Only）」</strong>並鎖定允許查詢的資料表</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pro-tip">
+          <strong>💡 非工程師也能立刻用的神器組合：</strong><br>
+          • <strong>雲端免安裝首選：</strong> 把 Excel / CSV 直接上傳到 <strong>ChatGPT（開啟數據分析）</strong> 或 <strong>Claude（開啟 Analysis Tool）</strong>，並在指令最後加上一句「<em>請務必執行程式碼計算，不要用文字估算</em>」。<br>
+          • <strong>本機隱私大容量首選：</strong> 把機密報表放在自己電腦，用開源單檔工具 <strong>DuckDB</strong> 搭配本機 AI 寫 SQL 查詢，不用把整份客戶名單上傳到雲端也能秒查百萬列資料！
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">Step-by-step 四步驟打造「可稽核、零估算」AI 數據分析流</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>先餵「資料字典（Data Dictionary）」，再問問題：</strong>
+              上傳表格後，第一句先別急著叫它做圖表，先告訴它關鍵業務定義（例如：「<code>status = 'completed'</code> 才算成交；<code>amount</code> 欄位單位是台幣未稅」），讓 AI 先印出欄位型別與缺失值檢查報告。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>強制「先算總量基線（Baseline Check）」：</strong>
+              要求 AI 先用程式算出「總筆數、日期區間、總金額」，並與你手邊 Excel 狀態列看到的數字核對一次。只要基線對不上，後面所有切片分析都先暫停，立刻找出少讀了哪個工作表或編碼格式（UTF-8 / Big5）。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>開啟「Show Code 透明稽核模式」：</strong>
+              永遠要求 AI 列出它實際執行的 Python 或 SQL 語法（例如 <code>WHERE created_at &gt;= '2026-10-01'</code>）。就算你不精通程式，也能一眼看懂篩選條件有沒有寫反或漏掉特定分類。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div>
+              <strong>把可重複使用的分析腳本存成「一鍵週報模板」：</strong>
+              一旦驗證這段 Python 或 SQL 邏輯完全正確，請 AI 幫你把整段腳本打包留存。下週只要把新檔案丟進去跑同一段確定性程式碼，連 AI 都不用重算一次，又快又零誤差！
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 2: Deep Dive 2 -->
+    <section class="section">
+      <div class="section-header">
+        <span>🧭</span>
+        <h2>今日實戰主題二：終結「長對話失智與半途斷線」！Plan-and-Execute ＆ 進度交接檔實戰術</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼同一個 AI 對話聊太久，表現會呈現斷崖式下滑？</h3>
+        <p>
+          當你要 AI 處理一個大工程——例如「把 12 份會議錄音逐字稿整理成季度白皮書」、「把整個舊網站的 10 個頁面重構為響應式版面」，或「對 20 家競品逐一做調研彙整」——很多人會直接開一個對話視窗從頭做到尾。但實測常會發現：聊到第 10～15 輪時，AI 開始出現<strong>上下文腐化（Context Rot）</strong>：前面說好不能改的格式被改掉了、第 7 項任務被悄悄跳過、回覆越來越敷衍，最後甚至因為達到對話長度上限或網路斷線而前功盡棄。
+        </p>
+        <p>
+          頂尖 AI Agent 工作流（如 Claude Code、Manus、LangGraph 的 Deep Agents）之所以能連續穩定工作數小時不走鐘，靠的不是把記憶塞進同一個大腦，而是<strong>「規劃與執行分離（Plan-and-Execute）」＋「外部進度檢查點（External Checkpoint / PROGRESS.md）」</strong>：<strong>每次只讓「乾淨新對話」專心做完清單上的 1 個小步驟，做完就把成果與交接筆記寫進外部檔案，然後果斷換下一個新視窗接力！</strong>
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 不要把所有任務歷史都背在對話紀錄裡負重前行！把「大腦記憶」外掛成一份人機共讀的 <code>PROGRESS.md</code> 任務看板，讓每個子任務都在<strong>全新、零干擾的上下文視窗</strong>裡滿血執行。
+        </div>
+
+        <!-- Mermaid Diagram 2 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    A["🎯 接收大型複雜任務\n（例如：翻譯 10 章手冊 / 多模組開發）"] --> B["🗺️ 階段一：總架構師模式（Planner）\n拆解為 5～10 個可獨立驗收的原子里程碑"]
+    B --> C["📄 寫入外部檢查點 PROGRESS.md\n記錄：總目標、已完成項、待辦清單、關鍵約定"]
+    C --> D["🆕 階段二：開啟全新乾淨視窗（Executor）\n只餵入 PROGRESS.md ＋ 當前單一子任務"]
+    D --> E["⚡ 專注執行單一里程碑並自檢\n產出對應結果檔案或段落"]
+    E --> F["✍️ 更新 PROGRESS.md 交接狀態\n勾選 [x] 已完成，寫下「下一棒注意事項」"]
+    F --> G{"🏁 清單全部打勾完成？"}
+    G -- "還有待辦項" --> D
+    G -- "100% 完成" --> H["🎉 階段三：最終總彙整與驗收\n產出完整成品並歸檔"]
+          </pre>
+          <div class="diagram-caption">圖 2：抗上下文腐化（Context Rot）與支援斷點續傳的「Plan-and-Execute + 交接檔」接力架構</div>
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">「單一長對話硬幹」vs「Plan-and-Execute 交接檔模式」對比表</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>評估維度</th>
+                <th>單一長對話硬幹模式（從頭聊到尾）</th>
+                <th>Plan-and-Execute + 外部交接檔模式</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>後期專注度與品質</strong></td>
+                <td>⚠️ 隨著對話變長，早期規則與試錯廢話塞滿視窗，AI 越來越容易鬼打牆</td>
+                <td>✅ <strong>每一棒都是全新視窗</strong>，注意力 100% 集中在當前這一步，頭尾品質一致</td>
+              </tr>
+              <tr>
+                <td><strong>斷線／超時／Quota 耗盡恢復力</strong></td>
+                <td>❌ 一旦視窗當機或額度用完，重新解釋整個脈絡極度痛苦</td>
+                <td>✅ 隨時從 <code>PROGRESS.md</code> 最後一個打勾處無縫接續，零重工成本</td>
+              </tr>
+              <tr>
+                <td><strong>Token 費用與速度</strong></td>
+                <td>💸 每多聊一輪就把前面幾萬字重傳一次，越到後面越貴越慢</td>
+                <td>⚡ 每次只帶精簡的交接摘要與當前步驟資料，Token 消耗穩定且回應極快</td>
+              </tr>
+              <tr>
+                <td><strong>人類掌控度（Human-in-the-Loop）</strong></td>
+                <td>方向偏了要往上滑找很久才能重來</td>
+                <td>✅ 每個里程碑之間都能審閱進度，改 <code>PROGRESS.md</code> 就能即時微調路線</td>
+              </tr>
+              <tr>
+                <td><strong>適用場景</strong></td>
+                <td>10 分鐘內能搞定的單次問答或小修改</td>
+                <td>長篇報告撰寫、多檔案開發、大量文件批次整理、跨日專案推進</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pro-tip">
+          <strong>📌 一份高效率「交接檔（<code>PROGRESS.md</code>）」只需要這 4 個欄位：</strong><br>
+          1. <strong>全域不動搖約定（Invariants）：</strong> 最多 5 條鐵律（例如：用繁體中文、變數命名規則、禁止更動某資料夾）。<br>
+          2. <strong>里程碑清單（Checklist）：</strong> 用 <code>- [x]</code> 與 <code>- [ ]</code> 標註進度。<br>
+          3. <strong>已拍板決策（Decisions Log）：</strong> 已經決定好不再反覆討論的選項。<br>
+          4. <strong>給下一棒的交接便條（Next Handoff Note）：</strong> 下一位新開視窗的 AI 打開後第一秒該讀哪個檔、接著做哪一件事。
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">Step-by-step 四步驟落地「長任務接力工作法」</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>第一對話只做「總規劃師」，絕不急著動手：</strong>
+              開啟第一個對話，請 AI 先把你的大需求拆成 4～8 個「每個能在 10 分鐘內獨立驗證」的小任務（Milestones），並要求它直接輸出成一份 Markdown 格式的 <code>PROGRESS.md</code> 計畫書。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>人類花 1 分鐘審核計畫書順序：</strong>
+              檢查有沒有漏掉重要前置條件、順序對不對。修改幾行清單文字的成本極低，卻能省下後面重做 2 小時的冤枉路。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>「一項里程碑，一個乾淨新視窗」接力執行：</strong>
+              如果是寫文章或分析（使用 ChatGPT / Claude 網頁版），把 <code>PROGRESS.md</code> 貼進<strong>新對話</strong>，下令：「<em>請只執行清單中下一個未完成的 <code>[ ]</code> 任務，完成後輸出更新版的 <code>PROGRESS.md</code></em>」；如果用 Cursor / Claude Code，直接開新 Session 指向同一個檔案即可。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div>
+              <strong>收尾前加上「跨棒一致性總檢（Final Consistency Pass）」：</strong>
+              當清單全部變成 <code>[x]</code> 時，最後開一個「總編審視窗」，只把各步驟產出的最終成品（不含中間試錯過程）餵給 AI，檢查前後文風格、名詞翻譯與數據引用是否前後一致，完美交付！
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 3: Micro-Action & Prompt -->
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）：沙盒零幻覺分析 ＆ 任務規劃交接模板</h2>
+      </div>
+
+      <div class="card">
+        <h3>二選一立刻上手：把「試算表丟進沙盒精算」或把「大專案拆成接力看板」</h3>
+        <p>
+          今天挑一個你手邊的真實需求試試看！複製下方這組<strong>「沙盒算數稽核 ＋ 長任務規劃交接」雙模式 Prompt 模板</strong>（依需要保留模式 A 或模式 B），直接貼進你的 AI 工具實測：
+        </p>
+
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 複製 Prompt</button>
+          <pre id="dailyPrompt">【任務模式選擇】（請依實際需求保留「模式 A」或「模式 B」）
+
+=== 模式 A：零幻覺數據分析（強制沙盒寫碼／SQL，禁止口算）===
+請扮演「資深資料分析師」，針對我提供的檔案／資料表執行分析。為確保 100% 數值準確，請嚴格遵守以下鐵律：
+1. 【禁止心算】所有加總、平均、排序與佔比計算，必須實際撰寫 Python（Pandas / DuckDB）或唯讀 SQL 程式碼並在沙盒中執行取得真實結果，嚴禁憑文字估算。
+2. 【基線對帳】第一步請先列出「總筆數、日期範圍、關鍵數值欄位總和」與缺失值狀況，讓我與原始資料核對。
+3. 【透明稽核】回覆每個洞察結論時，請附上對應的篩選邏輯或核心查詢語法，並以繁體中文 Markdown 表格整理前 5 名與異常項目。
+4. 【我的分析問題】：[填入你想問的 2～3 個業務問題，例如：各月份退貨率變化、哪個通路毛利最高]
+
+=== 模式 B：Plan-and-Execute 長任務規劃與交接檔生成 ===
+請扮演「資深專案架構師」，我們要完成一個較大的多步驟任務：
+- 最終目標：[填入你的大型任務，例如：將 5 份產品文件整理成客戶導入手冊 / 開發一個個人記帳網頁]
+- 已知條件與限制：[例如：使用繁體中文、輸出 Markdown、風格需淺顯易懂]
+
+請先「不要急著開始寫最終成品」，只幫我完成以下兩件事：
+1. 將任務拆解為 5～7 個「可獨立執行且有明確驗收標準」的原子里程碑（Milestones）。
+2. 產出一份可直接存檔的 `PROGRESS.md` 交接看板，包含：【全域不動搖約定】、【里程碑勾選清單 `- [ ]`】、【已拍板決策】與【第一棒執行指令】，方便我後續用「每個步驟開新視窗」的方式接力完成。</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
