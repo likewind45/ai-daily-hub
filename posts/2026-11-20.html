@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-20｜政峰AI學習站 Daily AI Learning Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.friday {
+      background: rgba(251, 113, 133, 0.14);
+      color: var(--accent-rose);
+      border-color: rgba(251, 113, 133, 0.3);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card p + p {
+      margin-top: 0.75rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .pro-tip {
+      background: rgba(52, 211, 153, 0.1);
+      border-left: 4px solid var(--accent-emerald);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 1.1rem 0;
+      font-size: 0.94rem;
+    }
+
+    .pro-tip strong {
+      color: var(--accent-emerald);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86em;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-primary);
+      padding: 0.15rem 0.42rem;
+      border-radius: 5px;
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    /* YouTube Recommendations Grid */
+    .yt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.4rem;
+    }
+
+    .yt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
+    }
+
+    .yt-video-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      display: block;
+      overflow: hidden;
+      text-decoration: none;
+    }
+
+    .yt-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .yt-video-container:hover .yt-thumb {
+      transform: scale(1.04);
+      filter: brightness(0.85);
+    }
+
+    .yt-play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.15) 100%);
+    }
+
+    .yt-play-btn {
+      width: 68px;
+      height: 48px;
+      background: rgba(255, 0, 0, 0.92);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .yt-video-container:hover .yt-play-btn {
+      transform: scale(1.1);
+      background: #ff0000;
+    }
+
+    .yt-play-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: #ffffff;
+      margin-left: 3px;
+    }
+
+    .yt-duration-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .yt-body {
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .yt-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .yt-tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+      background: rgba(129, 140, 248, 0.15);
+      color: var(--accent-secondary);
+    }
+
+    .yt-tag.fresh {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--accent-emerald);
+    }
+
+    .yt-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.45;
+    }
+
+    .yt-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .yt-takeaways {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.15rem;
+      flex: 1;
+    }
+
+    .yt-takeaways ul {
+      padding-left: 1.15rem;
+      margin-top: 0.4rem;
+      color: var(--text-secondary);
+    }
+
+    .yt-takeaways li {
+      margin-bottom: 0.35rem;
+    }
+
+    .yt-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.65rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+
+    .yt-btn:hover {
+      opacity: 0.92;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-grid {
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-body {
+      padding: 1.1rem 1.05rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+      .yt-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-20（週五）</span>
+        <span class="badge level">🎯 入門至進階：工具與實戰應用</span>
+        <span class="badge friday">🎬 附週五 YouTube 雙精選專欄</span>
+      </div>
+      <h1>告別「一次餵百頁就漏重點」！AI 大量文件 Map-Reduce 批次處理管線 ＆ 規格驅動 Vibe Coding（SDD）防爛尾實戰</h1>
+      <p>
+        今天的兩大實戰主題分別鎖定「高精準度大量資料處理」與「零基礎做 App 不翻車」：第一招教你借鏡分散式運算的 <strong>Map-Reduce（分而治之）</strong> 管線，徹底解決一次丟 50 份文件給 AI 卻漏東漏西的困境；第二招教你用三張簡單的契約紙落實 <strong>規格驅動開發（Spec-Driven Development）</strong>，讓 Vibe Coding 不再寫到一半改 A 壞 B 變爛尾樓！文末附上本週五嚴選 2 支最新繁中 AI YouTube 乾貨。
+      </p>
+    </header>
+
+    <!-- Quick KPI Overview -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">主題一核心觀念</div>
+        <div class="kpi-value">Map-Reduce 批次管線</div>
+        <div class="kpi-sub">單份抽取標準卡 ➔ 程式計數 ➔ 跨份深度歸納</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">主題二核心觀念</div>
+        <div class="kpi-value">Spec-Driven Vibe Coding</div>
+        <div class="kpi-sub">先簽 SPEC.md 規格契約與禁區，再動手寫程式</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">週五 YouTube 雙精選</div>
+        <div class="kpi-value">PAPAYA ＆ 泛科學院</div>
+        <div class="kpi-sub">零基礎許願做 App 實戰 ＋ 11 月最新旗艦模型實測</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">預估閱讀與實作</div>
+        <div class="kpi-value">14 分鐘閱讀 + 5 分鐘練習</div>
+        <div class="kpi-sub">內含 2 張架構流程圖 + 雙模式一鍵複製 Prompt</div>
+      </div>
+    </section>
+
+    <!-- Section 1: Deep Dive 1 -->
+    <section class="section">
+      <div class="section-header">
+        <span>📦</span>
+        <h2>今日實戰主題一：AI 大量文件「分而治之（Map-Reduce）」批次處理管線</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼「一次塞 50 份檔案進大視窗」，AI 反而變笨又漏看？</h3>
+        <p>
+          很多人拿到 30 份客戶訪談逐字稿、50 份廠商報價單，或一整季的客服工單時，習慣把檔案通通打包上傳到支援百萬 Token 的對話框，下令：「幫我統計大家最在意的痛點並列出前五名！」結果往往令人崩潰：AI 只挑前面與最後幾份有印象的內容回答，中間幾十份直接「視而不見」，甚至連「共有幾位客戶提到價格問題」都用猜的。
+        </p>
+        <p>
+          這背後的原因不是模型不聰明，而是「單一回合的注意力負荷過載」。解決之道非常經典卻威力驚人——借鏡大數據處理的 <strong>Map-Reduce（映射—歸納）兩階段架構</strong>：把「逐份精讀抽取」與「跨份統計歸納」徹底拆開！
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 不要叫一個 AI 在同一口氣內讀完 100 份文件兼做統計；用 <strong>Map（每份獨立抽取標準卡片）➔ 確定性彙整（去重計數）➔ Reduce（只讀卡片寫洞察）</strong>，漏看率直接歸零，成本還更省！
+        </div>
+
+        <!-- Mermaid Diagram 1 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart LR
+    Files["📂 大量原始文件\n(50 份問卷 / 合約 / 逐字稿)"] --> Split["✂️ 拆批派工\n(1 份文件 = 1 次獨立任務)"]
+    Split --> M1["⚡ Map 工人 1 (輕量快速模型)\n抽取檔案 1 ➔ 固定 JSON / 欄位卡"]
+    Split --> M2["⚡ Map 工人 2 (輕量快速模型)\n抽取檔案 2 ➔ 固定 JSON / 欄位卡"]
+    Split --> MN["⚡ Map 工人 N (輕量快速模型)\n抽取檔案 N ➔ 固定 JSON / 欄位卡"]
+    M1 --> Agg["🧮 中繼統計層\n(Excel / Python 計數與分類彙整)"]
+    M2 --> Agg
+    MN --> Agg
+    Agg --> Reduce["🧠 Reduce 總編 (旗艦推理模型)\n只讀乾淨統計與證據卡 ➔ 撰寫決策報告"]
+          </pre>
+          <div class="diagram-caption">圖 1：解決大量文件漏讀與統計幻覺的 AI Map-Reduce 三段式處理管線</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>比較維度</th>
+                <th>傳統做法：全部一次塞進對話框</th>
+                <th>一般 RAG 知識庫問答</th>
+                <th>Map-Reduce 批次管線（今日推薦）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>適合任務型態</strong></td>
+                <td>3 份以內的短文件快速瀏覽</td>
+                <td>從海量檔案中「找特定幾題答案」</td>
+                <td>必須「每一份都看過、做全景盤點與統計」</td>
+              </tr>
+              <tr>
+                <td><strong>覆蓋完整度</strong></td>
+                <td>❌ 中間段嚴重遺漏（注意力稀釋）</td>
+                <td>⚠️ 只抓 Top-K 相關片段，無法做全量計數</td>
+                <td>✅ 100% 每一份都有獨立進度與固定輸出欄位</td>
+              </tr>
+              <tr>
+                <td><strong>模型成本配比</strong></td>
+                <td>💸 每次重問都要重算幾十萬字，極貴</td>
+                <td>💰 僅檢索相關片段，成本低</td>
+                <td>🚀 Map 用便宜高速模型（Flash/Mini），Reduce 才用旗艦模型</td>
+              </tr>
+              <tr>
+                <td><strong>可稽核性</strong></td>
+                <td>很難知道某個結論出自哪一份文件</td>
+                <td>可附段落來源，但缺全域統計</td>
+                <td>✅ 每張抽取卡都綁定「檔名 + 原文金句」，隨時溯源</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">Step-by-step 四步驟落地「零程式或輕自動化的 Map-Reduce」</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>定義一張「統一格式的標準抽取卡（Map Schema）」：</strong>
+              動手前先決定每份文件只抓哪 4～5 個欄位。例如處理客戶訪談時，規定每份只輸出：<code>來源檔名</code>、<code>核心痛點標籤（限從預設 6 類選）</code>、<code>情緒分數（1~5）</code>、<code>原文金句（不超過 30 字）</code>。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>Map 階段——「一份一卡」獨立執行（人工試跑或腳本迴圈）：</strong>
+              若只有 5～10 份檔案，可用 Gemini / Claude 的「批次小窗口」或 Google Sheets AI 外掛逐列抽取；若超過 20 份，直接請 AI 幫你寫一段 30 行的 Python 迴圈（呼叫 <code>Batch API</code> 或低價 Flash 模型），逐一讀檔並把抽取卡存成一張 CSV 總表。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>中繼統計層——交給電腦算數，不讓 AI 口算：</strong>
+              一旦所有文件都變成乾淨的 CSV 欄位表，直接用 Excel 樞紐分析或 Python 算出「各痛點標籤出現次數與佔比」。這一步 100% 精準，絕不會有幻覺。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div>
+              <strong>Reduce 階段——餵進「精煉統計 ＋ 代表性金句」產出高階報告：</strong>
+              最後把這份只有幾千字的統計摘要與原文金句，交給推理最強的模型（例如 Claude 或 Gemini 旗艦版），讓它專心提煉策略洞察、撰寫管理層簡報與行動方案。
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 2: Deep Dive 2 -->
+    <section class="section">
+      <div class="section-header">
+        <span>📐</span>
+        <h2>今日實戰主題二：別讓 Vibe Coding 變成「許願爛尾樓」！規格驅動開發（SDD）實戰</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼大家一開始做 App 都很興奮，第 3 次修改後卻全盤崩壞？</h3>
+        <p>
+          今年最火紅的學習方式莫過於「Vibe Coding（氛圍寫程式）」——不會寫程式的人只要對著 Claude Code、Cursor、Lovable 或 Google AI Studio「許願」，10 分鐘就能變出一個專屬記帳 App、待辦清單或報價計算機。但幾乎每個新手都會在第 2 天撞上一堵牆：當你說「幫我多加一個篩選按鈕並改一下儲存格式」時，AI 卻順手把原本正常的版面改歪、把舊資料格式弄壞，修完 A 卻壞了 B，最後整包專案變成連 AI 自己都看不懂的「爛尾樓」。
+        </p>
+        <p>
+          問題出在：<strong>我們只給了 AI「口頭許願」，卻沒有給它「施工藍圖與禁區界線」</strong>。其實不需要會寫程式，只要借用軟體團隊最核心的 <strong>規格驅動開發（Spec-Driven Development, SDD）</strong>，把原本「邊聊邊改」改成「先簽藍圖契約、再分批施工」，任何人都能做出穩定維護的小工具！
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 別把第一句話就拿去生成程式碼！先叫 AI 當「產品訪談師」反問你 5 個問題、產出只有 1 頁的 <code>SPEC.md</code> 施工藍圖讓你確認，從此改功能只動指定模組、絕不誤傷舊功能。
+        </div>
+
+        <!-- Mermaid Diagram 2 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    Wish["💭 模糊許願\n(我想做一個個人記帳＋預算提醒 App)"] --> Interview["🎙️ AI 訪談反問補齊邊界\n(資料存哪？手機還是電腦用？不需什麼功能？)"]
+    Interview --> Spec["📄 產出 1 頁施工藍圖 SPEC.md\n(核心畫面 / 資料欄位契約 / 禁止更動清單)"]
+    Spec --> SignOff{"👤 人類點頭簽核\n藍圖是否符合想像？"}
+    SignOff -- "還缺細節或太複雜" --> Interview
+    SignOff -- "確認定案" --> Milestone["🧱 分階段施工 (一次只做 1 個模組)\nM1 資料骨架 ➔ M2 主畫面 ➔ M3 進階功能"]
+    Milestone --> Guard["🛡️ Git 快照存檔 ＋ 驗收測試\n(每過一關就存檔，改壞一鍵時光倒流)"]
+          </pre>
+          <div class="diagram-caption">圖 2：從「許願抽盲盒」升級為「可控工程交付」的規格驅動開發（SDD）閉環</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>開發習慣差異</th>
+                <th>純許願式 Vibe Coding（容易爛尾）</th>
+                <th>規格驅動開發 Spec-Driven（穩定可迭代）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>開場第一步</strong></td>
+                <td>直接叫 AI：「幫我寫一個 XX 網頁 App！」</td>
+                <td>先叫 AI 反問需求邊界，共同寫出 1 頁 <code>SPEC.md</code></td>
+              </tr>
+              <tr>
+                <td><strong>資料結構穩定度</strong></td>
+                <td>AI 每次自由發揮，欄位名稱前後對不上</td>
+                <td>在藍圖鎖死「資料格式契約」（例如 JSON 欄位名固定），絕不亂改</td>
+              </tr>
+              <tr>
+                <td><strong>新增功能風險</strong></td>
+                <td>「幫我加個搜尋框」結果整個版面跟儲存邏輯被覆寫</td>
+                <td>明確指定「僅修改 <code>SPEC.md</code> 第 3 節模組，其餘不動」</td>
+              </tr>
+              <tr>
+                <td><strong>出錯補救成本</strong></td>
+                <td>越修越爛，最後只能放棄重開新專案</td>
+                <td>搭配 Git 版本紀錄，每完成一個 Milestone 就存檔，隨時秒速回滾</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pro-tip">
+          <strong>📌 一份新手也能寫的「防爛尾 <code>SPEC.md</code>」只需這 4 段話：</strong><br>
+          1. <strong>一句話產品定義 ＆ 使用裝置：</strong> 誰在什麼情境用？（例如：我自己每天在 iPhone Safari 上花 30 秒記帳）。<br>
+          2. <strong>資料契約（Data Contract）：</strong> 每筆資料固定有哪些欄位？（例如：<code>date</code>、<code>category</code>、<code>amount</code>、<code>note</code>），資料存在瀏覽器 <code>localStorage</code> 還是雲端？<br>
+          3. <strong>明確的「不做清單（Non-Goals）」：</strong> 現階段絕對不加的功能（例如：不做登入註冊、不接金流），防止 AI 過度設計寫出一堆冗餘程式碼。<br>
+          4. <strong>3 個最小驗收情境：</strong> 打開畫面要能看到什麼？按下按鈕後資料重整頁面會不會保留？
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">Step-by-step 四步驟打造「不會爛尾的個人小工具」</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>強制「先訪談、後寫碼」：</strong>
+              打開 Claude、ChatGPT 或 Cursor 時，先明確指示：「<em>在寫任何一行程式碼之前，請先針對我的需求反問我 5 個釐清邊界的問題，並將我的回答整理成一份 <code>SPEC.md</code>。</em>」
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>用「Non-Goals（不做清單）」幫功能減肥：</strong>
+              新手最常犯的錯是第一版就想做完 10 個功能。在 <code>SPEC.md</code> 中狠心砍掉 70% 非必要功能，只留 1～2 個最核心的 MVP（最小可行產品）流程，程式碼量少一半、穩定度翻倍。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>分梯次施工 ＋ Git 版本快照：</strong>
+              讓 AI 先完成「第 1 關：畫面骨架與本地假資料測試」；你親自點開確認沒問題後，執行一次 <code>git commit</code>（或請 AI 幫你存一個版本快照），再進下一關。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div>
+              <strong>每次改版前先改 <code>SPEC.md</code>，再叫 AI 對照施工：</strong>
+              想加新功能時，先把新需求寫進 <code>SPEC.md</code>，然後在提示詞中告訴 AI：「<em>請閱讀更新後的 SPEC.md，只修改相關區塊，並確保既有的資料格式與功能不被破壞。</em>」
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 3: Micro-Action & Prompt -->
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）：Map-Reduce 抽取卡 ＆ Vibe Coding 規格訪談模板</h2>
+      </div>
+
+      <div class="card">
+        <h3>二選一立刻試跑：大量文件精準拆解，或把腦中點子變成防爛尾藍圖</h3>
+        <p>
+          今天選一個你手邊最急著解決的場景！複製下方這組<strong>「大量文件 Map-Reduce 抽取器 ＋ SDD 規格訪談師」雙模式 Prompt 模板</strong>（依需求保留模式 A 或模式 B），貼進你的 AI 實測：
+        </p>
+
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 複製 Prompt</button>
+          <pre id="dailyPrompt">【任務模式選擇】（請依實際需求保留「模式 A」或「模式 B」）
+
+=== 模式 A：Map-Reduce 單份文件標準抽取器（杜絕多文件漏讀）===
+請扮演「資深資訊萃取專家」。我有一批共 [N] 份文件需要逐一盤點，為了確保 100% 不遺漏任何一份，這是第 [X] 份（檔名/編號：[填入檔名]）。
+
+請嚴格只根據這份文件內容，輸出以下固定結構的「標準抽取卡」（繁體中文）：
+1. 【文件類型與核心結論】：用 1 句話概括（上限 40 字）。
+2. 【預設標籤分類】：請從「[填入你的 4~6 個固定標籤，如：價格問題 / 功能缺口 / 服務滿意 / 交期延遲 / 其他]」中選出最符合的 1~2 項，嚴禁自創標籤。
+3. 【關鍵數值與事實】：列出文中明確出現的金額、時間或人數；若無請填「未提及」，嚴禁猜測。
+4. 【原文證據金句】：摘錄 1 句最能代表該文件立場的原文（上限 35 字）。
+
+最後請補上一列 Markdown 單行表格（欄位：檔名 | 標籤 | 核心結論 | 關鍵數值），方便我直接複製貼進 Excel 彙整做 Reduce 統計！
+
+=== 模式 B：Vibe Coding 防爛尾「規格訪談師（Spec Interviewer）」===
+請扮演「資深產品架構師」。我想用 AI 做一個小工具／App，我的初步想法是：
+「[用 2 句話描述你想做的東西，例如：一個可以匯入每日花費、自動畫出月度預算圓餅圖的手機網頁]」
+
+⚠️ 嚴格規定：現在「禁止開始寫任何程式碼」！請先執行以下兩步：
+1. 針對這個想法，反問我 5 個最容易導致日後改版翻車的關鍵問題（例如：目標使用裝置、資料儲存方式、欄位邊界、核心操作流程、確定不做的 Non-Goals）。
+2. 等我回答完這 5 題後，再幫我整合成一份簡明清晰的 `SPEC.md`（含資料格式契約、3 個分段施工里程碑 M1~M3、以及每關的人類驗收清單），等我回覆「核准藍圖」後再從 M1 開始寫程式。</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Friday Special YouTube Recommendations -->
+    <section class="section">
+      <div class="section-header">
+        <span>🎬</span>
+        <h2>【週五限定專欄】本週中文 AI YouTube 雙精選（近半年內發布・10~25 分鐘乾貨）</h2>
+      </div>
+      <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">
+        今天是週五！為您嚴選 2 支<strong>最近 6 個月內（2026 年下半年）上傳</strong>、繁體中文發音、高觀看品質且片長 10～25 分鐘的精華影片：一支對應今日「零基礎自製 App 實作」，另一支帶您實測 11 月最新發表的 AI 旗艦模型！
+      </p>
+
+      <div class="yt-grid">
+        <!-- Video 1: Type 1 (Tool & Workflow Practical Tutorial) -->
+        <article class="yt-card">
+          <a href="https://www.youtube.com/watch?v=0VdLfs1t7dk" target="_blank" rel="noopener" class="yt-video-container" title="點擊前往 YouTube 觀看影片">
+            <img class="yt-thumb" src="https://i.ytimg.com/vi/0VdLfs1t7dk/hqdefault.jpg" alt="找不到適合自己的 App？不如乾脆自己做一個！沒有程式基礎也沒有關係，只要會「許願」就可以了喔！" />
+            <div class="yt-play-overlay">
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <span class="yt-duration-badge">17:53</span>
+            </div>
+          </a>
+          <div class="yt-body">
+            <div class="yt-tags">
+              <span class="yt-tag">類型 1｜工具與應用實操教學</span>
+              <span class="yt-tag fresh">🔥 37.1 萬次觀看・2026-09-27</span>
+            </div>
+            <div class="yt-title">找不到適合自己的 App？不如乾脆自己做一個！沒有程式基礎也沒有關係，只要會「許願」就可以了喔！</div>
+            <div class="yt-meta">📺 頻道：PAPAYA 電腦教室 ｜ ⏱️ 片長：17 分 53 秒 ｜ 📅 2026-09-27 發布</div>
+            <div class="yt-takeaways">
+              <strong>📌 為什麼推薦這支影片（完美呼應今日主題二）：</strong>
+              <ul>
+                <li><strong>非工程師也能完整走通「從許願到上線」全流程：</strong> PAPAYA 老師用最白話的節奏示範如何結合 AI、Git 版本安全網與雲端部署，做出真正能每天打開使用的專屬 App。</li>
+                <li><strong>時間軸實戰重點：</strong>
+                  <br>• <code>00:00</code> 設定專案資料夾與 <code>02:27</code> AI 設計專屬 App 圖示
+                  <br>• <code>03:17</code> 提出清晰 App 功能需求（對應規格定義）
+                  <br>• <code>05:44</code> <strong>關鍵保命招：將專案納入 Git 版本管理</strong>（改壞隨時回滾）
+                  <br>• <code>07:11</code> 雲端空間註冊、金鑰申請與 <code>11:16</code> 實機測試與迭代擴充
+                </li>
+              </ul>
+            </div>
+            <a href="https://www.youtube.com/watch?v=0VdLfs1t7dk" target="_blank" rel="noopener" class="yt-btn">
+              ▶️ 前往 YouTube 觀看完整影片
+            </a>
+          </div>
+        </article>
+
+        <!-- Video 2: Type 3 (AI Tech News & Trend Deep Commentary) -->
+        <article class="yt-card">
+          <a href="https://www.youtube.com/watch?v=NTmbr0LoZiY" target="_blank" rel="noopener" class="yt-video-container" title="點擊前往 YouTube 觀看影片">
+            <img class="yt-thumb" src="https://i.ytimg.com/vi/NTmbr0LoZiY/hqdefault.jpg" alt="Gemini 終於變聰明！Carbon、Hydrogen 到底好不好用？" />
+            <div class="yt-play-overlay">
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <span class="yt-duration-badge">10:49</span>
+            </div>
+          </a>
+          <div class="yt-body">
+            <div class="yt-tags">
+              <span class="yt-tag">類型 3｜AI 科技新聞與趨勢深度評論</span>
+              <span class="yt-tag fresh">🔥 1.7 萬次觀看・2026-11-17（本週最新！）</span>
+            </div>
+            <div class="yt-title">Gemini 終於變聰明！Carbon、Hydrogen 到底好不好用？</div>
+            <div class="yt-meta">📺 頻道：泛科學院 ｜ ⏱️ 片長：10 分 49 秒 ｜ 📅 2026-11-17 發布</div>
+            <div class="yt-takeaways">
+              <strong>📌 為什麼推薦這支影片：</strong>
+              <ul>
+                <li><strong>本週最新 11 月模型大戰實測與深度評比：</strong> 面對市場對 AI 泡沫的質疑，帶你一次看懂 Gemini 4（Hydrogen / Carbon）與 Anthropic 11 月新旗艦（Claude Fable 5.2）在真實開發場景的差距。</li>
+                <li><strong>時間軸重點：</strong>
+                  <br>• <code>00:00</code> 11 月 AI 黑天鵝與多模態模型大爆發盤點
+                  <br>• <code>01:25</code> <strong>Gemini 4 Hydrogen / Carbon 實測：</strong> 3D 九份山城生成與幻覺率觀察
+                  <br>• <code>04:48</code> <strong>Claude Fable 5.2 強項與缺點解析：</strong> 能力驚豔但 Token 成本高昂的取捨
+                  <br>• <code>06:59</code> 相同 3D 網頁遊戲生成任務：開發時間、Token 消耗與成品質感正面對決
+                </li>
+              </ul>
+            </div>
+            <a href="https://www.youtube.com/watch?v=NTmbr0LoZiY" target="_blank" rel="noopener" class="yt-btn">
+              ▶️ 前往 YouTube 觀看完整影片
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

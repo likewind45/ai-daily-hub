@@ -777,7 +777,7 @@
 
     <div class="topbar-right">
       <button class="action-btn qr-btn-desktop" onclick="toggleQrModal(true)" title="手機掃碼連線">📲 手機外網連線</button>
-      <a id="openNewTabLink" href="posts/2026-11-19.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
+      <a id="openNewTabLink" href="posts/2026-11-20.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
       <button class="action-btn" id="hubThemeBtn" onclick="toggleHubTheme()">☀️ 淺色</button>
     </div>
   </header>
@@ -847,18 +847,18 @@
 
         <div class="sidebar-footer">
           <span>🕗 每日 20:00 自動更新</span>
-          <span id="postCount">共 20 篇</span>
+          <span id="postCount">共 21 篇</span>
         </div>
       </aside>
 
       <!-- Right / Full Main Content Frame -->
       <section class="viewer">
         <div class="viewer-toolbar">
-          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-19（週四）｜別再叫 AI「用嘴巴算數」！沙盒程式碼分析（Code Interpreter / Text-to-SQL）實戰 ＆ 長任務「先規劃＋進度交接檔」防失智指南</span>
+          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-20（週五）｜告別「一次餵百頁就漏重點」！AI 大量文件 Map-Reduce 批次處理管線 ＆ 規格驅動 Vibe Coding（SDD）防爛尾實戰（附週五 YouTube 雙精選）</span>
         </div>
 
         <div class="iframe-scroll-wrapper" id="iframeWrapper">
-          <iframe id="contentFrame" src="posts/2026-11-19.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
+          <iframe id="contentFrame" src="posts/2026-11-20.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
         </div>
 
         <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
@@ -892,6 +892,14 @@
 
     // Daily posts manifest — updated automatically by the daily 20:00 automation
     const POSTS = [
+      {
+        date: "2026-11-20（週五）",
+        title: "告別「一次餵百頁就漏重點」！AI 大量文件 Map-Reduce 批次處理管線 ＆ 規格驅動 Vibe Coding（SDD）防爛尾實戰（附週五 YouTube 雙精選）",
+        summary: "徹底破解一次丟數十份文件給 AI 卻遺漏細節與算錯數量，以及 Vibe Coding 改到第 3 版就「改 A 壞 B」變爛尾樓兩大痛點！深入拆解「Map（逐份標準抽取卡）➔ 確定性程式計數 ➔ Reduce（高階洞察歸納）」三段式大量資料處理管線；並教你用 1 頁 SPEC.md 施工藍圖、資料契約與 Git 快照打造可控的 Spec-Driven 開發閉環。附本週五 YouTube 雙精選：PAPAYA 零基礎做 App 實戰 ＆ 泛科學院 11 月最新旗艦模型實測！",
+        path: "posts/2026-11-20.html",
+        hasYoutube: true,
+        tags: ["Map-Reduce", "批次處理", "Spec-Driven", "Vibe Coding", "SPEC.md", "YouTube精選", "PAPAYA", "泛科學院"]
+      },
       {
         date: "2026-11-19（週四）",
         title: "別再叫 AI「用嘴巴算數」！沙盒程式碼分析（Code Interpreter / Text-to-SQL）實戰 ＆ 長任務「先規劃＋進度交接檔」防失智指南",
