@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-23｜政峰AI學習站 Daily AI Learning Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .badge.topic {
+      background: rgba(129, 140, 248, 0.14);
+      color: var(--accent-secondary);
+      border-color: rgba(129, 140, 248, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card p + p {
+      margin-top: 0.75rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .pro-tip {
+      background: rgba(52, 211, 153, 0.1);
+      border-left: 4px solid var(--accent-emerald);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 1.1rem 0;
+      font-size: 0.94rem;
+    }
+
+    .pro-tip strong {
+      color: var(--accent-emerald);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86em;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-primary);
+      padding: 0.15rem 0.42rem;
+      border-radius: 5px;
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1.15rem;
+      margin-bottom: 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: top;
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-23（週一）</span>
+        <span class="badge level">🎯 入門至進階：Prompt 技巧 ＆ Coding 實戰</span>
+        <span class="badge topic">🧠 Reverse Prompting × 證據驅動除錯</span>
+      </div>
+      <h1>別再一次硬憋超長 Prompt！AI「雙向反問面談法（Reverse Prompting）」實戰 ＆ 終結鬼打牆「證據驅動除錯（MRE ＋ 診斷日誌）」指南</h1>
+      <p>
+        週一開工最常遇到兩個「越忙越卡」的 AI 消耗戰：第一是每次寫企劃或提需求，自己硬憋半天長 Prompt 卻還是漏掉關鍵條件，導致 AI 產出一堆「語氣完美但方向錯了」的廢話；第二是寫自動化腳本或做網頁遇到報錯，直接把 Error 貼給 AI 喊「幫我修好」，結果進入改 A 壞 B 的死亡迴圈。今天教你兩招「反直覺但省下 70% 返工時間」的實戰工作法！
+      </p>
+    </header>
+
+    <!-- Quick KPI Overview -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">今日核心觀念</div>
+        <div class="kpi-value">先問再寫 ＆ 先證後修</div>
+        <div class="kpi-sub">用 30 秒對齊假設、用真實 Log 取代盲猜補丁</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">焦點技巧一（提問術）</div>
+        <div class="kpi-value">Reverse Prompting</div>
+        <div class="kpi-sub">讓 AI 化身顧問反問 4 題選擇題，一次補齊盲點</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">焦點技巧二（除錯術）</div>
+        <div class="kpi-value">MRE ＋ 2-Strike 止血</div>
+        <div class="kpi-sub">最小重現範例 ＋ 埋點日誌，連修 2 次不過立即切斷</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">預估閱讀與實作</div>
+        <div class="kpi-value">10 分鐘閱讀 ＋ 5 分鐘練習</div>
+        <div class="kpi-sub">內含 2 張架構流程圖 ＋ 2 組比較表 ＋ 萬用模板</div>
+      </div>
+    </section>
+
+    <!-- Section 1: Deep Dive 1 -->
+    <section class="section">
+      <div class="section-header">
+        <span>💬</span>
+        <h2>今日實戰主題一：告別單向猜謎！「雙向反問面談法（Reverse Prompting）」讓 AI 幫你補齊 Prompt 盲點</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼你寫了 300 字提示詞，AI 還是交出「不合用」的答案？</h3>
+        <p>
+          心理學上有個詞叫<strong>「知識詛咒（Curse of Knowledge）」</strong>——當你想請 AI 幫忙寫一份「部門導入 AI 提案」或「做一個記帳工具」時，你腦中早就有許多默認前提（例如：預算上限、老闆最在意資安、對象是完全不懂技術的同事），但下指令時往往忘了寫出來。
+        </p>
+        <p>
+          面對空白，大型語言模型（LLM）的天性是<strong>「無論條件多缺，都會立刻腦補並自信地寫完一整篇」</strong>。結果就是你得反覆說「不對，太技術了重寫」、「不對，篇幅太長」，來回改了 5 輪反而更累。<strong>Reverse Prompting（反轉提問法／面談模式 Interview Pattern）</strong>徹底顛覆這個順序：先給 AI 一句「暫停鍵」，強制它扮演資深顧問，<strong>先反問你 3～5 個關鍵選擇題再動筆</strong>！
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 不要自己苦想「還要補充什麼背景給 AI」——直接給一句粗糙目標，並加上「<strong>在開始生成任何正式內容前，先列 4 題附預設選項的選擇題反問我</strong>」，讓 AI 主動幫你找出思考盲點！
+        </div>
+
+        <!-- Mermaid Diagram 1 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart LR
+    A["💡 1. 一句話粗糙目標\n例如：幫我寫一份 AI 工具導入簡報"] --> B["🛑 2. 觸發澄清閘門\n指令要求 AI 先暫停，掃描缺失條件"]
+    B --> C["❓ 3. AI 提出 4 題選擇題\n每題附 A/B/C 選項與預設推薦值"]
+    C --> D["⚡ 4. 人類 15 秒極速回覆\n只回：1B, 2A, 3C, 4補充預算3萬"]
+    D --> E["🎯 5. 鎖定共識一次交付\n精準產出成品，省去 4 輪無效重寫"]
+          </pre>
+          <div class="diagram-caption">圖 1：Reverse Prompting（雙向反問面談法）如何用「選擇題閘門」消除知識詛咒與盲目腦補</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>比較維度</th>
+                <th>傳統「單向硬寫 Prompt」</th>
+                <th>「雙向反問面談法（Reverse Prompting）」</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>人類起始負擔</strong></td>
+                <td>😫 高！得先絞盡腦汁把角色、對象、風格、格式一次寫全</td>
+                <td>⚡ 極低！只要講出一句白話目標（甚至用語音輸入）即可啟動</td>
+              </tr>
+              <tr>
+                <td><strong>隱藏假設處理</strong></td>
+                <td>AI 自行猜測沒講明的條件，常常猜錯方向卻照單全寫</td>
+                <td>✅ AI 主動點出「哪裡資訊不足」，將隱形假設攤在陽光下確認</td>
+              </tr>
+              <tr>
+                <td><strong>互動回覆成本</strong></td>
+                <td>看完整篇 1,500 字錯版成品後，花時間逐段打字糾正</td>
+                <td>🎯 只需回覆 <code>1A, 2C, 3推薦</code>，用做選擇題取代寫申論題</td>
+              </tr>
+              <tr>
+                <td><strong>最適合場景</strong></td>
+                <td>結構極度固定、你非常清楚規則的日常重複任務</td>
+                <td>寫重要企劃、陌生領域調研、系統需求規劃、複雜自動化設計</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">Step-by-step 四步驟落地「雙向反問工作法」</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>第一句話先下「禁止立刻交卷令」：</strong>
+              先丟出你的粗糙想法，並明確限制 AI：「<em>在你動筆產出任何正式內容之前，請先不要急著寫答案，先幫我做需求診斷。</em>」
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>強制它「出選擇題」而非「問開放式問題」：</strong>
+              如果讓 AI 隨便反問，它常會丟出 10 個很難答的大問題。務必規定：「<em>只問最關鍵的 3～5 題，每題用 A / B / C 選擇題呈現，並在最適合多數情況的選項旁標註『（AI 推薦）』。</em>」
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>用「極簡編號」回覆，或直接同意推薦項：</strong>
+              你不需要寫完整句子，只要打 <code>1B, 2A, 3D（預算約 5 萬）, 4用AI推薦</code>，15 秒就能把專案邊界對齊得一清二楚。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div>
+              <strong>先複述 3 行共識，再正式輸出成品：</strong>
+              收到你的選擇後，讓 AI 先用 3 行條列確認「本次目標、核心限制與輸出格式」，確認無誤後直接一次產出高品質初稿！
+            </div>
+          </li>
+        </ul>
+
+        <div class="pro-tip">
+          <strong>🚀 進階生產力組合拳：語音口述 ＋ Reverse Prompting</strong><br>
+          現在許多人習慣用手機或電腦語音輸入（如 Whisper / 內建聽寫）把零碎想法一口氣講給 AI 聽。語音口述通常邏輯跳躍、漏東漏西，這時只要在最後補上一句「<em>先問我 4 個選擇題確認方向再寫</em>」，就能把散亂的口語筆記瞬間收斂成條理分明的正式報告！
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Deep Dive 2 -->
+    <section class="section">
+      <div class="section-header">
+        <span>🩺</span>
+        <h2>今日實戰主題二：終結「修一個壞三個」！AI 系統化除錯與「證據驅動修復（Evidence-Driven Debugging）」</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼把 Error 貼給 AI，它常常越改越亂？</h3>
+        <p>
+          無論你是使用 Cursor、Claude Code 寫程式，還是用 ChatGPT 寫 Python / Apps Script 自動化小工具，一定遇過這個崩潰循環：程式報錯了 ➡️ 把錯誤訊息貼給 AI ➡️ 它改了一版還是錯 ➡️ 再貼回去 ➡️ 第 3 版開始它居然把你原本好好的功能刪掉，甚至捏造不存在的參數！
+        </p>
+        <p>
+          這叫做<strong>「盲猜補丁死亡迴圈（Blind-Patch Doom Loop）」</strong>。根本原因在於：AI 只看到靜態的程式碼與最後一行紅字，它<strong>看不到程式執行當下（Runtime）變數裡面到底裝了什麼值</strong>（例如是空的 <code>null</code>、格式多了一個空白、還是 API 回傳了錯誤碼）。缺證據就硬修，等於蒙著眼睛動手術。
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 遇到抓不出來的 Bug 時，千萬別對 AI 說「幫我修好」！請改口下令：「<strong>先不要改業務邏輯！列出 2 個最可能原因，並幫我加上診斷 Log，我跑完把真實輸出貼給你再修。</strong>」
+        </div>
+
+        <!-- Mermaid Diagram 2 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    Bug["🚨 程式報錯或行為不符預期"] --> Bundle["📦 1. 打包現場證據三寶\n預期行為 vs 實際結果 ＋ 完整 Stack Trace ＋ 觸發操作"]
+    Bundle --> Isolate{"🔬 2. 能否抽成 20 行以內\n最小可重現範例 (MRE)？"}
+    Isolate -- "大專案太複雜" --> MakeMRE["✂️ 請 AI 先寫 20 行獨立小腳本\n剝離外部干擾重現問題"]
+    Isolate -- "範圍已很明確" --> LogPhase["🩺 3. 埋設診斷日誌 (先不改邏輯)\nAI 提出 2 個假設 ＋ 插入 print / console.log"]
+    MakeMRE --> LogPhase
+    LogPhase --> Run["▶️ 人類執行一次並貼回真實 Log"]
+    Run --> Patch["🔧 4. 根據真實證據精準修補並驗證"]
+    Patch --> Check{"🧪 問題解決了嗎？"}
+    Check -- "已通過測試 ✅" --> Clean["🧹 移除診斷 Log 並 Git 存檔"]
+    Check -- "連續 2 輪仍失敗 ⚠️" --> Breaker["🛑 觸發 2-Strike 止血斷路器！\nGit 回退乾淨版本 ＋ 開新視窗重審現場"]
+    Breaker --> Bundle
+          </pre>
+          <div class="diagram-caption">圖 2：用「最小重現範例 (MRE) ＋ 診斷日誌埋點 ＋ 2-Strike 止血閘門」取代盲猜試錯的 AI 除錯架構</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>對比項目</th>
+                <th>傳統「盲貼報錯（Doom Loop）」</th>
+                <th>「證據驅動除錯（Evidence-Driven）」</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>給 AI 的線索</strong></td>
+                <td>只貼一句「跑不動」或截掉一半的錯誤紅字</td>
+                <td>完整報錯 ＋ 預期／實際差異 ＋ 關鍵執行變數 Log</td>
+              </tr>
+              <tr>
+                <td><strong>AI 的第一反應</strong></td>
+                <td>直接猜一個最常見原因，大改整段程式碼</td>
+                <td>先提出 2 個可驗證假設，精準鎖定變數狀態</td>
+              </tr>
+              <tr>
+                <td><strong>第 2 輪失敗後的處置</strong></td>
+                <td>在已經改歪的程式碼上繼續疊加第 3 層補丁（越來越亂）</td>
+                <td>🛑 嚴格觸發「2-Strike 回退」：退回乾淨快照、換新視窗切入</td>
+              </tr>
+              <tr>
+                <td><strong>程式碼健康度</strong></td>
+                <td>留下大量無用試錯垃圾碼與潛在新 Bug</td>
+                <td>只修改真正出問題的 1～3 行，乾淨且可追溯根因</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">Step-by-step 四步驟落地「證據驅動除錯術」</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>湊齊「現場三寶」再問 AI：</strong>
+              貼問題時固定給齊三件事：(1) <strong>我預期發生什麼</strong>（例如：按下送出要存進試算表）；(2) <strong>實際發生了什麼</strong>（例如：按鈕沒反應，Console 出現 <code>TypeError: Cannot read properties of undefined</code>）；(3) <strong>完整的錯誤堆疊（Stack Trace）</strong>，千萬別只截最後一行。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>用「最小可重現範例（MRE）」把大象關進小籠子：</strong>
+              如果整個專案有十幾個檔案，AI 很容易被不相干的程式碼分散注意力。請它幫你寫一個<strong>不靠資料庫或前端畫面、只有 20 行以內</strong>的獨立測試腳本，專門重現出問題的那段資料轉換或 API 呼叫。一旦獨立腳本能重現錯誤，修復時間通常縮短 80%。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>先埋「診斷日誌（Diagnostic Logging）」，拿到證據才動刀：</strong>
+              告訴 AI：「<em>先不要改核心程式碼，請列出 2 個最可能的故障原因，並給我幾行 <code>print()</code> 或 <code>console.log()</code>，幫我檢查關鍵變數在出錯前一刻的實際長相。</em>」你跑一次把印出的文字貼回去，AI 就能像拿到 X 光片一樣一刀切中根因。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div>
+              <strong>嚴守「2-Strike 止血規則（Two-Strike Rule）」：</strong>
+              只要同一個 Bug 讓 AI 連續修改 2 次都沒解決，<strong>立刻停手</strong>！不要賭第 3 次（上下文已經充滿錯誤試錯的雜訊）。用 Git 還原到改壞前的版本（<code>git checkout -- .</code> 或 Cursor 的 Checkpoint Restore），帶着剛剛抓到的 Log 證據<strong>開一個全新的對話視窗</strong>重新分析。
+            </div>
+          </li>
+        </ul>
+
+        <div class="pro-tip">
+          <strong>📌 非工程師也能記住的萬用除錯口訣：</strong><br>
+          下次 AI 寫的小工具或網頁壞掉時，千萬不要只打「還是錯，再改一次」；改成貼上執行結果並說：「<strong>請根據這份真實輸出，排除掉已經確定沒問題的部分，告訴我目前還缺什麼現場資訊才能 100% 定位根因？</strong>」
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Micro-Action & Prompt -->
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）：雙向反問對齊 ＆ 證據驅動除錯模板</h2>
+      </div>
+
+      <div class="card">
+        <h3>二選一立刻試跑：把「模糊想法交給 AI 反問」或用「X 光片思維抓出頑固 Bug」</h3>
+        <p>
+          今天挑一個你手邊正在卡關的工作——想寫份企劃卻不知從何補齊背景（用<strong>模式 A</strong>），或是有段腳本／自動化流程一直報錯修不好（用<strong>模式 B</strong>）。直接複製下方模板貼進 AI 對話視窗實測：
+        </p>
+
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 複製 Prompt</button>
+          <pre id="dailyPrompt">【任務模式選擇】（請依實際需求保留「模式 A」或「模式 B」）
+
+=== 模式 A：雙向反問面談法（Reverse Prompting）===
+請扮演「資深策略與執行顧問」。我有一個初步想法如下：
+- 初步目標：[填入你的粗糙想法，例如：我想做一份給業務團隊用的 AI 客戶開發指南 / 我想規劃一個週末自動化小工具]
+
+【重要執行規則】
+1. 請「先不要開始產出任何正式內容」。
+2. 先分析我的目標還缺哪些關鍵決策資訊（例如：目標受眾、預算與時間限制、交付格式、成功標準、避雷禁忌）。
+3. 針對最關鍵的 4 個缺口，設計「4 題選擇題」反問我；每題提供 A/B/C 三個具體選項，並在最適合多數情況的選項旁標註「（推薦）」，方便我用 `1A, 2C...` 在 15 秒內快速回覆。
+4. 等我回覆選項後，請先用 3 行條列複述共識，再一次交付高品質成品！
+
+=== 模式 B：證據驅動 AI 除錯（Evidence-Driven Debugging）===
+請扮演「資深除錯架構師」，協助我系統化定位以下程式／腳本問題。請嚴格遵守以下除錯紀律：
+
+【現場三寶資訊】
+- 我預期的正確行為：[填入原本應該發生什麼]
+- 實際發生的錯誤現象：[填入實際現象]
+- 完整錯誤訊息 / Stack Trace：[貼上完整報錯]
+- 相關程式碼片段：[貼上出錯附近的程式碼]
+
+【除錯步驟要求（禁止直接盲猜大改）】
+1. 【假設診斷】先根據現場資訊，列出「2 個最可能的根本原因（Root Causes）」與各自成立的條件。
+2. 【先看證據再動刀】如果現有資訊還不足以 100% 確定原因，請「先不要修改業務邏輯」，直接給我 2～4 行帶有清楚標籤的診斷 Log（`print` / `console.log`），或幫我抽成一個 20 行以內的最小可重現範例（MRE）。
+3. 等我執行並貼回真實的 Log 輸出後，再給我「最小幅度、零副作用」的精準修復程式碼與驗證方法。</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
