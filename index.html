@@ -777,7 +777,7 @@
 
     <div class="topbar-right">
       <button class="action-btn qr-btn-desktop" onclick="toggleQrModal(true)" title="手機掃碼連線">📲 手機外網連線</button>
-      <a id="openNewTabLink" href="posts/2026-11-23.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
+      <a id="openNewTabLink" href="posts/2026-11-24.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
       <button class="action-btn" id="hubThemeBtn" onclick="toggleHubTheme()">☀️ 淺色</button>
     </div>
   </header>
@@ -847,18 +847,18 @@
 
         <div class="sidebar-footer">
           <span>🕗 每日 20:00 自動更新</span>
-          <span id="postCount">共 22 篇</span>
+          <span id="postCount">共 23 篇</span>
         </div>
       </aside>
 
       <!-- Right / Full Main Content Frame -->
       <section class="viewer">
         <div class="viewer-toolbar">
-          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-23（週一）｜別再一次硬憋超長 Prompt！AI「雙向反問面談法（Reverse Prompting）」實戰 ＆ 終結鬼打牆「證據驅動除錯（MRE ＋ 診斷日誌）」指南</span>
+          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-24（週二）｜告別濃濃「AI 翻譯腔」！Few-Shot 風格指紋複製術（Style DNA）實戰 ＆ AI 代理動手不翻車「Tool Calling ＋ Dry-Run 預演機制」指南</span>
         </div>
 
         <div class="iframe-scroll-wrapper" id="iframeWrapper">
-          <iframe id="contentFrame" src="posts/2026-11-23.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
+          <iframe id="contentFrame" src="posts/2026-11-24.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
         </div>
 
         <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
@@ -892,6 +892,14 @@
 
     // Daily posts manifest — updated automatically by the daily 20:00 automation
     const POSTS = [
+      {
+        date: "2026-11-24（週二）",
+        title: "告別濃濃「AI 翻譯腔」！Few-Shot 風格指紋複製術（Style DNA）實戰 ＆ AI 代理動手不翻車「Tool Calling ＋ Dry-Run 預演機制」指南",
+        summary: "破解 AI 寫出「綜上所述、值得注意的是」制式翻譯腔（AI Slop），以及自動化工具誤寄誤刪的兩大隱憂！深入拆解用「Style DNA 風格指紋卡 ＋ 2 則好範例 ＋ 1 則反範例 ＋ 禁用詞黑名單」取代空泛形容詞的 Few-Shot 寫作引擎；並白話圖解 AI 代理 Tool Calling 思考開單與程式執行的分離原理，教你裝上「三級讀寫分級 ＋ Draft-First 草稿優先 ＋ Dry-Run 預演清單 ＋ 冪等防護」安全煞車皮。",
+        path: "posts/2026-11-24.html",
+        hasYoutube: false,
+        tags: ["Few-Shot", "Style DNA", "去AI味", "Tool Calling", "Dry-Run", "AI安全閘門", "冪等性"]
+      },
       {
         date: "2026-11-23（週一）",
         title: "別再一次硬憋超長 Prompt！AI「雙向反問面談法（Reverse Prompting）」實戰 ＆ 終結鬼打牆「證據驅動除錯（MRE ＋ 診斷日誌）」指南",
