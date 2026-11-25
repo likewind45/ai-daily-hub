@@ -777,7 +777,7 @@
 
     <div class="topbar-right">
       <button class="action-btn qr-btn-desktop" onclick="toggleQrModal(true)" title="手機掃碼連線">📲 手機外網連線</button>
-      <a id="openNewTabLink" href="posts/2026-11-24.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
+      <a id="openNewTabLink" href="posts/2026-11-25.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
       <button class="action-btn" id="hubThemeBtn" onclick="toggleHubTheme()">☀️ 淺色</button>
     </div>
   </header>
@@ -847,18 +847,18 @@
 
         <div class="sidebar-footer">
           <span>🕗 每日 20:00 自動更新</span>
-          <span id="postCount">共 23 篇</span>
+          <span id="postCount">共 24 篇</span>
         </div>
       </aside>
 
       <!-- Right / Full Main Content Frame -->
       <section class="viewer">
         <div class="viewer-toolbar">
-          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-24（週二）｜告別濃濃「AI 翻譯腔」！Few-Shot 風格指紋複製術（Style DNA）實戰 ＆ AI 代理動手不翻車「Tool Calling ＋ Dry-Run 預演機制」指南</span>
+          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-25（週三）｜別再讓 AI 只當「拍馬屁啦啦隊」！Pre-Mortem 事前驗屍與紅隊拆彈術 ＆「對話蒸餾封裝術（Chat-to-Skill）」實戰指南</span>
         </div>
 
         <div class="iframe-scroll-wrapper" id="iframeWrapper">
-          <iframe id="contentFrame" src="posts/2026-11-24.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
+          <iframe id="contentFrame" src="posts/2026-11-25.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
         </div>
 
         <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
@@ -892,6 +892,14 @@
 
     // Daily posts manifest — updated automatically by the daily 20:00 automation
     const POSTS = [
+      {
+        date: "2026-11-25（週三）",
+        title: "別再讓 AI 只當「拍馬屁啦啦隊」！Pre-Mortem 事前驗屍與紅隊拆彈術 ＆「對話蒸餾封裝術（Chat-to-Skill）」實戰指南",
+        summary: "破解 AI 內建「討好偏見（Sycophancy）」只會順風誇獎，以及費心調教 20 輪卻把好經驗沉在歷史紀錄兩大痛點！深入拆解透過「匿名盲測框 ＋ Pre-Mortem 半年慘敗假設 ＋ 三視角紅隊輪詢（財務／用戶／資安）」逼出致命盲點的決策拆彈法；並教你用「對話蒸餾封裝術（Chat-to-Skill）」抽離變數與糾錯護欄，將一次性對話打包成可複用的個人技能模組。",
+        path: "posts/2026-11-25.html",
+        hasYoutube: false,
+        tags: ["Pre-Mortem", "紅隊演練", "討好偏見", "Sycophancy", "Chat-to-Skill", "技能封裝", "Prompt工程"]
+      },
       {
         date: "2026-11-24（週二）",
         title: "告別濃濃「AI 翻譯腔」！Few-Shot 風格指紋複製術（Style DNA）實戰 ＆ AI 代理動手不翻車「Tool Calling ＋ Dry-Run 預演機制」指南",

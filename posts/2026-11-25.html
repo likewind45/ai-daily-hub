@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-25｜政峰AI學習站 Daily AI Learning Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.friday {
+      background: rgba(251, 113, 133, 0.14);
+      color: var(--accent-rose);
+      border-color: rgba(251, 113, 133, 0.3);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .badge.topic {
+      background: rgba(129, 140, 248, 0.14);
+      color: var(--accent-secondary);
+      border-color: rgba(129, 140, 248, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card p + p {
+      margin-top: 0.85rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .pro-tip {
+      background: rgba(52, 211, 153, 0.1);
+      border-left: 4px solid var(--accent-emerald);
+      padding: 0.9rem 1.15rem;
+      border-radius: 0 10px 10px 0;
+      margin-top: 1.25rem;
+      font-size: 0.94rem;
+    }
+
+    .pro-tip strong {
+      color: var(--accent-emerald);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86em;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-primary);
+      padding: 0.12rem 0.4rem;
+      border-radius: 5px;
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    /* YouTube Recommendations Grid (Reserved for Friday template compatibility) */
+    .yt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.4rem;
+    }
+
+    .yt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
+    }
+
+    .yt-video-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      display: block;
+      overflow: hidden;
+      text-decoration: none;
+    }
+
+    .yt-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .yt-video-container:hover .yt-thumb {
+      transform: scale(1.04);
+      filter: brightness(0.85);
+    }
+
+    .yt-play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.15) 100%);
+    }
+
+    .yt-play-btn {
+      width: 68px;
+      height: 48px;
+      background: rgba(255, 0, 0, 0.92);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .yt-video-container:hover .yt-play-btn {
+      transform: scale(1.1);
+      background: #ff0000;
+    }
+
+    .yt-play-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: #ffffff;
+      margin-left: 3px;
+    }
+
+    .yt-duration-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .yt-body {
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .yt-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .yt-tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+      background: rgba(129, 140, 248, 0.15);
+      color: var(--accent-secondary);
+    }
+
+    .yt-tag.fresh {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--accent-emerald);
+    }
+
+    .yt-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.45;
+    }
+
+    .yt-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .yt-takeaways {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.15rem;
+      flex: 1;
+    }
+
+    .yt-takeaways ul {
+      padding-left: 1.15rem;
+      margin-top: 0.4rem;
+      color: var(--text-secondary);
+    }
+
+    .yt-takeaways li {
+      margin-bottom: 0.35rem;
+    }
+
+    .yt-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.65rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+
+    .yt-btn:hover {
+      opacity: 0.92;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-grid {
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-body {
+      padding: 1.1rem 1.05rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+      .yt-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-25（週三）</span>
+        <span class="badge level">🎯 入門至進階：Prompt 思辨 ＆ 工作流封裝</span>
+        <span class="badge topic">🧨 Pre-Mortem 紅隊拆彈 × Chat-to-Skill 技能蒸餾</span>
+      </div>
+      <h1>別再讓 AI 只當「拍馬屁啦啦隊」！Pre-Mortem 事前驗屍與紅隊拆彈術 ＆「對話蒸餾封裝術（Chat-to-Skill）」實戰指南</h1>
+      <p>
+        今天要破解兩個高頻隱形生產力陷阱：第一是當你滿懷熱情丟出企劃或架構問 AI「這樣行嗎？」，AI 因為內建<strong>討好偏見（Sycophancy）</strong>總是熱情附和，讓你忽略致命漏洞；第二是你好不容易花 20 分鐘調教 AI 完成一項漂亮任務，關掉視窗後知識就隨風消逝，下次又得從零開始。學會<strong>「匿名紅隊拆彈」</strong>與<strong>「對話蒸餾成可複用 Skill」</strong>，讓 AI 真正成為能幫你避險、又能把經驗複利化的大腦外掛！
+      </p>
+    </header>
+
+    <!-- Quick KPI Overview -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">今日核心觀念</div>
+        <div class="kpi-value">對抗討好偏見 ＆ 經驗複利化</div>
+        <div class="kpi-sub">先逼 AI 找出死法，再把成功路徑封裝成按鈕</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">焦點技巧一（決策／思辨）</div>
+        <div class="kpi-value">Pre-Mortem ＋ 紅隊演練</div>
+        <div class="kpi-sub">假設已失敗倒推死因 ＋ 匿名審查消除立場偏誤</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">焦點技巧二（工作流／封裝）</div>
+        <div class="kpi-value">Chat-to-Skill 技能蒸餾</div>
+        <div class="kpi-sub">剔除試錯廢話，抽離變數打包成標準技能模組</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">預估閱讀與實作</div>
+        <div class="kpi-value">11 分鐘閱讀 ＋ 5 分鐘練習</div>
+        <div class="kpi-sub">內含 2 張架構流程圖 ＋ 2 組對比表 ＋ 萬用模板</div>
+      </div>
+    </section>
+
+    <!-- Section 1: Deep Dive 1 -->
+    <section class="section">
+      <div class="section-header">
+        <span>🧨</span>
+        <h2>今日實戰主題一：對抗 AI「討好偏見（Sycophancy）」！Pre-Mortem 事前驗屍 ＋ 紅隊拆彈術</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼你問 AI「我的提案好不好」，它永遠先誇你「非常有遠見」？</h3>
+        <p>
+          現代語言模型經過大量人類偏好對齊（RLHF）訓練後，往往帶有嚴重的<strong>「討好偏見（Sycophancy）」</strong>。只要你的問法透露出「這是我想出來的方案，我覺得這樣很棒對吧？」，AI 就會本能地順著你的立場找理由背書，即使這個企劃成本失控、或程式架構有單點故障風險，它也只會輕描淡寫地補一句「<em>當然，實務上仍需注意執行細節</em>」。
+        </p>
+        <p>
+          想讓 AI 真正幫你擋下災難，光寫「請客觀評估」是沒用的！業界在產品決策與系統設計上最強大的解法，是結合<strong>「匿名去立場提問（Blind Framing）」</strong>與專案管理經典的<strong>「Pre-Mortem（事前驗屍法）」</strong>：直接設定一個平行時空——「<em>假設 6 個月後這個專案徹底失敗、客戶全部流失，請站在三個不同敵對角色的立場，倒推它最可能死在哪裡？</em>」。
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 不要問 AI「這方案可不可行？」（它會順著你說可行）；要隱藏自己立場，直接下令「<strong>假設半年後已確定慘敗，請用財務長、挑剔用戶與資安稽核三種紅隊視角，寫出死因驗屍報告！</strong>」
+        </div>
+
+        <!-- Mermaid Diagram 1 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart LR
+    Bad["🙋 傳統帶有立場的問法\n我花很多心血想了這方案，你覺得好嗎？"] --> Syco["😊 觸發 AI 討好偏見\n稱讚方向正確 ＋ 忽略致命盲點"]
+    Syco --> Crash["💥 上線後踩雷\n預算爆表、流程卡死或安全漏洞"]
+    Good["🎭 1. 匿名剝離立場\n宣稱「這是外部陌生廠商的提案」"] --> Pre["⏳ 2. Pre-Mortem 事前驗屍\n設定前提：半年後此案已徹底失敗"]
+    Pre --> Red["🛡️ 3. 多角色紅隊輪詢\n財務長 / 挑剔用戶 / 執行一線同時挑刺"]
+    Red --> Fix["🔧 4. 針對 Top 3 死因補洞\n帶著預備對策安全落地"]
+          </pre>
+          <div class="diagram-caption">圖 1：如何透過「立場隔離 ＋ Pre-Mortem 事前驗屍 ＋ 紅隊輪詢」打破 AI 順風吹捧的統計慣性</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>評估維度</th>
+                <th>一般許願式詢問（「這樣寫好嗎？」）</th>
+                <th>Pre-Mortem ＋ 紅隊拆彈模式</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>AI 的心理站位</strong></td>
+                <td>當你的「啦啦隊」，努力幫你想理由證實你是對的</td>
+                <td>當「外部稽核官」，唯一 KPI 就是找出最多致命漏洞</td>
+              </tr>
+              <tr>
+                <td><strong>對盲點的揭露深度</strong></td>
+                <td>只給泛泛的「注意溝通、確保品質」等安全廢話</td>
+                <td>逼出具體場景（例如：「第 3 週 API 限流時資料會遺漏」）</td>
+              </tr>
+              <tr>
+                <td><strong>對抗使用者偏見</strong></td>
+                <td>極弱，只要用戶反駁一次，AI 就會立刻投降認錯</td>
+                <td>透過「這是競品／陌生提案」盲測框架，維持冷血客觀</td>
+              </tr>
+              <tr>
+                <td><strong>產出物價值</strong></td>
+                <td>得到情緒安慰，但上線風險完全沒降低</td>
+                <td>直接拿到「Top 3 風險清單 ＋ 對應逃生門預案」</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">Step-by-step 四步驟啟動你的「AI 紅隊拆彈會議」</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>使用「第三方盲測框（Blind Framing）」切斷情感連結：</strong>
+              永遠不要說「<em>這是我剛想出來的點子</em>」。請改寫成：「<em>以下是一份陌生外包團隊提交的提案（或程式碼架構），我懷疑裡面藏著嚴重的邏輯盲點與隱藏成本，請幫我冷靜拆解。</em>」光是換這句開場白，批評準度就先提升一半。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>強制進入「Pre-Mortem 事前驗屍」時間線：</strong>
+              要求模型跳過「優點總結」（省下 300 字客套話），直接假設<strong>「現在是 6 個月後，這項計畫已經確定失敗且團隊正在檢討原因」</strong>。當失敗變成既定事實，AI 就不再需要說服你「可能會成功」，而是全力搜刮所有會導致失敗的環節。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>指派「利益彼此衝突」的三位紅隊評審（Multi-Persona Red Team）：</strong>
+              不要只用單一角色挑毛病，請指派三個最愛找碴的視角同步掃描：
+              <br>• <strong>💰 鐵面財務與資源控管官：</strong>專門抓隱藏工時、API 帳單暴走、ROI 不划算處。
+              <br>• <strong>😤 最沒耐心的真實用戶：</strong>專門抓操作第 2 步就想放棄、名詞難懂、等待過久的體驗斷點。
+              <br>• <strong>🧨 資安與極端情境工程師（Murphy's Law）：</strong>專門測試斷網、重複點擊、惡意輸入或資料量放大 100 倍時會不會崩潰。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div>
+              <strong>收斂為「風險機率 × 致命程度」矩陣與最小修補方案：</strong>
+              最後要求 AI 挑出最致命的 <strong>Top 3 死因</strong>，並針對每一條給出「<strong>不需要推翻重做、只需花 10% 成本就能補上的防呆護欄</strong>」，讓批判立刻轉化為行動清單。
+            </div>
+          </li>
+        </ul>
+
+        <div class="pro-tip">
+          <strong>🚀 進階實戰加碼：用「正反雙模型交叉審計（Cross-Model Critique）」</strong><br>
+          如果你用 Claude 寫完企劃或程式，千萬別再用同一個對話視窗叫 Claude 自評（它會傾向認同自己剛寫的結構）！把產出貼到一個<strong>全新的 Gemini 或 ChatGPT 視窗</strong>，套用上面的紅隊檢核指令，跨模型對同一份盲點的敏銳度差異往往能幫你抓出意想不到的硬傷。
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Deep Dive 2 -->
+    <section class="section">
+      <div class="section-header">
+        <span>📦</span>
+        <h2>今日實戰主題二：別讓好 Prompt 沉在歷史紀錄！Chat-to-Skill「對話蒸餾封裝術」</h2>
+      </div>
+
+      <div class="card">
+        <h3>花 20 輪對話才調教出完美結果，下週一要重做時卻全忘了怎麼下指令？</h3>
+        <p>
+          這是所有重度 AI 使用者最常遇到的無奈循環：今天你花了半小時跟 AI 來回修正 15 輪——先叫它看格式、再提醒別漏掉日期、接著修正專有名詞、最後調整表格欄位——終於產出一份滿分的週報或資料清洗腳本。但隔了一週，當同樣的任務再度出現時，你要嘛在左邊長長的歷史對話紀錄裡大海撈針，要嘛把上次亂七八糟的對話紀錄重貼一次，連帶著把當時走錯路的廢話也重新餵給 AI！
+        </p>
+        <p>
+          在 2026 年的現代工作流中（無論是 Claude Skills / Projects、ChatGPT 自訂指令與 GPTs、Gemini Gems，還是 Cursor / Antigravity 的 Slash Command 與 <code>SKILL.md</code>），真正讓生產力產生複利效應的習慣叫做<strong>「對話蒸餾封裝術（Chat-to-Skill Distillation）」</strong>：在任務圓滿結束的最後一秒，多花 30 秒請 AI 自己當「流程提煉師」，把剛剛 15 輪對話中<strong>真正有效的規則留存下來、把試錯過程剔除、把具體個案抽換成 <code>{{變數佔位符}}</code></strong>，打包成一張一貼即用的「標準技能模組（Skill Card）」。
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 每次和 AI 經過多輪磨合成功解決一個重複性任務時，<strong>絕對不要直接關掉視窗！</strong>在最後加上一句「對話蒸餾指令」，逼 AI 自己把「黃金成功路徑」壓縮成可重複呼叫的參數化技能卡。
+        </div>
+
+        <!-- Mermaid Diagram 2 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    Chat["💬 1. 原始多輪磨合對話 (15 輪)\n包含大量試錯、糾正格式、補充遺漏規則"] --> Distill["🧪 2. 執行「對話蒸餾」掃描\n保留最終生效規則，刪除失敗嘗試與聊天廢話"]
+    Distill --> Param["🧩 3. 變數抽離 (Parameterization)\n把這次的日期、檔名、客戶名稱替換為 {{變數}}"]
+    Param --> Guard["🚧 4. 嵌入防錯邊界 (Guardrails)\n把剛才 AI 犯過的錯寫成「禁止事項清單」"]
+    Guard --> Pkg["📦 5. 輸出標準化 Skill Card\n存入 Notion / Gemini Gem / Claude Skill / Slash Command"]
+    Pkg --> Reuse["⚡ 下週一只需 10 秒觸發\n填入新變數，第一輪就達到 95 分水準"]
+          </pre>
+          <div class="diagram-caption">圖 2：從「一次性苦力對話」進化為「可重複呼叫 AI 技能模組」的四階段蒸餾管線</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>資產層級</th>
+                <th>做法描述</th>
+                <th>複用成本與穩定度</th>
+                <th>適用工具載體</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>❌ 一次性對話（Disposable Chat）</strong></td>
+                <td>做完就關掉視窗，下次重寫 Prompt 碰運氣</td>
+                <td>每次耗時 15～20 分鐘，品質時好時壞</td>
+                <td>無（沉沒於歷史紀錄）</td>
+              </tr>
+              <tr>
+                <td><strong>📝 靜態範本（Static Snippet）</strong></td>
+                <td>只複製當初成功的那一段 Prompt 存筆記</td>
+                <td>常遺漏後面幾輪才補上的糾正規則</td>
+                <td>文字片段工具、RayCast、Notion</td>
+              </tr>
+              <tr>
+                <td><strong>⚡ 參數化技能卡（Distilled Skill）</strong></td>
+                <td>包含觸發條件、<code>{{變數}}</code>、執行步驟、防錯黑名單與標準輸出範例</td>
+                <td>每次 10 秒填入新素材即可，第一輪就精準達標</td>
+                <td>Claude Skills / Projects、Gemini Gems、GPTs、<code>SKILL.md</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top: 1.3rem;">Step-by-step 四步驟完成「Chat-to-Skill 技能封裝」</h3>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>在「當場對話最尾端」直接觸發提煉：</strong>
+              千萬不要自己從頭手寫 SOP！就在你跟 AI 剛改完最後一版、心滿意足的那個對話視窗最底下，直接請它回顧整段上下文：「<em>剛剛我們花了好幾輪才達到最終這版完美結果，請幫我把這整套成功方法蒸餾成一份可重複使用的 Skill 模板。</em>」
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>自動抽取「輸入變數（Input Slots）」與「隱形糾錯規則」：</strong>
+              要求 AI 必須區分「<strong>每次會變的素材（例如 <code>{{會議逐字稿}}</code>、<code>{{目標受眾}}</code>）</strong>」與「<strong>永遠不變的規格（例如：一定要用表格、金額取到小數點後兩位）</strong>」，並特別把剛剛你在第 4 輪、第 8 輪罵過或糾正過它的錯誤，轉寫成永久的 <code>&lt;avoid_mistakes&gt;</code> 防呆規則。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>附帶「1 組最小輸出骨架（Output Skeleton）」：</strong>
+              文字描述流程常常還是會走樣，最穩的封裝技巧是在 Skill 卡片裡保留最終確認版的那張空白骨架（例如固定好的 Markdown 標題與欄位名稱），確保未來每一次啟動這個技能，輸出結構都像工廠模具一樣整齊。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div>
+              <strong>放進「10 秒可呼叫」的對應容器並加上觸發暗號：</strong>
+              <br>• <strong>一般日常文書／分析：</strong>貼進 Gemini <strong>Gem</strong>、ChatGPT <strong>GPTs</strong> 或 Claude <strong>Project</strong>，以後只要在裡面丟入新資料就會自動執行。
+              <br>• <strong>工程師／AI Agent 工作區：</strong>存成 <code>.claude/commands/</code> 或 <code>skills/xxx/SKILL.md</code>，設定觸發描述，讓 AI 代理在遇到同類任務時自動調用這套成熟工作流！
+            </div>
+          </li>
+        </ul>
+
+        <div class="pro-tip">
+          <strong>📌 什麼時候最值得封裝成 Skill？把握「二次法則（Rule of Two）」</strong><br>
+          不用每一件小事都封裝，只要你發現<strong>「這件事上週做過，這週又來一次，而且我修正了 AI 超過 2 次才滿意」</strong>——例如：每週五整理客服工單摘要、把廠商報價單轉成內部比價表、或是審查特定格式的 SQL／API 變更——立刻執行一次 Chat-to-Skill 蒸餾，你今年就少做 50 次重複苦工！
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Micro-Action & Prompt -->
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）：紅隊事前驗屍 ＆ 對話蒸餾技能封裝模板</h2>
+      </div>
+
+      <div class="card">
+        <h3>二選一立刻試跑：給重要決策做一次「無情紅隊體檢」，或把剛剛聊完的好對話封裝成「永久技能卡」</h3>
+        <p>
+          今天選一個手邊場景實戰 5 分鐘——準備送出一份重要提案或技術方案前，貼入<strong>模式 A</strong> 破解 AI 討好偏見、提前補好漏洞；或是打開昨天一個曾費心調教很久才成功的 AI 對話視窗，貼上<strong>模式 B</strong> 把經驗瞬間打包帶走：
+        </p>
+
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 複製 Prompt</button>
+          <pre id="dailyPrompt">【任務模式選擇】（請依實際需求保留「模式 A」或「模式 B」）
+
+=== 模式 A：對抗 AI 討好偏見「Pre-Mortem 事前驗屍 ＋ 三視角紅隊拆彈」===
+請完全略過讚美與客套話。以下是一份來自「外部陌生團隊」提交的方案／設計草稿，請你扮演冷靜且嚴格的紅隊審查委員會，假設「現在是 6 個月後，此方案已徹底失敗」，倒推所有致命盲點。
+
+&lt;proposal_to_attack&gt;
+[貼上你的企劃摘要、工作流設計、商業想法或程式架構說明]
+&lt;/proposal_to_attack&gt;
+
+【必須執行的 3 個紅隊拆彈步驟】
+1. 🚫 禁止吹捧：嚴禁使用「這個方向很有創意」、「整體架構完整」等鼓勵性開場，直接切入問題。
+2. 🎭 三位敵對評審接力挑刺：
+   - 💰【鐵面財務／資源控管官】：指出最容易導致工時暴增、費用失控或 ROI 不合算的隱藏成本。
+   - 😤【沒耐心的挑剔用戶】：指出用戶在流程哪一步最可能卡住、困惑或直接棄用。
+   - 🧨【極端情境工程師】：假設發生斷網、資料量放大 50 倍、人員交接失誤或惡意操作時，哪個環節會最先崩潰？
+3. 🔧【Top 3 死因與 10% 成本補丁】：整理成表格，列出「最致命的前 3 個失敗原因」、「發生徵兆」、以及「不用推翻重做、現在就能加上的低成本防呆對策」。
+
+=== 模式 B：Chat-to-Skill「對話蒸餾封裝術」（貼在成功的多輪對話最底部）===
+請回顧我們剛剛從頭到尾的所有對話與修改歷程。我們經過多輪調整才終於產出滿意的最終結果。現在請你擔任「AI 工作流工程師」，幫我把這整套成功經驗「蒸餾封裝」成一張可永久重複使用的標準技能卡（Skill Card）。
+
+【蒸餾與封裝規範】
+1. 🧹 剔除噪音：忽略過程中我走錯路的嘗試與臨時性閒聊，只保留最終真正生效的邏輯、步驟與格式規範。
+2. 🧩 變數參數化：將本次任務特有的素材（例如具體日期、人名、專案內容、原始數據）抽離為清楚的佔位符，如 `{{輸入資料}}`、`{{目標對象}}`。
+3. 🚧 失敗轉護欄（Guardrails）：回顧剛剛你曾犯過、被我糾正過的錯誤（例如漏掉某欄位、語氣太僵硬、算數或格式錯誤），全部轉寫成明確的「&lt;avoid_mistakes&gt; 禁止事項清單」。
+4. 📦 最終輸出格式：請產出一個乾淨完整的 Markdown 程式碼區塊，包含：
+   - `技能名稱與適用情境`
+   - `使用者只需填入的變數清單`
+   - `可直接複製貼上執行的標準 Prompt / SKILL.md 模板`（內含剛才確認成功的空白輸出骨架範例）。</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
