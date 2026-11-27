@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>2026-11-27｜政峰AI學習站 Daily AI Learning Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    window.mermaid = mermaid;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+      securityLevel: 'loose',
+      fontFamily: '"Noto Sans TC", "Inter", sans-serif'
+    });
+  </script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1e2942;
+      --bg-code: #090d16;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #1e293b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --badge-bg: rgba(56, 189, 248, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --badge-bg: rgba(2, 132, 199, 0.1);
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.75;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: var(--badge-bg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2.2rem 1.5rem 4rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.12));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge.friday {
+      background: rgba(251, 113, 133, 0.14);
+      color: var(--accent-rose);
+      border-color: rgba(251, 113, 133, 0.3);
+    }
+
+    .badge.level {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    /* Quick Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header h2 {
+      font-size: 1.38rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.65rem 1.85rem;
+      margin-bottom: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.65rem;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pain-point {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--accent-amber);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.9rem 0 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .pain-point strong {
+      color: var(--accent-amber);
+    }
+
+    .step-list {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-num {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--bg-secondary);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Diagram Container */
+    .diagram-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.1rem 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 0.65rem;
+      text-align: center;
+    }
+
+    /* Code / Prompt Box */
+    .code-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    pre {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #0b0f19;
+      border-color: var(--accent-primary);
+    }
+
+    /* YouTube Recommendations Grid */
+    .yt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.4rem;
+    }
+
+    .yt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
+    }
+
+    .yt-video-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      display: block;
+      overflow: hidden;
+      text-decoration: none;
+    }
+
+    .yt-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .yt-video-container:hover .yt-thumb {
+      transform: scale(1.04);
+      filter: brightness(0.85);
+    }
+
+    .yt-play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.15) 100%);
+    }
+
+    .yt-play-btn {
+      width: 68px;
+      height: 48px;
+      background: rgba(255, 0, 0, 0.92);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .yt-video-container:hover .yt-play-btn {
+      transform: scale(1.1);
+      background: #ff0000;
+    }
+
+    .yt-play-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: #ffffff;
+      margin-left: 3px;
+    }
+
+    .yt-duration-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .yt-body {
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .yt-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .yt-tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+      background: rgba(129, 140, 248, 0.15);
+      color: var(--accent-secondary);
+    }
+
+    .yt-tag.fresh {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--accent-emerald);
+    }
+
+    .yt-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.45;
+    }
+
+    .yt-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .yt-takeaways {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.15rem;
+      flex: 1;
+    }
+
+    .yt-takeaways ul {
+      padding-left: 1.15rem;
+      margin-top: 0.4rem;
+      color: var(--text-secondary);
+    }
+
+    .yt-takeaways li {
+      margin-bottom: 0.35rem;
+    }
+
+    .yt-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.65rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+
+    .yt-btn:hover {
+      opacity: 0.92;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Mobile & Device Viewport Override Support (iPhone 15: 393px, iPhone 15 Pro Max: 430px) */
+    html[data-view-mode="mobile"] body {
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html[data-view-mode="mobile"] .navbar {
+      padding: 0.65rem 0.95rem;
+      padding-top: max(0.65rem, env(safe-area-inset-top));
+    }
+
+    html[data-view-mode="mobile"] .brand {
+      font-size: 0.96rem;
+      gap: 0.5rem;
+    }
+
+    html[data-view-mode="mobile"] .brand-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8rem;
+    }
+
+    html[data-view-mode="mobile"] .btn-outline {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    html[data-view-mode="mobile"] .container {
+      padding: 1.1rem 0.95rem 3.5rem;
+    }
+
+    html[data-view-mode="mobile"] .hero {
+      padding: 1.25rem 1.15rem;
+      border-radius: 14px;
+      margin-bottom: 1.35rem;
+    }
+
+    html[data-view-mode="mobile"] .hero h1 {
+      font-size: 1.32rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .hero p {
+      font-size: 0.92rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.65rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-card {
+      padding: 0.85rem 0.9rem;
+      border-radius: 12px;
+    }
+
+    html[data-view-mode="mobile"] .kpi-value {
+      font-size: 0.96rem;
+    }
+
+    html[data-view-mode="mobile"] .kpi-sub {
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    html[data-view-mode="mobile"] .section-header h2 {
+      font-size: 1.15rem;
+      line-height: 1.38;
+    }
+
+    html[data-view-mode="mobile"] .card {
+      padding: 1.15rem 1.05rem;
+      border-radius: 14px;
+    }
+
+    html[data-view-mode="mobile"] .card h3 {
+      font-size: 1.05rem;
+    }
+
+    html[data-view-mode="mobile"] .step-item {
+      padding: 0.8rem 0.9rem;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    html[data-view-mode="mobile"] .diagram-box {
+      padding: 0.85rem 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html[data-view-mode="mobile"] pre {
+      font-size: 0.8rem;
+      padding: 2.3rem 0.9rem 1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-grid {
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+
+    html[data-view-mode="mobile"] .yt-body {
+      padding: 1.1rem 1.05rem;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.65rem 0.95rem;
+        padding-top: max(0.65rem, env(safe-area-inset-top));
+      }
+      .container {
+        padding: 1.1rem 0.95rem 3.5rem;
+      }
+      .hero {
+        padding: 1.25rem 1.15rem;
+      }
+      .hero h1 {
+        font-size: 1.32rem;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      .card {
+        padding: 1.15rem 1.05rem;
+      }
+      .yt-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Automatically hidden when embedded inside index.html iframe) -->
+  <nav class="navbar" id="postNavbar">
+    <a href="../index.html" target="_top" class="brand">
+      <div class="brand-icon">AI</div>
+      <span>政峰AI學習站</span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" target="_top" class="btn-outline" id="backToHubBtn">📚 歷史學習入口</a>
+      <button class="btn-outline" id="themeToggle" onclick="toggleTheme()">☀️ 切換淺色</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-meta">
+        <span class="badge">📅 2026-11-27（週五）</span>
+        <span class="badge level">🎯 入門至進階：Prompt 推演 ＆ 程式碼考古</span>
+        <span class="badge friday">🎬 附週五 YouTube 雙精選專欄</span>
+      </div>
+      <h1>別再讓 AI 一條路走到黑！Tree of Thoughts（思維樹多路徑推演）＆「AI 程式碼考古學（Repomix ＋ 影響半徑圖譜）」實戰指南</h1>
+      <p>
+        我們常遇到兩種挫折：第一是請 AI 寫方案或做決策時，它只給出「看起來很順、其實只是第一直覺的單一平庸路線」；第二是接手別人的陌生專案或三個月前的舊程式碼，還沒搞懂資料流向就急著叫 AI 改寫，結果改壞整個系統。今天帶你掌握 <strong>ToT 多路徑思維樹決策法</strong> 與 <strong>AI 程式碼考古三部曲</strong>，先把路看清、再精準出手！
+      </p>
+    </header>
+
+    <!-- Quick KPI Overview -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Prompt 決策升級</div>
+        <div class="kpi-value">Tree of Thoughts (ToT)</div>
+        <div class="kpi-sub">發散 3 路線 ➔ 權重剪枝 ➔ 混合最優解</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Coding 讀檔利器</div>
+        <div class="kpi-value">Repomix + 影響半徑圖</div>
+        <div class="kpi-sub">單檔打包專案全景，15 分鐘摸透架構</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">週五雙精選影音</div>
+        <div class="kpi-value">PAPAYA ＆ 志祺七七</div>
+        <div class="kpi-sub">LLM Wiki 第二大腦 ＆ AI Agent 衝擊軟體業</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">預估閱讀與實作</div>
+        <div class="kpi-value">12 分鐘閱讀 + 5 分鐘練習</div>
+        <div class="kpi-sub">內含 2 張流程圖 + 2 張對照表 + 1 組萬用模板</div>
+      </div>
+    </section>
+
+    <!-- Section 1: Deep Dive 1 -->
+    <section class="section">
+      <div class="section-header">
+        <span>🌳</span>
+        <h2>今日實戰主題一：別再讓 AI 一條路走到黑！Tree of Thoughts（思維樹多路徑推演術）</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼「請一步步思考（CoT）」還是常常產出平庸方案？</h3>
+        <p>
+          大家已經很熟悉用「請一步步思考（Chain of Thought, CoT）」來讓 AI 講出推論過程。但 CoT 有個先天限制：它是<strong>「單線一條龍」</strong>的文字接龍。只要 AI 在第 1 句選了一個最常見、最保守的假設（例如「提高曝光靠下廣告」），接下來的 800 字都會順著這條平庸路線越寫越自洽，根本不會回頭思考「有沒有完全不同的高槓桿打法？」。
+        </p>
+        <p style="margin-top: 0.75rem;">
+          2026 年在策略企劃、架構選型與商業決策中最強的進階技法，叫做<strong>「思維樹推演（Tree of Thoughts, ToT）」</strong>——強迫 AI 在動筆展開細節前，先長出 3 條彼此互斥的策略分枝，用量化權重「修剪掉爛枝」，最後把冠軍路線與亞軍亮點合併成終極方案。
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 不要讓 AI「想到哪寫到哪」，而是要求它先交出 <strong>「3 條截然不同的路線草圖 ➔ 客觀打分淘汰 1 條 ➔ 吸收亞軍優點組裝最終版」</strong>，用 1 次對話換來 3 位顧問腦力激盪的品質。
+        </div>
+
+        <!-- Mermaid Diagram 1 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart LR
+    Q["🎯 複雜決策或企劃題目"] --> B1["🌿 分枝 A：低成本游擊路線\n(3行核心假設與限制)"]
+    Q --> B2["🌿 分枝 B：高價值精品路線\n(3行核心假設與限制)"]
+    Q --> B3["🌿 分枝 C：工具生態借力路線\n(3行核心假設與限制)"]
+    B1 --> Eval["⚖️ 權重剪枝矩陣\n可行性 × 成本 × 風險 × 見效速度"]
+    B2 --> Eval
+    B3 --> Eval
+    Eval -- "淘汰最低分路線" --> Prune["✂️ 明確說明放棄原因"]
+    Eval -- "保留冠軍 + 借鏡亞軍亮點" --> Final["🏆 混合強化版最終執行方案"]
+          </pre>
+          <div class="diagram-caption">圖 1：Tree of Thoughts（思維樹）「發散分枝 ➔ 權重剪枝 ➔ 融合收斂」三段式推演架構</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>推演模式</th>
+                <th>思考路線</th>
+                <th>常見盲點</th>
+                <th>最適合使用的場景</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>直接問答 (Zero-Shot)</strong></td>
+                <td>直覺跳到結論</td>
+                <td>容易遺漏前置條件與風險</td>
+                <td>查定義、單純翻譯、格式轉換</td>
+              </tr>
+              <tr>
+                <td><strong>思維鏈 (CoT)</strong></td>
+                <td>單一線性展開 (A1 ➔ A2 ➔ A3)</td>
+                <td>開頭假設若普通，整篇都在合理化平庸解法</td>
+                <td>數學計算、已知標準流程的步驟拆解</td>
+              </tr>
+              <tr>
+                <td><strong>思維樹 (ToT)</strong></td>
+                <td>多路平行探索 + 評分剪枝 + 融合</td>
+                <td>花費較多輸出 Token（建議用輕量綱要分枝）</td>
+                <td>產品企劃、系統技術選型、職涯/商業難題決策</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>強制互斥發散（Diverge with Constraints）：</strong> 在指令中明確規定「必須提出 3 個邏輯完全不同的解法」，例如限制「一個靠零預算人工流程、一個靠現成 SaaS 串接、一個靠寫小程式自動化」，避免 AI 產出換湯不換藥的三個複製人選項。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>輕量綱要＋量化剪枝（Score & Prune）：</strong> 要求每個分枝先只寫 80 字摘要與「最大致命傷」，並依你設定的 4 項權重（例如：1週內上線 35%、維護成本 25%、擴充性 20%、風險可控度 20%）列表打分，主動淘汰最後一名。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>跨枝嫁接與深度展開（Synthesize & Deepen）：</strong> 挑選第一名為主骨架，同時要求 AI「從第二名路線偷師一個關鍵優勢嫁接進來」，再展開具體的 Step-by-step 執行清單與驗收指標。
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 2: Deep Dive 2 -->
+    <section class="section">
+      <div class="section-header">
+        <span>🧭</span>
+        <h2>今日實戰主題二：15 分鐘摸透萬行陌生專案！AI 程式碼考古學（Repomix ＋ 影響半徑圖譜）</h2>
+      </div>
+
+      <div class="card">
+        <h3>為什麼接手舊專案或開源碼時，叫 AI 直接「幫我加個功能」最容易翻車？</h3>
+        <p>
+          無論你是剛從 GitHub 下載了一個超酷的開源工具想魔改，還是打開自己三個月前寫到一半的專案，最致命的錯誤就是<strong>「只丟單一檔案給 AI，叫它馬上改程式碼」</strong>。因為 AI 看不到全域的呼叫關係與資料流向，它往往會忘記改到隱藏在另一個資料夾的設定檔，甚至好心幫你重寫了一個專案裡早就存在的共用函式。
+        </p>
+        <p style="margin-top: 0.75rem;">
+          高手接手陌生專案時，會先執行一套<strong>「AI 程式碼考古學（Codebase Archaeology）」</strong>：先把整座倉庫濃縮成乾淨的上下文包裹，讓 AI 先畫出「入口點 ➔ 核心資料流 ➔ 影響半徑雷達圖」，完全看懂地圖後才動第一行程式碼。
+        </p>
+
+        <div class="pain-point">
+          <strong>💡 一句話痛點破解：</strong> 接手陌生專案的前 15 分鐘<strong>「只讀不寫（Read-Only Mapping）」</strong>！先用 <code>Repomix</code> 把乾淨目錄打包餵給長上下文 AI 畫出系統地圖與修改影響半徑，準確率遠勝盲目開改。
+        </div>
+
+        <!-- Mermaid Diagram 2 -->
+        <div class="diagram-box">
+          <pre class="mermaid">
+flowchart TD
+    Repo["📦 陌生專案資料夾\n(數十個檔案與巢狀目錄)"] --> Pack["🗜️ 步驟一：全景打包過濾\nRepomix / gitingest\n(排除 node_modules 與二進位雜檔)"]
+    Pack --> Map["🗺️ 步驟二：畫出結構雙圖\n入口點 Entry Point + 核心資料流向"]
+    Map --> Blast["🎯 步驟三：鎖定修改目標\n盤點「影響半徑 Blast Radius」清單\n(哪些呼叫者與測試會連動？)"]
+    Blast --> Safe{"🛡️ 人類確認路線圖\n是否有遺漏的相依模組？"}
+    Safe -- "發現盲點，補查特定檔案" --> Map
+    Safe -- "藍圖無誤，開始動刀" --> Edit["✍️ 步驟四：最小化精準修改與驗證"]
+          </pre>
+          <div class="diagram-caption">圖 2：避免「改一處崩三處」的 AI 程式碼考古學四步驟作業閉環</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>考古工具 / 方法</th>
+                <th>核心功能</th>
+                <th>白話比喻</th>
+                <th>推薦使用時機</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Repomix</strong><br>(<code>npx repomix</code>)</td>
+                <td>自動讀取 <code>.gitignore</code>，將整個專案壓縮為單一 Markdown/XML 檔，並統計 Token 數</td>
+                <td>把整棟大樓的藍圖與水電管線裝訂成一本「精華目錄冊」</td>
+                <td>本機有程式碼資料夾，想一次丟給 Gemini / Claude 看懂全貌</td>
+              </tr>
+              <tr>
+                <td><strong>Gitingest</strong><br>(網址把 github 改 gitingest)</td>
+                <td>免安裝工具，貼上公開 GitHub Repo 網址即秒轉純文字結構包裹</td>
+                <td>線上版「開源專案 X 光機」</td>
+                <td>快速研究網路上的開源專案、學習別人的實作架構</td>
+              </tr>
+              <tr>
+                <td><strong>CLI Agent 只讀探勘</strong><br>(Claude Code / Gemini CLI)</td>
+                <td>直接用終端機指令搜尋符號引用、追蹤 Call Graph 與歷史 Git Commit</td>
+                <td>派一位資深偵探直接進現場調閱監視器與翻找線索</td>
+                <td>超大型專案（超過數十萬行），無法一次塞進單一對話視窗時</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <strong>淨空打包（Context Packing）：</strong> 在專案根目錄執行 <code>npx repomix --style markdown</code>（或對公開 GitHub 專案直接打開 <code>gitingest.com</code>），系統會自動濾掉 <code>node_modules</code>、圖片與暫存檔，產出一份帶目錄樹的純文字檔案，並檢查總 Token 是否落在模型甜蜜點（例如 10 萬 Token 內）。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <strong>先問「誰是起點、資料怎麼走」：</strong> 把打包檔餵給 AI，禁止它改程式，只問三個問題：「1. 使用者觸發動作後，請求經過哪幾個檔案？ 2. 全域設定與環境變數都在哪裡讀取？ 3. 哪三個檔案是整個專案的心臟？」並要求它用 Mermaid 畫出來。
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <strong>動刀前先算「影響半徑（Blast Radius）」：</strong> 鎖定你要改的功能後，請 AI 列出所有呼叫該函式的上游檔案、共用的資料型別，以及現有的相關測試檔，確認「牽一髮會動哪幾身」之後，再開始撰寫修改程式。
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 3: Micro-Action & Prompt -->
+    <section class="section">
+      <div class="section-header">
+        <span>💡</span>
+        <h2>今日 5 分鐘實戰練習（Micro-Action）：ToT 思維樹決策 ＆ 專案影響半徑萬用模板</h2>
+      </div>
+
+      <div class="card">
+        <h3>一鍵啟動「三路線推演 ＋ 量化剪枝」高勝率決策腦</h3>
+        <p>
+          今天不論你要評估一個新點子、決定系統架構，還是煩惱某個職場企劃該選哪種打法，請複製下方這套<strong>「Tree of Thoughts（思維樹）三路線評估模板」</strong>，直接貼給 AI 試跑一次，體會「多路徑比較」與「單線盲猜」的巨大差距：
+        </p>
+
+        <div class="code-wrapper">
+          <button class="copy-btn" onclick="copyPrompt(this)">📋 複製 Prompt</button>
+          <pre id="dailyPrompt">【任務目標】
+請針對以下難題，運用「Tree of Thoughts（思維樹多路徑推演）」模式協助我找出最優解法，先不要急著給單一答案：
+- 我的題目／情境：[填入你的決策難題，例如：我想做一個自動化每週帳務整理工具 / 我們團隊想導入 AI 客服]
+- 我的資源與限制：[例如：只有週末 4 小時可開發 / 預算零元 / 不希望客戶資料外洩]
+
+【第一步：發散 3 條互斥策略分枝】
+請提出 3 條「思考維度完全不同」的路線（例如：路線 A 極簡手工替代、路線 B 現成工具串接、路線 C 輕量程式自動化）。
+每條路線限用 4 行交代：核心作法、所需工具、最大前提假設、一個潛在致命傷。
+
+【第二步：權重評分與剪枝】
+請用 Markdown 表格，依以下權重對 3 條路線進行 1~10 分評分：
+- 落地速度 (35%)｜長期維護成本 (25%)｜效果上限 (25%)｜風險可控度 (15%)
+計算加權總分後，明確說明「淘汰哪一條路線以及為何淘汰」。
+
+【第三步：跨枝嫁接與行動清單】
+選出最高分路線作為主軸，並從第二名路線中「借鑑一個優點」進行混合強化，最後給出明天就能執行的 3 個 Step-by-step 落地步驟。</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Friday Special YouTube Recommendations -->
+    <section class="section">
+      <div class="section-header">
+        <span>🎬</span>
+        <h2>【週五限定專欄】本週中文 AI YouTube 雙精選（近半年內發布・10~25 分鐘乾貨）</h2>
+      </div>
+      <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">
+        嚴格篩選<strong>過去 6 個月內（2026 下半年）上傳</strong>、繁體中文發音、片長介於 10～25 分鐘且破萬觀看的高含金量影片，一則帶你實作「會自我進化的 AI 筆記大腦」，一則帶你看懂「AI Agent 如何重塑軟體與 App 生態」：
+      </p>
+
+      <div class="yt-grid">
+        <!-- Video 1: Type 1 (Tool & Workflow Practical Tutorial) -->
+        <article class="yt-card">
+          <a href="https://www.youtube.com/watch?v=ZC8AI_jFWnU" target="_blank" rel="noopener" class="yt-video-container" title="點擊前往 YouTube 觀看影片">
+            <img class="yt-thumb" src="https://i.ytimg.com/vi/ZC8AI_jFWnU/hqdefault.jpg" alt="國外瘋傳的 AI 筆記工作流！LLM Wiki 讓你的 Obsidian 筆記升級成能自我進化的第二大腦！" />
+            <div class="yt-play-overlay">
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <span class="yt-duration-badge">18:05</span>
+            </div>
+          </a>
+          <div class="yt-body">
+            <div class="yt-tags">
+              <span class="yt-tag">類型 1｜工具與應用實操教學</span>
+              <span class="yt-tag fresh">🔥 28.2 萬次觀看・2026-07 發布</span>
+            </div>
+            <div class="yt-title">國外瘋傳的 AI 筆記工作流！LLM Wiki 讓你的 Obsidian 筆記升級成能自我進化的第二大腦！</div>
+            <div class="yt-meta">📺 頻道：PAPAYA 電腦教室 ｜ ⏱️ 片長：18 分 05 秒 ｜ 📅 2026-07-08 發布</div>
+            <div class="yt-takeaways">
+              <strong>📌 為什麼推薦這支影片：</strong>
+              <ul>
+                <li><strong>超越單純問答的知識庫自動化（28萬+高人氣）：</strong> PAPAYA 老師手把手示範國外超紅的「LLM Wiki」概念——讓 AI Agent 直接進駐你的本機筆記庫，自動整理關聯、維護雙向連結並定期排版成資訊圖表。</li>
+                <li><strong>時間軸重點：</strong>
+                  <br>• <code>00:00</code> Obsidian 基礎操作、範本建立與雙向關聯圖
+                  <br>• <code>11:02</code> <strong>核心亮點：LLM Wiki 架構設定</strong>與概念拆解
+                  <br>• <code>13:08</code> 將 CLI Agent（Codex）連接到 Obsidian 資料夾自動維護
+                  <br>• <code>14:23</code> 搭配 Web Clipper 剪藏 ＆ 設定 LLM 自動排程生成 HTML 圖表
+                </li>
+              </ul>
+            </div>
+            <a href="https://www.youtube.com/watch?v=ZC8AI_jFWnU" target="_blank" rel="noopener" class="yt-btn">
+              ▶️ 前往 YouTube 觀看完整影片
+            </a>
+          </div>
+        </article>
+
+        <!-- Video 2: Type 3 (AI Tech News & Trend Deep Commentary) -->
+        <article class="yt-card">
+          <a href="https://www.youtube.com/watch?v=WFGoFKxiOoQ" target="_blank" rel="noopener" class="yt-video-container" title="點擊前往 YouTube 觀看影片">
+            <img class="yt-thumb" src="https://i.ytimg.com/vi/WFGoFKxiOoQ/hqdefault.jpg" alt="手機App即將走入歷史？AI Agent 為什麼讓整個軟體業瑟瑟發抖？｜志祺七七" />
+            <div class="yt-play-overlay">
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <span class="yt-duration-badge">12:50</span>
+            </div>
+          </a>
+          <div class="yt-body">
+            <div class="yt-tags">
+              <span class="yt-tag">類型 3｜AI 科技新聞與趨勢深度評論</span>
+              <span class="yt-tag fresh">🔥 27.7 萬次觀看・2026-09 發布</span>
+            </div>
+            <div class="yt-title">手機App即將走入歷史？AI Agent 為什麼讓整個軟體業瑟瑟發抖？｜志祺七七</div>
+            <div class="yt-meta">📺 頻道：志祺七七 ｜ ⏱️ 片長：12 分 50 秒 ｜ 📅 2026-09-30 發布</div>
+            <div class="yt-takeaways">
+              <strong>📌 為什麼推薦這支影片：</strong>
+              <ul>
+                <li><strong>正反平衡剖析軟體業大洗牌（27萬+觀看）：</strong> 從馬斯克預言與 YC 訪談「80% App 將退居幕後」切入，對比企業 SaaS 軟體股反彈的真實原因，看懂軟體未來到底會變成什麼模樣。</li>
+                <li><strong>時間軸與觀察重點：</strong>
+                  <br>• <code>00:35</code> 「App 消失論」背後的技術轉折：統一由 Agent 呼叫後端服務
+                  <br>• <code>03:48</code> <strong>反方實證：</strong>為什麼確定性介面與企業合規軟體沒那麼容易被取代？
+                  <br>• <code>05:33</code> 軟體新形態：GUI 介面變薄、但 API 與資料護城河變得更值錢
+                </li>
+              </ul>
+            </div>
+            <a href="https://www.youtube.com/watch?v=WFGoFKxiOoQ" target="_blank" rel="noopener" class="yt-btn">
+              ▶️ 前往 YouTube 觀看完整影片
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>政峰AI學習站 Daily AI Learning Hub • 為您量身打造的專屬知識庫</p>
+  </footer>
+
+  <script>
+    // Theme toggle with localStorage persistence
+
+    function applyPostViewMode(mode) {
+      const effective = (mode === 'auto')
+        ? (window.innerWidth <= 820 ? 'mobile' : 'desktop')
+        : mode;
+      document.documentElement.setAttribute('data-view-mode', effective);
+      const vBtn = document.getElementById('viewModeToggle');
+      if (vBtn) {
+        vBtn.innerHTML = effective === 'mobile' ? '💻 電腦版' : '📱 手機版';
+      }
+    }
+
+    function togglePostViewMode() {
+      const cur = document.documentElement.getAttribute('data-view-mode') || 'desktop';
+      const next = cur === 'mobile' ? 'desktop' : 'mobile';
+      localStorage.setItem('ai-hub-view-mode', next);
+      applyPostViewMode(next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ai-hub-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' ? '☀️ 切換淺色' : '🌙 切換深色';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    // Initialize saved theme (default dark) & detect if inside index.html iframe
+    (function () {
+      const saved = localStorage.getItem('ai-hub-theme') || 'dark';
+      applyTheme(saved);
+      applyPostViewMode('auto');
+      window.addEventListener('resize', () => applyPostViewMode('auto'));
+      if (window.self !== window.top) {
+        const nav = document.getElementById('postNavbar');
+        if (nav) nav.style.display = 'none';
+      }
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'ai-hub-theme' && e.newValue) {
+          applyTheme(e.newValue);
+        }
+        if (e.key === 'ai-hub-view-mode' && e.newValue) {
+          applyPostViewMode(e.newValue);
+        }
+      });
+    })();
+
+    // Copy Prompt helper
+    function copyPrompt(btn) {
+      const text = document.getElementById('dailyPrompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ 已複製！';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
