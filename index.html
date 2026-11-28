@@ -777,7 +777,7 @@
 
     <div class="topbar-right">
       <button class="action-btn qr-btn-desktop" onclick="toggleQrModal(true)" title="手機掃碼連線">📲 手機外網連線</button>
-      <a id="openNewTabLink" href="posts/2026-11-27.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
+      <a id="openNewTabLink" href="posts/2026-11-28.html" target="_blank" class="action-btn" title="在新分頁單獨開啟">↗ 單頁</a>
       <button class="action-btn" id="hubThemeBtn" onclick="toggleHubTheme()">☀️ 淺色</button>
     </div>
   </header>
@@ -847,18 +847,18 @@
 
         <div class="sidebar-footer">
           <span>🕗 每日 20:00 自動更新</span>
-          <span id="postCount">共 26 篇</span>
+          <span id="postCount">共 27 篇</span>
         </div>
       </aside>
 
       <!-- Right / Full Main Content Frame -->
       <section class="viewer">
         <div class="viewer-toolbar">
-          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-27（週五）｜別再讓 AI 一條路走到黑！Tree of Thoughts（思維樹多路徑推演）＆「AI 程式碼考古學（Repomix ＋ 影響半徑圖譜）」實戰指南</span>
+          <span class="current-post-label" id="currentPostLabel">正在閱讀：2026-11-28（週六）｜別再只叫 AI「寫話術」或「說程式碼很棒」！AI 高壓角色沙盤模擬（State-Tracked Role-Play）＆ 雙遍對抗式程式碼審查（Two-Pass Code Review）實戰指南</span>
         </div>
 
         <div class="iframe-scroll-wrapper" id="iframeWrapper">
-          <iframe id="contentFrame" src="posts/2026-11-27.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
+          <iframe id="contentFrame" src="posts/2026-11-28.html" title="Daily AI Learning Content" scrolling="yes"></iframe>
         </div>
 
         <!-- Mobile Bottom Navigation Bar (For iPhone 15 / 15 Pro Max Thumb Reach) -->
@@ -892,6 +892,14 @@
 
     // Daily posts manifest — updated automatically by the daily 20:00 automation
     const POSTS = [
+      {
+        date: "2026-11-28（週六）",
+        title: "別再只叫 AI「寫話術」或「說程式碼很棒」！AI 高壓角色沙盤模擬（State-Tracked Role-Play）＆ 雙遍對抗式程式碼審查（Two-Pass Code Review）實戰指南",
+        summary: "破解重要談判只背公關話術一被反問就當機，以及問 AI「程式碼有沒有問題」卻只換來橡皮圖章式客套稱讚的兩大盲點！深入拆解附帶「隱藏底線 ＋ 動態信任計分條 ＋ /debrief 教練複盤」的 AI 高壓沙盤陪練室；並手把手示範「Diff 精準投餵 ➔ Pass 1 極端反例獵殺 ➔ Pass 2 資安韌性審計 ➔ P0/P1 分級閘門」的雙遍對抗式程式碼審查工作流。",
+        path: "posts/2026-11-28.html",
+        hasYoutube: false,
+        tags: ["Role-Play", "沙盤推演", "State Tracker", "Code Review", "Two-Pass", "對抗式審查", "AI品管"]
+      },
       {
         date: "2026-11-27（週五）",
         title: "別再讓 AI 一條路走到黑！Tree of Thoughts（思維樹多路徑推演）＆「AI 程式碼考古學（Repomix ＋ 影響半徑圖譜）」實戰指南",
